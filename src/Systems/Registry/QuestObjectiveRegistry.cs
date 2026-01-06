@@ -21,6 +21,7 @@ namespace VsQuest
             objectiveRegistry.Add("hasAttribute", new PlayerHasAttributeActionObjective());
             objectiveRegistry.Add("interactat", new InteractAtCoordinateObjective());
             objectiveRegistry.Add("checkvariable", new CheckVariableObjective());
+            objectiveRegistry.Add("interactcount", new InteractCountObjective());
         }
     }
 }
