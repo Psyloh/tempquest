@@ -1,17 +1,18 @@
 {
     "type": "code",
-    "modid": "vsquest",
+    "modid": "AlegacyVSquest",
     "name": "VS Quest",
     "side": "universal",
     "authors": [
         "G3rste",
         "Zwetsche",
-		"Flajakay"
+		"Flajakay",
+        "DreadMob"
     ],
     "description": "Mod that focuses on implementing a Quest System.",
-    "version": "3.0.0",
+    "version": "1.0.0",
     "dependencies": {
-        "game": "1.21.0",
+        "game": "1.21.6",
         "itemizer": "1.1.1"
     }
 }

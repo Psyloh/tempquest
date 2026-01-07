@@ -10,6 +10,6 @@
   "version": "1.0.0",
   "dependencies": {
     "game": "1.21.6",
-    "vsquest": "3.0.0"
+    "AlegacyVSquest": "1.0.0"
   }
 }
