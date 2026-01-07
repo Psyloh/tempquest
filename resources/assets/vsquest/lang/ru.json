@@ -10,5 +10,14 @@
     "access-quests": "Говорить",
     "quest-freeghost-title": "Хотелось бы упокоиться в местечке получше",
     "quest-freeghost-desc": "Тут довольно уныло, может, посадишь несколько цветов?",
-    "quest-freeghost-obj": "Посажено цветов: {0}/8"
+    "quest-freeghost-obj": "Посажено цветов: {0}/8",
+    "attr-attackpower": "Сила атаки",
+    "attr-warmth": "Тепло",
+    "attr-protection": "Защита",
+    "attr-protectionperc": "Защита %",
+    "attr-walkspeed": "Скорость ходьбы",
+    "attr-hungerrate": "Скорость голода",
+    "attr-healingeffectiveness": "Эффективность лечения",
+    "attr-rangedaccuracy": "Точность дальнего боя",
+    "attr-rangedchargspeed": "Скорость заряда"
 }

@@ -193,9 +193,7 @@ namespace vsquest.src.Systems.Actions
                 if (collectible != null)
                 {
                     var stack = new ItemStack(collectible);
-                    stack.Attributes.SetString("itemizerName", actionItem.name);
-                    stack.Attributes.SetString("itemizerDesc", actionItem.description);
-                    stack.Attributes.SetString("vsquest:actions", JsonConvert.SerializeObject(actionItem.actions));
+                    VsQuest.Util.ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
                     if (!byPlayer.InventoryManager.TryGiveItemstack(stack))
                     {
                         sapi.World.SpawnItemEntity(stack, byPlayer.Entity.ServerPos.XYZ);
