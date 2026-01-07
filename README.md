@@ -1,105 +1,466 @@
+
+
+<div align="center">
+
 # VS Quest
 
-It is a fork of the original mod with the addition of functionality required by the alegacy.online server. But, of course, you can use it as well.
+**A powerful and extensible quest system mod for Vintage Story**
 
-Mod aims to add Quests to Vintage Story.<br>
-It should also enable you to easily add your own quests to the game as well as your own questgivers.<br>
-<br>
-If you want to use this as a base for creating your own quests, please have a look at this **[example](example)**. The most important aspects to take care of are the **[quests.json](example/assets/vsquestexample/config/quests.json)** as well as the **[questgiver behavior](example/assets/vsquestexample/entities/questgiver.json#L229-L235)**<br><br>
-Every quest in the config/quests/*.json can have the following attributes:
-* **id**: Unique id to identify your quest in the system
-* **cooldown**: cooldown in days until the questgiver offers the quest again
-* **predecessor**: optional -> questid that has to be completed before this quest becomes available
-* **perPlayer**: determines if the quest cooldown is set per player or globally
-* **onAcceptedActions**: list of actions that are executed after the quest was accepted
-  * **id**: unique id of the action
-  * **args**: arguments for the function called by the action, all supplied as strings
-* **gatherObjectives**: list of items the player has to offer
-  * **validCodes**: list of accepted item codes
-  * **demand**: needed amount
-* **actionObjectives**: list of objectives that rely on custom code
-  * **id**: unique id of the action objective to check
-  * **args**: arguments for the function called by the action objective, all supplied as strings
-  * **currently available action objectives**:
-    * **interactat**: requires the player to right-click a block at a specific coordinate.
-      * `args[0]`: The coordinates of the target block, formatted as a string: `"x,y,z"`.
-      * `args[1]`: (Optional) A message to display to the player in chat upon successful interaction.
-      * `args[2]`: (Optional) A sound to play upon successful interaction. The path should be a valid sound asset location (e.g., `"game:sounds/voice/saxophone"`).
-* **killObjectives**: list of entities the player has to defeat
-  * **validCodes**: list of accepted entity codes
-  * **demand**: needed amount
-* **blockPlaceObjectives**: list of blocks the player has place
-  * **validCodes**: list of accepted block codes
-  * **demand**: needed amount
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Game Version](https://img.shields.io/badge/Vintage%20Story-1.21.6+-green.svg)](https://www.vintagestory.at/)
+[![Version](https://img.shields.io/badge/Mod%20Version-3.0.0-orange.svg)](resources/modinfo.json)
 
-* **blockBreakObjectives**: list of blocks the player has break
-  * **validCodes**: list of accepted block codes
-  * **demand**: needed amount
-* **itemRewards**: list of items the player receives upon completing the quest
-  * **itemCode**: code of the reward
-  * **amount**: amount the player receives
-* **randomItemRewards**: if you want to reward the player with a random reward (something like "select 3 out of 7 possible items") this is the place to go
-  * **selectAmount**: specifies how many of the item entries should be randomly selected
-  * **items**: list of items to randomize from
-    * **itemCode**: code of the reward
-    * **minAmount**: minimum amount of that item to drop
-    * **maxAmount**: maximum amount of that item to drop
-* **actionRewards**: list of rewards that rely on custom code, like spawning a certain creature, ...
-  * **id**: unique id of the action
-  * **args**: arguments for the function called by the action, all supplied as strings
-  * **currently available actions (can be used both as actionRewards and onAcceptedActions)**:
-    * despawnquestgiver: despawns the questgiver after the given amount of time
-      * args: ["8"] => questgiver is despawned after 8 seconds
-    * playsound: plays the given sound at the players position (only hearable by the player himself)
-      * args: ["game:sounds/voice/saxophone"] => plays the saxophone sound
-    * spawnentities: spawns all entities provided
-      * args: ["game:wolf-male", "game:wolf-female"] => spawns a male and a female wolf
-    * spawnany: spawns a random entity
-      * args: ["game:wolf-male", "game:wolf-female"] => spawns either a male or a female wolf
-    * recruitentity: recruits the questgiver (requires custom aitasks and is used by vsvillage)
-      * args: none
-    * addplayerattribute: adds an attribute as string to the watched attributes of the player, useful for storing custom data
-      * args: ["isacoolguy","yes"] => sets the isacoolguy attribute of the player to yes
-    * removeplayerattribute: remove a playerattribute
-      * args: ["isacoolguy"] => deletes the isacoolguy attribute
-    * completequest => completes the given quest
-      * args: ["vsquestexample:talktome", "25"] => completes the quest vsquestexample:talktome where the questgivers entity id is 25
-    * acceptquest: adds a quest to the active quests of the player
-      * args: ["vsquestexample:talktome", "25"] => adds vsquestexample:talktome with questgiver 25 to the active quests of the player
-    * giveitem: gives an item to the player
-      * args: ["game:gear-rusty", "1"] => gives 1 rusty gear to the player
-    * spawnsmoke: spawns smoke particles at the questgivers location
-      * args: [] => none
-    * addtraits: adds the given list of traits to the player
-      * args: ["bowyer", "precise"] => adds the precise and the bowyer trait to the player
-    * removetraits: removes the given list of traits from the player, but can not remove traits that are linked to the players class (eg. can not remove bowyer from hunter)
-      * args: ["bowyer", "precise"] => removes the precise and the bowyer trait from the player
-    * servercommand: executes a server command from the console.
-      * args: ["say", "hello"] => executes "/say hello" from the server console.
-    * playercommand: executes a command from the player's perspective.
-      * args: ["emote", "wave"] => executes "/emote wave" as the player.
-    * addjournalentry: adds a new entry to the player's journal.
-      * args: ["loreCode", "title", "chapter1", "chapter2", ...] => creates a journal entry with the given lore code, title, and chapters.
-    * giveactionitem: gives a player an action item defined in itemconfig.json.
-      * args: ["itemId"] => gives the player the action item with the specified ID.
+</div>
 
-### Action Items
+---
 
-Action items are special items that can trigger a series of actions when used. They are defined in itemconfig.json
+## 📖 Overview
 
-Each action item has the following properties:
-* **id**: a unique id for the action item.
-* **itemCode**: the code of the base item.
-* **name**: the name of the action item.
-* **description**: the description of the action item.
-* **actions**: a list of actions to be executed when the item is used. Each action has an `id` and `args`, just like in quests.
+**VS Quest** is a fork of the original quest mod, enhanced with additional functionality for the [alegacy.online](https://alegacy.online) server. This mod adds a comprehensive quest system to Vintage Story, allowing players to accept, track, and complete quests from custom NPCs (Quest Givers).
+
+---
+
+## �️ Quest System Architecture
+
+### How It Works
+
+The quest system integrates with Vintage Story's entity and dialogue systems:
+
+---
+
+## 🧑‍🤝‍🧑 Quest Givers
+
+Quest Givers are entities with the `questgiver` behavior. They use Vintage Story's `conversable` behavior for dialogue.
+
+### Entity Configuration
+
+Add the `questgiver` behavior to your entity's server behaviors:
+
+```json
+{
+  "code": "questgiver",
+  "behaviors": [
+    {
+      "code": "conversable",
+      "dialogue": "config/dialogue/myquestgiver"
+    },
+    {
+      "code": "questgiver",
+      "quests": [
+        "mymod:quest1",
+        "mymod:quest2"
+      ],
+      "selectrandom": false,
+      "selectrandomcount": 1
+    }
+  ]
+}
+```
+
+### Quest Giver Behavior Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `quests` | `string[]` | List of quest IDs this NPC can offer |
+| `selectrandom` | `bool` | If `true`, randomly selects quests from the list per entity |
+| `selectrandomcount` | `int` | How many quests to randomly select (default: 1) |
+
+### Accessing Quests
+
+There are two ways for players to access quests:
+
+| Method | Condition | Description |
+|--------|-----------|-------------|
+| **Dialogue Trigger** | Entity has `conversable` behavior | Use `"trigger": "openquests"` in dialogue component |
+| **Sneak + Right-click** | Entity has NO `conversable` behavior | Direct interaction opens quest GUI |
+
+---
+
+## 💬 Dialogue System
+
+The dialogue system uses Vintage Story's native `conversable` behavior with a special trigger for opening the quest GUI.
+
+### Dialogue File Structure
+
+Location: `assets/{modid}/config/dialogue/{name}.json`
+
+```json
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "mymod:dialogue-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "mymod:dialogue-open-quests", "jumpTo": "openquests" },
+        { "value": "mymod:dialogue-goodbye", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "openquests",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "openquests",
+      "text": [
+        { "value": "mymod:dialogue-quest-confirm" }
+      ]
+    }
+  ]
+}
+```
+
+### Dialogue Component Types
+
+| Type | Owner | Description |
+|------|-------|-------------|
+| `talk` | `npc` | NPC speaks text, can have `jumpTo` for next component |
+| `talk` | `player` | Player chooses from multiple text options, each with own `jumpTo` |
+| `condition` | `npc` | Checks a variable and jumps to different components |
+
+### Special Trigger: `openquests`
+
+When a dialogue component has `"trigger": "openquests"`, clicking it:
+1. Closes the dialogue window
+2. Opens the Quest Selection GUI
+3. Shows available quests from this quest giver
+
+### Condition Components
+
+Check entity or player variables to branch dialogue:
+
+```json
+{
+  "code": "checkquest",
+  "owner": "npc",
+  "type": "condition",
+  "variable": "entity.questdone",
+  "isValue": "true",
+  "thenJumpTo": "postquest",
+  "elseJumpTo": "prequest"
+}
+```
+
+---
+
+## 🖥️ Quest GUI
+
+The quest GUI has two tabs:
+
+| Tab | Content |
+|-----|---------|
+| **Available Quests** | Quests player can accept (dropdown selector + Accept button) |
+| **Active Quests** | Quests in progress (progress display + Complete button) |
+
+### Quest Availability Conditions
+
+A quest appears in the "Available" tab only if:
+
+1. **Cooldown passed** — Time since last acceptance ≥ `cooldown` (in game days)
+2. **Not currently active** — Player doesn't have this quest in progress
+3. **Predecessor completed** — If `predecessor` is set, that quest must be completed
+
+---
+
+## 🌐 Localization
+
+All quest text uses Vintage Story's language system.
+
+### Required Lang Keys
+
+For each quest ID `{questId}`, define these in your `lang/en.json`:
+
+| Lang Key | Usage |
+|----------|-------|
+| `{questId}-title` | Quest name in dropdown and GUI title |
+| `{questId}-desc` | Quest description shown in GUI |
+| `{questId}-obj` | Progress text with placeholders (e.g., `"Found: {0}/{1}"`) |
+| `{questId}-final` | *(optional)* Message shown when quest is completable |
+
+### Progress Placeholders
+
+The `-obj` key receives progress values as indexed placeholders:
+
+```json
+"mymod:quest1-obj": "Flowers planted: {0}/10\nItems collected: {1}/{2}"
+```
+
+Arguments are passed in order: gather progress, then tracker progress, then action objective progress.
+
+---
+
+## 📁 File Structure
+
+```
+assets/{modid}/
+├── config/
+│   ├── quests.json          # Quest definitions
+│   ├── itemconfig.json      # Action Items registry
+│   └── dialogue/
+│       └── {npcname}.json   # Dialogue trees
+├── entities/
+│   └── questgiver.json      # Quest giver entity
+└── lang/
+    └── en.json              # Localization
+```
+
+---
+
+## � Action Item System
+
+Action Items are special items that execute quest actions when used (Right-Click) by the player. 
+
+### Configuration
+
+Action Items are defined in `assets/{modid}/config/itemconfig.json`.
+
+```json
+{
+  "actionItems": [
+    {
+      "id": "memorial-scarf-2026",
+      "itemCode": "game:clothes-shoulder-artisans-scarf",
+      "name": "<font color=\"#8B5CF6\">Memorial Scarf</font>",
+      "description": "A scarf with embroidery...",
+      "actions": [
+        {
+          "id": "playsound",
+          "args": ["game:sounds/effect/cloth"]
+        },
+        {
+          "id": "notify",
+          "args": ["You feel warmth..."]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Properties
+
+| Property | Description |
+|----------|-------------|
+| `id` | Unique ID for the action item (used in `giveactionitem`) |
+| `itemCode` | The base game item/block code to use as a template |
+| `name` | Custom display name (supports HTML formatting) |
+| `description` | Custom tooltip description |
+| `actions` | List of `ActionWithArgs` to execute on right-click |
+
+### Obtaining Action Items
+
+Players receive these items via the `giveactionitem` action (in quests or commands):
+
+```json
+{
+  "id": "giveactionitem",
+  "args": ["memorial-scarf-2026"]
+}
+```
+
+When given, the item retains the visual appearance of the base `itemCode` but gains the custom name, description, and action triggers.
+
+---
+
+## 🎯 Actions Reference
+
+Actions are executable commands that can be triggered at different points during a quest lifecycle. They are defined as objects with an `id` and an `args` array.
+
+### Action Format
+
+Actions are defined in JSON using the `ActionWithArgs` structure:
+
+```json
+{
+  "id": "actionname",
+  "args": ["arg1", "arg2", "arg3"]
+}
+```
+
+### Where Actions Can Be Used
+
+| Property | Trigger | Description |
+|----------|---------|-------------|
+| `onAcceptedActions` | Quest Accepted | Executes when a player accepts the quest |
+| `actionRewards` | Quest Completed | Executes when a player completes the quest |
+| Action Objectives (`args` field) | Objective Event | Inline action strings triggered during objective events (e.g., interacting at coordinates) |
+| Action Items (`actions` field) | Item Used | Executes when player right-clicks an Action Item |
+
+### Inline Action Strings
+
+Some systems (like `interactat` objectives) support inline action strings. Multiple actions are separated by `;` and arguments with spaces use single quotes:
+
+```
+actionname arg1 arg2; anotheraction 'arg with spaces'
+```
+
+---
+
+## 📋 Available Actions
+
+### Entity Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `despawnquestgiver` | `delay_ms` | Removes the quest giver entity after a delay (in milliseconds) |
+| `spawnentities` | `entityCode1`, `entityCode2`, ... | Spawns one or more entities at the quest giver's position |
+| `spawnany` | `entityCode1`, `entityCode2`, ... | Spawns a **random** entity from the provided list |
+| `recruitentity` | *(none)* | Makes the quest giver follow the player as a companion |
+| `spawnsmoke` | *(none)* | Creates a smoke particle effect at the quest giver's position |
+
+---
+
+### Item Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `giveitem` | `itemCode`, `amount`, `[name]`, `[description]` | Gives the player an item. Optional Itemizer integration for custom name/description |
+| `giveactionitem` | `actionItemId` | Gives a pre-configured Action Item from `itemconfig.json` |
+
+---
+
+### Player State Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `healplayer` | *(none)* | Fully heals the player (100 HP) |
+| `addplayerattribute` | `key`, `value` | Sets a string attribute on the player entity |
+| `removeplayerattribute` | `key` | Removes an attribute from the player entity |
+| `addtraits` | `trait1`, `trait2`, ... | Adds traits to the player's `extraTraits` list |
+| `removetraits` | `trait1`, `trait2`, ... | Removes traits from the player's `extraTraits` list |
+
+---
+
+### Quest Flow Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `acceptquest` | `questGiverId`, `questId` | Triggers acceptance of another quest |
+| `completequest` | `[questId]`, `[questGiverId]` | Marks a quest as completed. Uses current quest if no args |
+
+---
+
+### UI & Notification Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `playsound` | `soundAsset` | Plays a sound (e.g., `game:sounds/effect/writing`) |
+| `notify` | `message` | Displays a chat notification to the player (supports lang keys) |
+| `showquestfinaldialog` | `titleKey`, `textKey`, `[option1Key]`, `[option2Key]` | Shows a dialog box with localized text and optional buttons |
+
+---
+
+### Command Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `servercommand` | `command`, `args...` | Executes a server console command |
+| `playercommand` | `command`, `args...` | Sends a command to be executed on the player's client |
+
+---
+
+### Journal Actions
+
+| Action ID | Arguments | Description |
+|-----------|-----------|-------------|
+| `addjournalentry` | `loreCode`, `title`, `chapter1`, `[chapter2]`, ... | Adds or updates a journal entry with multiple chapters |
+
+---
+
+## 🎯 Action Objectives Reference
+
+Action Objectives are special quest completion conditions that track player progress. Unlike regular objectives (gather, kill, etc.), these use custom logic and can trigger inline actions.
+
+### Action Objective Format
+
+Action Objectives are defined in the `actionObjectives` array using the same `ActionWithArgs` structure:
+
+```json
+{
+  "id": "objectivename",
+  "args": ["arg1", "arg2", "..."]
+}
+```
+
+---
+
+## 📋 Available Action Objectives
+
+### `interactat` — Interact at Coordinate
+
+Completes when the player right-clicks a block at a specific coordinate. Can trigger inline actions on interaction.
+
+| Argument | Description |
+|----------|-------------|
+| `x,y,z` | Target block coordinates (comma-separated) |
+| `actionString` | *(optional)* Inline actions to execute on interaction |
+
+---
+
+### `interactcount` — Count Multiple Interactions
+
+Tracks how many of the specified coordinates have been interacted with. Provides progress tracking (e.g., "3/8 found").
+
+| Argument | Description |
+|----------|-------------|
+| `x,y,z` (repeated) | Multiple coordinate strings |
+| *(last arg)* | Empty string or inline action string |
 
 
-To give an action item to a player, you can use the `giveactionitem` action in a quest or the `/giveactionitem` command.
+> **Note:** Use `interactat` for each coordinate to trigger per-location actions, and `interactcount` to track overall progress.
 
-To convert an entity to a questgiver it needs the questgiver behavior:
-* **quests**: list of quests the questgiver offers
-* **selectrandom**: if set to true, the questgiver will only offer a random selection of its quests
-* **selectrandomcount**: determines the number of random quests the questgiver offers
+---
 
-![Thumbnail](resources/modicon.png)
+### `checkvariable` — Check Player Variable
+
+Checks a player's integer attribute against a value using comparison operators. Can trigger actions when condition is met.
+
+| Argument | Description |
+|----------|-------------|
+| `varName` | Player attribute name to check |
+| `operator` | Comparison: `=`, `==`, `>`, `>=`, `<`, `<=`, `!=` |
+| `value` | Integer value to compare against |
+
+---
+
+### `hasAttribute` — Player Has Attribute
+
+Completes when the player has a specific string attribute set to a specific value.
+
+| Argument | Description |
+|----------|-------------|
+| `key` | Player attribute name |
+| `value` | Expected string value |
+
+---
+
+### `plantflowers` — Nearby Flowers
+
+Completes when there are enough flowers within a 31x11x31 block area around the player.
+
+| Argument | Description |
+|----------|-------------|
+| `count` | Minimum number of flowers required nearby |
+
+
+---
+
+## 💡 Example: Complete Quest Definition
+
+You can check newyear2026 for a complete example of a quest.
+
+---
+
+<div align="center">
+
+**Happy Questing! 🎮**
+
+</div>
