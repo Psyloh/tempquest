@@ -193,8 +193,6 @@ The `-obj` key receives progress values as indexed placeholders:
 "mymod:quest1-obj": "Flowers planted: {0}/10\nItems collected: {1}/{2}"
 ```
 
-Arguments are passed in order: gather progress, then tracker progress, then action objective progress.
-
 ---
 
 ## 📁 File Structure
