@@ -1,0 +1,33 @@
+{
+  "newyear2026:dialogue-witness-postquest": "…Collected.\nMidnight has passed.\nThe New Year ended long ago.\nThese boxes are all that remains of it.\nTake one.\nInside is silence.\nIt will help you hear when the darkness draws nearer.\nGo.",
+  "newyear2026:dialogue-witness-final-silent": "Stay silent.",
+
+  "newyear2026:gift-found-1": "Gift found: a rusted mechanism. It remembers motion.",
+  "newyear2026:gift-found-2": "Gift found: a shattered ornament. It glitters in the void.",
+  "newyear2026:gift-found-3": "Gift found: a worn note. A wish that became silence.",
+  "newyear2026:gift-found-4": "Gift found: a key stuck in a lock. An attempt left unfinished.",
+  "newyear2026:gift-found-5": "Gift found: a dead clock. Its hands closed on midnight.",
+  "newyear2026:gift-found-6": "Gift found: a blank postcard. An unwritten message.",
+  "newyear2026:gift-found-7": "Gift found: an unlit candle. The wax remembers flame.",
+  "newyear2026:gift-found-8": "Gift found: a box of silence. Noise swallowed itself.",
+
+  "newyear2026:NewYear2026-title": "Hello, 2026",
+  "newyear2026:NewYear2026-desc": "The Witness stands in the church.<br><br>He barely speaks. Every word he says is heavy and irreversible.<br><br>He alone knows of eight gifts—forgotten offerings of the year that has passed. They are hidden here, in boxes wrapped in yellowed paper.<br><br><strong>Task</strong><br>Find them all. Bring them to him.<br><br>Then, perhaps, he will say something more. Or simply disappear.",
+  "newyear2026:NewYear2026-obj": "Gifts found: {8}/{9}",
+  "newyear2026:NewYear2026-final": "Quest completed.",
+
+  "newyear2026:dialogue-witness-intro": "The Witness is silent. Then he looks at you as if counting the seconds to midnight.",
+  "newyear2026:dialogue-witness-openquests": "About the gifts…",
+  "newyear2026:dialogue-witness-openquests-confirm": "Speak. I am listening.",
+  "newyear2026:dialogue-witness-q-midnight": "What happens at midnight?",
+  "newyear2026:dialogue-witness-q-gifts": "Why were there gifts?",
+  "newyear2026:dialogue-witness-q-year": "And what will become of 2026?",
+  "newyear2026:dialogue-witness-a-midnight": "At midnight the world pretends you can start over. It's a lie. But people cling to it.",
+  "newyear2026:dialogue-witness-a-gifts": "Gifts are a way to say: 'I remember.' Even when there is no one left to remember.",
+  "newyear2026:dialogue-witness-a-year": "A year is just a number. Darkness doesn't count. You do.",
+  "newyear2026:dialogue-witness-closechoice": "…",
+
+  "game:tradingwindow-questgiver": "Witness",
+
+  "item-creature-questgiver": "Witness"
+}
