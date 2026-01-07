@@ -4,12 +4,12 @@
   "name": "New Year 2026 Quest Pack",
   "side": "universal",
   "authors": [
-    "shado"
+    "AshenLegacy"
   ],
-  "description": "A small quest pack adding the NewYear2026 quest.",
+  "description": "NewYear2026 quest.",
   "version": "1.0.0",
   "dependencies": {
-    "game": "1.21.0",
+    "game": "1.21.6",
     "vsquest": "3.0.0"
   }
 }

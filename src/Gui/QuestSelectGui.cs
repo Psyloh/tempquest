@@ -128,7 +128,7 @@ namespace VsQuest
             }
             else
             {
-                return String.Format("{0}<br><br><strong>Progress</strong><br>{1}", questText(quest.questId), progress);
+                return String.Format("{0}<br><br><strong>Прогресс</strong><br>{1}", questText(quest.questId), progress);
             }
         }
 
