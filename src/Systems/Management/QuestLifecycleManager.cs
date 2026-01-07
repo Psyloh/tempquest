@@ -39,6 +39,13 @@ namespace VsQuest
         public void OnQuestAccepted(IServerPlayer fromPlayer, QuestAcceptedMessage message, ICoreServerAPI sapi, System.Func<string, List<ActiveQuest>> getPlayerQuests)
         {
             var quest = questRegistry[message.questId];
+            var playerQuests = getPlayerQuests(fromPlayer.PlayerUID);
+
+            if (playerQuests.Exists(q => q.questId == message.questId))
+            {
+                return;
+            }
+
             var killTrackers = CreateTrackers(quest.killObjectives);
             var blockPlaceTrackers = CreateTrackers(quest.blockPlaceObjectives);
             var blockBreakTrackers = CreateTrackers(quest.blockBreakObjectives);
@@ -51,11 +58,18 @@ namespace VsQuest
                 blockPlaceTrackers = blockPlaceTrackers,
                 blockBreakTrackers = blockBreakTrackers
             };
-            getPlayerQuests(fromPlayer.PlayerUID).Add(activeQuest);
+            playerQuests.Add(activeQuest);
             var questgiver = sapi.World.GetEntityById(message.questGiverId);
-            var key = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", quest.id, fromPlayer.PlayerUID) : String.Format("lastaccepted-{0}", quest.id);
-            questgiver.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
-            questgiver.WatchedAttributes.MarkPathDirty(key);
+            var key = String.Format("vsquest:lastaccepted-{0}", quest.id);
+            fromPlayer.Entity.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
+            fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
+
+            if (questgiver != null)
+            {
+                var legacyKey = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", quest.id, fromPlayer.PlayerUID) : String.Format("lastaccepted-{0}", quest.id);
+                questgiver.WatchedAttributes.SetDouble(legacyKey, sapi.World.Calendar.TotalDays);
+                questgiver.WatchedAttributes.MarkPathDirty(legacyKey);
+            }
             foreach (var action in quest.onAcceptedActions)
             {
                 try
@@ -73,7 +87,7 @@ namespace VsQuest
         public void OnQuestCompleted(IServerPlayer fromPlayer, QuestCompletedMessage message, ICoreServerAPI sapi, System.Func<string, List<ActiveQuest>> getPlayerQuests)
         {
             var playerQuests = getPlayerQuests(fromPlayer.PlayerUID);
-            var activeQuest = playerQuests.Find(item => item.questId == message.questId && item.questGiverId == message.questGiverId);
+            var activeQuest = playerQuests.Find(item => item.questId == message.questId);
             if (activeQuest.isCompletable(fromPlayer))
             {
                 activeQuest.completeQuest(fromPlayer);
@@ -101,7 +115,7 @@ namespace VsQuest
                 var stack = new ItemStack(item, reward.amount);
                 if (!fromPlayer.InventoryManager.TryGiveItemstack(stack))
                 {
-                    sapi.World.SpawnItemEntity(stack, questgiver.ServerPos.XYZ);
+                    sapi.World.SpawnItemEntity(stack, (questgiver ?? fromPlayer.Entity).ServerPos.XYZ);
                 }
             }
             List<RandomItem> randomItems = quest.randomItemRewards.items;
@@ -118,7 +132,7 @@ namespace VsQuest
                 var stack = new ItemStack(item, sapi.World.Rand.Next(randomItem.minAmount, randomItem.maxAmount + 1));
                 if (!fromPlayer.InventoryManager.TryGiveItemstack(stack))
                 {
-                    sapi.World.SpawnItemEntity(stack, questgiver.ServerPos.XYZ);
+                    sapi.World.SpawnItemEntity(stack, (questgiver ?? fromPlayer.Entity).ServerPos.XYZ);
                 }
             }
             foreach (var action in quest.actionRewards)
@@ -137,11 +151,12 @@ namespace VsQuest
 
         private static void MarkQuestCompleted(IServerPlayer fromPlayer, QuestCompletedMessage message, Entity questgiver)
         {
-            var completedQuests = new HashSet<string>(questgiver.WatchedAttributes.GetStringArray(String.Format("playercompleted-{0}", fromPlayer.PlayerUID), new string[0]));
+            var completedQuests = new HashSet<string>(fromPlayer.Entity.WatchedAttributes.GetStringArray("vsquest:playercompleted", new string[0]));
             completedQuests.Add(message.questId);
             var completedQuestsArray = new string[completedQuests.Count];
             completedQuests.CopyTo(completedQuestsArray);
-            questgiver.WatchedAttributes.SetStringArray(String.Format("playercompleted-{0}", fromPlayer.PlayerUID), completedQuestsArray);
+            fromPlayer.Entity.WatchedAttributes.SetStringArray("vsquest:playercompleted", completedQuestsArray);
+            fromPlayer.Entity.WatchedAttributes.MarkAllDirty();
         }
     }
 }

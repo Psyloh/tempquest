@@ -86,7 +86,7 @@ namespace VsQuest
         public void SendQuestInfoMessageToClient(ICoreServerAPI sapi, EntityPlayer player)
         {
             var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
-            var activeQuests = questSystem.GetPlayerQuests(player.PlayerUID).FindAll(quest => quest.questGiverId == entity.EntityId);
+            var activeQuests = questSystem.GetPlayerQuests(player.PlayerUID);
 
             var serverPlayer = player.Player as IServerPlayer;
             if (serverPlayer != null)
@@ -113,9 +113,9 @@ namespace VsQuest
             {
                 var quest = questSystem.QuestRegistry[questId];
 
-                var key = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", questId, player.PlayerUID) : String.Format("lastaccepted-{0}", questId);
-                if (entity.WatchedAttributes.GetDouble(key, -quest.cooldown) + quest.cooldown < sapi.World.Calendar.TotalDays
-                        && activeQuests.Find(activeQuest => activeQuest.questId == questId && activeQuest.questGiverId == entity.EntityId) == null
+                var key = String.Format("vsquest:lastaccepted-{0}", questId);
+                if (player.WatchedAttributes.GetDouble(key, -quest.cooldown) + quest.cooldown < sapi.World.Calendar.TotalDays
+                        && activeQuests.Find(activeQuest => activeQuest.questId == questId) == null
                         && predecessorsCompleted(quest, player.PlayerUID))
                 {
                     availableQuestIds.Add(questId);
@@ -147,7 +147,7 @@ namespace VsQuest
 
         private bool predecessorsCompleted(Quest quest, string playerUID)
         {
-            var completedQuests = new List<string>(entity.WatchedAttributes.GetStringArray(String.Format("playercompleted-{0}", playerUID), new string[0]));
+            var completedQuests = new List<string>(entity.World.PlayerByUid(playerUID)?.Entity?.WatchedAttributes.GetStringArray("vsquest:playercompleted", new string[0]) ?? new string[0]);
             return String.IsNullOrEmpty(quest.predecessor)
                 || completedQuests.Contains(quest.predecessor);
         }
