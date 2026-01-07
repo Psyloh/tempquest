@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -86,7 +87,10 @@ namespace VsQuest
         public void SendQuestInfoMessageToClient(ICoreServerAPI sapi, EntityPlayer player)
         {
             var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
-            var activeQuests = questSystem.GetPlayerQuests(player.PlayerUID);
+            var allActiveQuests = questSystem.GetPlayerQuests(player.PlayerUID);
+            var activeQuests = allActiveQuests
+                .Where(activeQuest => quests.Contains(activeQuest.questId))
+                .ToList();
 
             var serverPlayer = player.Player as IServerPlayer;
 
@@ -97,7 +101,7 @@ namespace VsQuest
 
                 var key = String.Format("vsquest:lastaccepted-{0}", questId);
                 if (player.WatchedAttributes.GetDouble(key, -quest.cooldown) + quest.cooldown < sapi.World.Calendar.TotalDays
-                        && activeQuests.Find(activeQuest => activeQuest.questId == questId) == null
+                        && allActiveQuests.Find(activeQuest => activeQuest.questId == questId) == null
                         && predecessorsCompleted(quest, player.PlayerUID))
                 {
                     availableQuestIds.Add(questId);
