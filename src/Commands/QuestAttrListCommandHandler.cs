@@ -44,6 +44,14 @@ namespace VsQuest
                 "rangedWeaponsSpeed"
             };
 
+            string[] attrKeys = new[]
+            {
+                ItemAttributeUtils.AttrAttackPower,
+                ItemAttributeUtils.AttrWarmth,
+                ItemAttributeUtils.AttrProtection,
+                ItemAttributeUtils.AttrProtectionPerc
+            };
+
             var lines = statKeys
                 .Select(statKey =>
                 {
@@ -53,6 +61,15 @@ namespace VsQuest
                     return $"{statKey} = {val.ToString(CultureInfo.InvariantCulture)}";
                 })
                 .Where(l => l != null)
+                .Concat(
+                    attrKeys.Select(attrKey =>
+                    {
+                        string storeKey = $"vsquestadmin:attr:{attrKey}";
+                        if (!tree.HasAttribute(storeKey)) return null;
+                        float val = tree.GetFloat(storeKey, 0f);
+                        return $"{attrKey} = {val.ToString(CultureInfo.InvariantCulture)}";
+                    }).Where(l => l != null)
+                )
                 .ToArray();
 
             if (lines.Length == 0)

@@ -44,6 +44,21 @@ namespace VsQuest
                 return TextCommandResult.Error("Value must be a number (use '.' for decimals).");
             }
 
+            if (IsPlayerAttr(shortKey))
+            {
+                if (target.Entity == null)
+                {
+                    return TextCommandResult.Error("Player entity not available.");
+                }
+
+                string playerAttrStoreKey = $"vsquestadmin:attr:{shortKey}";
+                target.Entity.WatchedAttributes.SetFloat(playerAttrStoreKey, fValue);
+                target.Entity.WatchedAttributes.MarkPathDirty(playerAttrStoreKey);
+                target.Entity.WatchedAttributes.MarkAllDirty();
+
+                return TextCommandResult.Success($"Set player attribute '{shortKey}' = {fValue.ToString(CultureInfo.InvariantCulture)} for '{target.PlayerName}'.");
+            }
+
             if (!TryMapToPlayerStat(shortKey, out string statKey))
             {
                 return TextCommandResult.Error($"Attribute '{shortKey}' is not supported for players. Supported: {string.Join(", ", GetSupportedKeys())}");
@@ -99,12 +114,30 @@ namespace VsQuest
         {
             return new[]
             {
+                ItemAttributeUtils.AttrAttackPower,
+                ItemAttributeUtils.AttrWarmth,
+                ItemAttributeUtils.AttrProtection,
+                ItemAttributeUtils.AttrProtectionPerc,
                 ItemAttributeUtils.AttrWalkSpeed,
                 ItemAttributeUtils.AttrHungerRate,
                 ItemAttributeUtils.AttrHealingEffectiveness,
                 ItemAttributeUtils.AttrRangedAccuracy,
                 ItemAttributeUtils.AttrRangedSpeed
             };
+        }
+
+        private static bool IsPlayerAttr(string shortKey)
+        {
+            switch (shortKey)
+            {
+                case ItemAttributeUtils.AttrAttackPower:
+                case ItemAttributeUtils.AttrWarmth:
+                case ItemAttributeUtils.AttrProtection:
+                case ItemAttributeUtils.AttrProtectionPerc:
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -37,6 +37,21 @@ namespace VsQuest
                 ? key.Substring(ItemAttributeUtils.AttrPrefix.Length)
                 : key;
 
+            if (IsPlayerAttr(shortKey))
+            {
+                if (target.Entity == null)
+                {
+                    return TextCommandResult.Error("Player entity not available.");
+                }
+
+                string playerAttrStoreKey = $"vsquestadmin:attr:{shortKey}";
+                target.Entity.WatchedAttributes.RemoveAttribute(playerAttrStoreKey);
+                target.Entity.WatchedAttributes.MarkPathDirty(playerAttrStoreKey);
+                target.Entity.WatchedAttributes.MarkAllDirty();
+
+                return TextCommandResult.Success($"Removed player attribute '{shortKey}' for '{target.PlayerName}'.");
+            }
+
             if (!TryMapToPlayerStat(shortKey, out string statKey))
             {
                 return TextCommandResult.Error($"Attribute '{shortKey}' is not supported for players. Supported: {string.Join(", ", GetSupportedKeys())}");
@@ -92,12 +107,30 @@ namespace VsQuest
         {
             return new[]
             {
+                ItemAttributeUtils.AttrAttackPower,
+                ItemAttributeUtils.AttrWarmth,
+                ItemAttributeUtils.AttrProtection,
+                ItemAttributeUtils.AttrProtectionPerc,
                 ItemAttributeUtils.AttrWalkSpeed,
                 ItemAttributeUtils.AttrHungerRate,
                 ItemAttributeUtils.AttrHealingEffectiveness,
                 ItemAttributeUtils.AttrRangedAccuracy,
                 ItemAttributeUtils.AttrRangedSpeed
             };
+        }
+
+        private static bool IsPlayerAttr(string shortKey)
+        {
+            switch (shortKey)
+            {
+                case ItemAttributeUtils.AttrAttackPower:
+                case ItemAttributeUtils.AttrWarmth:
+                case ItemAttributeUtils.AttrProtection:
+                case ItemAttributeUtils.AttrProtectionPerc:
+                    return true;
+            }
+
+            return false;
         }
     }
 }
