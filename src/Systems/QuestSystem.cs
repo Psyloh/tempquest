@@ -133,6 +133,11 @@ namespace VsQuest
             persistenceManager.SavePlayerQuests(playerUID, activeQuests);
         }
 
+        internal bool ForceCompleteQuestInternal(IServerPlayer player, QuestCompletedMessage message, ICoreServerAPI sapi)
+        {
+            return lifecycleManager.ForceCompleteQuest(player, message, sapi, GetPlayerQuests);
+        }
+
         internal void OnQuestAccepted(IServerPlayer fromPlayer, QuestAcceptedMessage message, ICoreServerAPI sapi)
         {
             lifecycleManager.OnQuestAccepted(fromPlayer, message, sapi, GetPlayerQuests);

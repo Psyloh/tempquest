@@ -102,6 +102,24 @@ namespace VsQuest
             }
         }
 
+        public bool ForceCompleteQuest(IServerPlayer fromPlayer, QuestCompletedMessage message, ICoreServerAPI sapi, System.Func<string, List<ActiveQuest>> getPlayerQuests)
+        {
+            var playerQuests = getPlayerQuests(fromPlayer.PlayerUID);
+            var activeQuest = playerQuests.Find(item => item.questId == message.questId);
+            if (activeQuest == null)
+            {
+                return false;
+            }
+
+            activeQuest.completeQuest(fromPlayer);
+            playerQuests.Remove(activeQuest);
+
+            var questgiver = sapi.World.GetEntityById(message.questGiverId);
+            RewardPlayer(fromPlayer, message, sapi, questgiver);
+            MarkQuestCompleted(fromPlayer, message, questgiver);
+            return true;
+        }
+
         private void RewardPlayer(IServerPlayer fromPlayer, QuestCompletedMessage message, ICoreServerAPI sapi, Entity questgiver)
         {
             var quest = questRegistry[message.questId];

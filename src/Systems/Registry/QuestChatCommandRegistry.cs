@@ -13,7 +13,11 @@ namespace VsQuest
             var questListHandler = new QuestListCommandHandler(sapi, questSystem);
             var questCheckHandler = new QuestCheckCommandHandler(sapi, questSystem);
             var forgiveQuestHandler = new QuestForgiveCommandHandler(sapi, questSystem);
+            var questCompleteHandler = new QuestCompleteCommandHandler(sapi, questSystem);
             var questActionItemsHandler = new QuestActionItemsCommandHandler(itemSystem);
+            var questAttrSetHandler = new QuestAttrSetCommandHandler(sapi);
+            var questAttrRemoveHandler = new QuestAttrRemoveCommandHandler(sapi);
+            var questAttrListHandler = new QuestAttrListCommandHandler(sapi);
 
             sapi.ChatCommands.GetOrCreate("giveactionitem")
                 .WithDescription("Gives a player an action item defined in itemconfig.json.")
@@ -28,6 +32,43 @@ namespace VsQuest
                     .WithDescription("Lists all registered action items.")
                     .RequiresPrivilege(Privilege.give)
                     .HandleWith(questActionItemsHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("complete")
+                    .WithDescription("Force-completes an active quest for a player.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("questId"), sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(questCompleteHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("attr")
+                    .WithDescription("Admin player attributes.")
+                    .RequiresPrivilege(Privilege.give)
+                    .BeginSubCommand("set")
+                        .WithDescription("Sets a string attribute on an online player.")
+                        .RequiresPrivilege(Privilege.give)
+                        .WithArgs(
+                            sapi.ChatCommands.Parsers.Word("playerName"),
+                            sapi.ChatCommands.Parsers.Word("key"),
+                            sapi.ChatCommands.Parsers.Word("value")
+                        )
+                        .HandleWith(questAttrSetHandler.Handle)
+                    .EndSubCommand()
+                    .BeginSubCommand("list")
+                        .WithDescription("Lists watched attributes for an online player.")
+                        .RequiresPrivilege(Privilege.give)
+                        .WithArgs(
+                            sapi.ChatCommands.Parsers.Word("playerName")
+                        )
+                        .HandleWith(questAttrListHandler.Handle)
+                    .EndSubCommand()
+                    .BeginSubCommand("remove")
+                        .WithDescription("Removes an attribute from an online player.")
+                        .RequiresPrivilege(Privilege.give)
+                        .WithArgs(
+                            sapi.ChatCommands.Parsers.Word("playerName"),
+                            sapi.ChatCommands.Parsers.Word("key")
+                        )
+                        .HandleWith(questAttrRemoveHandler.Handle)
+                    .EndSubCommand()
                 .EndSubCommand()
                 .BeginSubCommand("list")
                     .WithDescription("Lists all registered quest IDs and their titles.")
