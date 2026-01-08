@@ -55,7 +55,7 @@ namespace VsQuest
             var lines = statKeys
                 .Select(statKey =>
                 {
-                    string storeKey = $"vsquestadmin:stat:{statKey}";
+                    string storeKey = PlayerAttributeAdminUtils.BuildStatStoreKey(statKey);
                     if (!tree.HasAttribute(storeKey)) return null;
                     float val = tree.GetFloat(storeKey, 0f);
                     return $"{statKey} = {val.ToString(CultureInfo.InvariantCulture)}";
@@ -64,7 +64,7 @@ namespace VsQuest
                 .Concat(
                     attrKeys.Select(attrKey =>
                     {
-                        string storeKey = $"vsquestadmin:attr:{attrKey}";
+                        string storeKey = PlayerAttributeAdminUtils.BuildAttrStoreKey(attrKey);
                         if (!tree.HasAttribute(storeKey)) return null;
                         float val = tree.GetFloat(storeKey, 0f);
                         return $"{attrKey} = {val.ToString(CultureInfo.InvariantCulture)}";
