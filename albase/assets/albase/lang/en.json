@@ -1,0 +1,38 @@
+{
+  "albase:quest1-title": "AL Base: Quest 1",
+  "albase:quest1-desc": "Stub quest.",
+  "albase:quest1-obj": "",
+
+  "albase:priest-allowcharselonce-title": "Priest: Change Class",
+  "albase:priest-allowcharselonce-desc": "The priest can grant you the right to change your class once — but not for free.\n\nHe demands a cleansing rite: track down and destroy those who defile the surroundings.\n\nAfter the rite you will receive a blessing and can use .charsel once. You can only do this again after 90 in-game days.",
+  "albase:priest-allowcharselonce-obj": "Objectives:\n{0}",
+
+  "albase:priest-allowcharselonce-reward": "Priest: The blessing is granted. You can now use .charsel once. Next time — in 90 in-game days.",
+
+  "albase:priest-allowcharselonce-journal-title": "Priest",
+  "albase:priest-allowcharselonce-journal-text": "The priest in the temple offered a rare mercy: the right to change your class once.\n\nBut a blessing is never free. He demands a cleansing rite—track down and destroy those who defile the surroundings.\n\nThe targets of the rite can vary; the priest will name new foes when you accept the task.\n\nComplete the rite and return to receive the blessing.",
+
+  "albase:priest-allowcharselonce-reward-journal-title": "Priest",
+  "albase:priest-allowcharselonce-reward-journal-text": "The rite is complete. The priest granted the blessing and allowed a single change of class and appearance.\n\nUse the .charsel command when you are ready—this can be done only once.\n\nYou will not be able to receive this permission again for at least 90 in-game days.",
+
+  "albase:dialogue-priest-intro": "Peace be with you. What do you seek here?",
+  "albase:dialogue-priest-changeclass": "I want to change my class.",
+  "albase:dialogue-priest-whoareyou": "Who are you?",
+  "albase:dialogue-priest-abouttemple": "What is this place?",
+  "albase:dialogue-priest-aboutblessing": "Tell me about the rite and the blessing.",
+  "albase:dialogue-priest-openquests-confirm": "Speak, and I will listen.",
+  "albase:dialogue-priest-closechoice": "I will return later.",
+
+  "albase:dialogue-priest-whoareyou-answer": "I have served here for many years. I do not seek power—only to keep people from despair and to remind them that order is still possible.",
+  "albase:dialogue-priest-abouttemple-answer": "Once it was a quiet refuge for travelers. Now these walls stand more on prayer than on stone—yet they still offer shelter.",
+  "albase:dialogue-priest-aboutblessing-answer": "A blessing is not a coin. It has a cost: patience and deeds. The cleansing rite is simple—find those who defile the surroundings, and prove you can finish what you start.",
+
+  "albase:dialogue-priest-final-title": "Priest",
+  "albase:dialogue-priest-final-text": "The blessing is granted. You may now change class and appearance once via .charsel. You can only receive this again after 90 in-game days.",
+  "albase:dialogue-priest-final-option": "Understood.",
+  "albase:priest-randomkill-notify": "Rite: kill {0}x {1}.",
+  "tradingwindow-priest": "Priest",
+  "game:tradingwindow-priest": "Priest",
+  "albase:tradingwindow-priest": "Priest",
+  "item-creature-priest": "Priest"
+}

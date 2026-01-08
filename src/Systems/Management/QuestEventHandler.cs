@@ -43,8 +43,19 @@ namespace VsQuest
         {
             if (damageSource?.SourceEntity is EntityPlayer player)
             {
-                persistenceManager.GetPlayerQuests(player.PlayerUID)
-                    .ForEach(quest => quest.OnEntityKilled(entity.Code.Path, player.Player));
+                string killedCode = entity?.Code?.Path;
+                var quests = persistenceManager.GetPlayerQuests(player.PlayerUID);
+                var serverPlayer = player.Player as IServerPlayer;
+
+                foreach (var quest in quests)
+                {
+                    quest.OnEntityKilled(killedCode, player.Player);
+
+                    if (serverPlayer != null)
+                    {
+                        RandomKillQuestUtils.TryHandleKill(sapi, serverPlayer, quest, killedCode);
+                    }
+                }
             }
         }
 

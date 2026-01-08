@@ -1,0 +1,69 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-changeclass", "jumpTo": "openquests" },
+        { "value": "albase:dialogue-priest-whoareyou", "jumpTo": "whoareyou" },
+        { "value": "albase:dialogue-priest-abouttemple", "jumpTo": "abouttemple" },
+        { "value": "albase:dialogue-priest-aboutblessing", "jumpTo": "aboutblessing" },
+        { "value": "albase:dialogue-priest-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "whoareyou",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-whoareyou-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "abouttemple",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-abouttemple-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "aboutblessing",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-aboutblessing-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "openquests",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "openquests",
+      "text": [
+        { "value": "albase:dialogue-priest-openquests-confirm" }
+      ]
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-priest-closechoice" }
+      ]
+    }
+  ]
+}

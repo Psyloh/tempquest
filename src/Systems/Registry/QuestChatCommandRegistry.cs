@@ -13,7 +13,9 @@ namespace VsQuest
             var questListHandler = new QuestListCommandHandler(sapi, questSystem);
             var questCheckHandler = new QuestCheckCommandHandler(sapi, questSystem);
             var forgiveQuestHandler = new QuestForgiveCommandHandler(sapi, questSystem);
+            var forgiveAllQuestHandler = new QuestForgiveAllCommandHandler(sapi, questSystem);
             var questCompleteHandler = new QuestCompleteCommandHandler(sapi, questSystem);
+            var questCompleteActiveHandler = new QuestCompleteActiveCommandHandler(sapi, questSystem);
             var questActionItemsHandler = new QuestActionItemsCommandHandler(itemSystem);
             var questAttrSetHandler = new QuestAttrSetCommandHandler(sapi);
             var questAttrRemoveHandler = new QuestAttrRemoveCommandHandler(sapi);
@@ -38,6 +40,12 @@ namespace VsQuest
                     .RequiresPrivilege(Privilege.give)
                     .WithArgs(sapi.ChatCommands.Parsers.Word("questId"), sapi.ChatCommands.Parsers.Word("playerName"))
                     .HandleWith(questCompleteHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("completeactive")
+                    .WithDescription("Force-completes the player's currently active quest.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(questCompleteActiveHandler.Handle)
                 .EndSubCommand()
                 .BeginSubCommand("attr")
                     .WithDescription("Admin player attributes.")
@@ -86,6 +94,12 @@ namespace VsQuest
                     .RequiresPrivilege(Privilege.give)
                     .WithArgs(sapi.ChatCommands.Parsers.Word("questId"), sapi.ChatCommands.Parsers.Word("playerName"))
                     .HandleWith(forgiveQuestHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("forgiveall")
+                    .WithDescription("Resets all quests for a player: clears active quests, completed flags, and cooldowns.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(forgiveAllQuestHandler.Handle)
                 .EndSubCommand();
         }
     }

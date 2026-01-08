@@ -125,6 +125,11 @@ namespace VsQuest
 
         private string activeQuestText(ActiveQuest quest)
         {
+            if (QuestProgressTextUtil.TryBuildRandomKillProgressText(capi, player, quest, out string detailedProgress))
+            {
+                return String.Format("{0}<br><br><strong>Прогресс</strong><br>{1}", questText(quest.questId), detailedProgress);
+            }
+
             string progress = Lang.Get(quest.questId + "-obj", quest.progress(player).ConvertAll<string>(x => x.ToString()).ToArray());
             if (string.IsNullOrEmpty(progress))
             {

@@ -1,0 +1,38 @@
+{
+  "albase:quest1-title": "AL Base: Квест 1",
+  "albase:quest1-desc": "Квест-заглушка.",
+  "albase:quest1-obj": "",
+
+  "albase:priest-allowcharselonce-title": "Священник: Смена класса",
+  "albase:priest-allowcharselonce-desc": "Священник может дать право на одну смену класса — но не бесплатно.\n\nОн требует совершить обряд очищения: выслеживать и истребить тех, кто оскверняет окрестности.\n\nПосле завершения обряда ты получишь благословение и сможешь один раз использовать .charsel. Следующий раз — только через 90 игровых дней.",
+  "albase:priest-allowcharselonce-obj": "Цели:\n{0}",
+
+  "albase:priest-allowcharselonce-reward": "Священник: благословение даровано. Теперь ты можешь один раз использовать .charsel. Следующий раз — через 90 игровых дней.",
+
+  "albase:priest-allowcharselonce-journal-title": "Священник",
+  "albase:priest-allowcharselonce-journal-text": "Священник в храме пообещал редкую милость — право на одну смену класса.\n\nНо благословение не даётся даром. Он требует обряда очищения: отыскать и уничтожить тех, кто оскверняет окрестности.\n\nЦели обряда меняются — священник укажет новых врагов, когда ты примешь задание.\n\nЗаверши обряд и вернись к нему за благословением.",
+
+  "albase:priest-allowcharselonce-reward-journal-title": "Священник",
+  "albase:priest-allowcharselonce-reward-journal-text": "Обряд завершён. Священник даровал благословение и разрешил один раз сменить класс и внешность.\n\nИспользуй команду .charsel, когда будешь готов — это можно сделать только один раз.\n\nПовторно получить такое право получится не раньше, чем через 90 игровых дней.",
+
+  "albase:dialogue-priest-intro": "Мир тебе. Что ищешь в доме молитвы?",
+  "albase:dialogue-priest-changeclass": "Я хочу сменить класс.",
+  "albase:dialogue-priest-whoareyou": "Кто ты?",
+  "albase:dialogue-priest-abouttemple": "Что это за место?",
+  "albase:dialogue-priest-aboutblessing": "Расскажи об обряде и благословении.",
+  "albase:dialogue-priest-openquests-confirm": "Говори — и я выслушаю.",
+  "albase:dialogue-priest-closechoice": "Я зайду позже.",
+
+  "albase:dialogue-priest-whoareyou-answer": "Я служу здесь уже много лет. Я не ищу власти — лишь стараюсь удержать людей от отчаяния и напомнить им, что порядок всё ещё возможен.",
+  "albase:dialogue-priest-abouttemple-answer": "Когда-то это было тихое место, где путники могли перевести дух. Теперь стены держатся скорее на молитвах, чем на камне — но даже так они дают укрытие.",
+  "albase:dialogue-priest-aboutblessing-answer": "Благословение — не монета. Оно требует цены: терпения и дел. Обряд очищения прост: найди тех, кто оскверняет окрестности, и докажи, что ты способен довести дело до конца.",
+
+  "albase:dialogue-priest-final-title": "Священник",
+  "albase:dialogue-priest-final-text": "Благословение дано. Теперь ты можешь один раз изменить класс и внешность через .charsel. Вернуться за этим снова можно будет только через 90 игровых дней.",
+  "albase:dialogue-priest-final-option": "Понял.",
+  "albase:priest-randomkill-notify": "Обряд: убей {0}x {1}.",
+  "tradingwindow-priest": "Священник",
+  "game:tradingwindow-priest": "Священник",
+  "albase:tradingwindow-priest": "Священник",
+  "item-creature-priest": "Священник"
+}

@@ -19,5 +19,8 @@
     "attr-hungerrate": "Скорость голода",
     "attr-healingeffectiveness": "Эффективность лечения",
     "attr-rangedaccuracy": "Точность дальнего боя",
-    "attr-rangedchargspeed": "Скорость заряда"
+    "attr-rangedchargspeed": "Скорость заряда",
+    "mob-drifter-normal": "Дрифтер",
+    "mob-drifter-deep": "Глубинный дрифтер",
+    "mob-locust": "Саранча"
 }

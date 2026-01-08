@@ -50,6 +50,14 @@ namespace VsQuest
             actionRegistry.Add("playercommand", ActionUtil.PlayerCommand);
             actionRegistry.Add("giveactionitem", ActionUtil.GiveActionItem);
 
+            actionRegistry.Add("allowcharselonce", (api, message, byPlayer, args) =>
+            {
+                byPlayer?.Entity?.WatchedAttributes?.SetBool("allowcharselonce", true);
+                byPlayer?.Entity?.WatchedAttributes?.MarkPathDirty("allowcharselonce");
+            });
+
+            actionRegistry.Add("randomkill", RandomKillAction.Execute);
+
             actionRegistry.Add("setquestgiverattribute", SetQuestGiverAttributeAction.Execute);
             actionRegistry.Add("notify", NotifyAction.Execute);
             actionRegistry.Add("showquestfinaldialog", ShowQuestFinalDialogAction.Execute);

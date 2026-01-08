@@ -49,6 +49,14 @@ namespace vsquest.src.Systems.Actions
 
             modJournal.AddOrUpdateJournalEntry(player, journalEntry);
             sapi.SendMessage(player, GlobalConstants.GeneralChatGroup, "Журнал обновлён", EnumChatType.Notification);
+
+            try
+            {
+                sapi.World.PlaySoundFor(new AssetLocation("sounds/effect/writing"), player);
+            }
+            catch
+            {
+            }
         }
     }
 }

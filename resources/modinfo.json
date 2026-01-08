@@ -10,7 +10,7 @@
         "DreadMob"
     ],
     "description": "Mod that focuses on implementing a Quest System.",
-    "version": "1.0.0",
+    "version": "0.1",
     "dependencies": {
         "game": "1.21.6",
         "itemizer": "1.1.1"

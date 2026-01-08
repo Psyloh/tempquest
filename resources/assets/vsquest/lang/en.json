@@ -19,5 +19,8 @@
     "attr-hungerrate": "Hunger Rate",
     "attr-healingeffectiveness": "Healing Effectiveness",
     "attr-rangedaccuracy": "Ranged Accuracy",
-    "attr-rangedchargspeed": "Ranged Charge Speed"
+    "attr-rangedchargspeed": "Ranged Charge Speed",
+    "mob-drifter-normal": "Drifter",
+    "mob-drifter-deep": "Deep drifter",
+    "mob-locust": "Locust"
 }

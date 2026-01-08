@@ -1,0 +1,15 @@
+{
+  "type": "content",
+  "modid": "albase",
+  "name": "AL Base Quest Pack",
+  "side": "universal",
+  "authors": [
+    "AshenLegacy"
+  ],
+  "description": "Base quest pack.",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "1.21.6",
+    "alegacyvsquest": "1.0.0"
+  }
+}
