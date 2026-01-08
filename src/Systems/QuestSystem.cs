@@ -127,11 +127,72 @@ namespace VsQuest
             var itemSystem = api.ModLoader.GetModSystem<ItemSystem>();
             var giveActionItemHandler = new GiveActionItemCommandHandler(api, itemSystem);
 
+            var forgiveQuestHandler = new QuestForgiveCommandHandler(sapi, this);
+            var questListHandler = new QuestListCommandHandler(sapi, this);
+            var questCheckHandler = new QuestCheckCommandHandler(sapi, this);
+
             sapi.ChatCommands.GetOrCreate("giveactionitem")
                 .WithDescription("Gives a player an action item defined in itemconfig.json.")
                 .RequiresPrivilege(Privilege.give)
                 .WithArgs(sapi.ChatCommands.Parsers.Word("itemId"), sapi.ChatCommands.Parsers.OptionalInt("amount", 1))
                 .HandleWith(giveActionItemHandler.Handle);
+
+            sapi.ChatCommands.GetOrCreate("quest")
+                .WithDescription("Quest administration commands")
+                .RequiresPrivilege(Privilege.give)
+                .BeginSubCommand("list")
+                    .WithDescription("Lists all registered quest IDs and their titles.")
+                    .RequiresPrivilege(Privilege.give)
+                    .HandleWith(questListHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("check")
+                    .WithDescription("Shows active/completed quests and progress for a player.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(questCheckHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("forgive")
+                    .WithDescription("Resets a quest for a player: removes it from active quests and clears cooldown/completed flags.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("questId"), sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(forgiveQuestHandler.Handle)
+                .EndSubCommand();
+        }
+
+        public bool ForgiveQuest(IServerPlayer player, string questId)
+        {
+            var quests = persistenceManager.GetPlayerQuests(player.PlayerUID);
+            var activeQuest = quests.Find(q => q.questId == questId);
+            bool removed = false;
+
+            if (activeQuest != null)
+            {
+                quests.Remove(activeQuest);
+                removed = true;
+            }
+
+            // Clear per-player cooldown marker
+            var key = string.Format("vsquest:lastaccepted-{0}", questId);
+            if (player.Entity?.WatchedAttributes != null)
+            {
+                player.Entity.WatchedAttributes.RemoveAttribute(key);
+                player.Entity.WatchedAttributes.MarkPathDirty(key);
+
+                // Clear completion flag
+                var completed = player.Entity.WatchedAttributes.GetStringArray("vsquest:playercompleted", new string[0]);
+                if (completed != null && completed.Length > 0)
+                {
+                    var filtered = completed.Where(id => id != questId).ToArray();
+                    if (filtered.Length != completed.Length)
+                    {
+                        player.Entity.WatchedAttributes.SetStringArray("vsquest:playercompleted", filtered);
+                        player.Entity.WatchedAttributes.MarkAllDirty();
+                    }
+                }
+            }
+
+            persistenceManager.SavePlayerQuests(player.PlayerUID, quests);
+            return removed;
         }
 
         public override void AssetsLoaded(ICoreAPI api)
