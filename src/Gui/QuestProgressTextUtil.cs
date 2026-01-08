@@ -9,55 +9,7 @@ namespace VsQuest
     {
         private static string LocalizeMobName(string code)
         {
-            if (string.IsNullOrWhiteSpace(code)) return code;
-
-            string fullKey = $"vsquest:mob-{code}";
-            string shortKey = $"mob-{code}";
-            try
-            {
-                string t = Lang.Get(fullKey);
-                if (!string.Equals(t, fullKey, StringComparison.OrdinalIgnoreCase)) return t;
-            }
-            catch
-            {
-            }
-
-            try
-            {
-                string t = Lang.Get(shortKey);
-                if (!string.Equals(t, shortKey, StringComparison.OrdinalIgnoreCase)) return t;
-            }
-            catch
-            {
-            }
-
-            int dashIndex = code.IndexOf('-');
-            if (dashIndex > 0)
-            {
-                string baseCode = code.Substring(0, dashIndex);
-                string baseFullKey = $"vsquest:mob-{baseCode}";
-                string baseShortKey = $"mob-{baseCode}";
-
-                try
-                {
-                    string t = Lang.Get(baseFullKey);
-                    if (!string.Equals(t, baseFullKey, StringComparison.OrdinalIgnoreCase)) return t;
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    string t = Lang.Get(baseShortKey);
-                    if (!string.Equals(t, baseShortKey, StringComparison.OrdinalIgnoreCase)) return t;
-                }
-                catch
-                {
-                }
-            }
-
-            return code;
+            return MobLocalizationUtils.GetMobDisplayName(code);
         }
 
         public static bool TryBuildRandomKillProgressText(ICoreClientAPI capi, IClientPlayer player, ActiveQuest activeQuest, out string progressText)
