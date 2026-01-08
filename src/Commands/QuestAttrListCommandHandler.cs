@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using VsQuest.Util;
 
 namespace VsQuest
 {
@@ -37,70 +35,32 @@ namespace VsQuest
                 return TextCommandResult.Success("No watched attributes.");
             }
 
-            var dict = TryGetAttributesDictionary(tree);
-            if (dict == null || dict.Count == 0)
+            string[] statKeys = new[]
             {
-                return TextCommandResult.Success("No watched attributes.");
-            }
+                "walkspeed",
+                "hungerrate",
+                "healingeffectivness",
+                "rangedWeaponsAcc",
+                "rangedWeaponsSpeed"
+            };
 
-            var sb = new StringBuilder();
-            foreach (var kvp in dict.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
-            {
-                sb.Append(kvp.Key);
-                sb.Append(" = ");
-                sb.Append(kvp.Value?.ToString() ?? "<null>");
-                sb.Append('\n');
-            }
-
-            return TextCommandResult.Success(sb.ToString().TrimEnd('\n'));
-        }
-
-        private static Dictionary<string, object> TryGetAttributesDictionary(object tree)
-        {
-            var type = tree.GetType();
-
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                var ft = field.FieldType;
-                if (typeof(IDictionary).IsAssignableFrom(ft))
+            var lines = statKeys
+                .Select(statKey =>
                 {
-                    var obj = field.GetValue(tree) as IDictionary;
-                    if (obj == null) continue;
+                    string storeKey = $"vsquestadmin:stat:{statKey}";
+                    if (!tree.HasAttribute(storeKey)) return null;
+                    float val = tree.GetFloat(storeKey, 0f);
+                    return $"{statKey} = {val.ToString(CultureInfo.InvariantCulture)}";
+                })
+                .Where(l => l != null)
+                .ToArray();
 
-                    var result = new Dictionary<string, object>();
-                    foreach (DictionaryEntry entry in obj)
-                    {
-                        if (entry.Key is string sKey)
-                        {
-                            result[sKey] = entry.Value;
-                        }
-                    }
-                    return result;
-                }
-            }
-
-            foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            if (lines.Length == 0)
             {
-                var pt = prop.PropertyType;
-                if (!prop.CanRead) continue;
-                if (typeof(IDictionary).IsAssignableFrom(pt))
-                {
-                    var obj = prop.GetValue(tree, null) as IDictionary;
-                    if (obj == null) continue;
-
-                    var result = new Dictionary<string, object>();
-                    foreach (DictionaryEntry entry in obj)
-                    {
-                        if (entry.Key is string sKey)
-                        {
-                            result[sKey] = entry.Value;
-                        }
-                    }
-                    return result;
-                }
+                return TextCommandResult.Success("No vsquestadmin player stats set.");
             }
 
-            return null;
+            return TextCommandResult.Success(string.Join("\n", lines));
         }
     }
 }

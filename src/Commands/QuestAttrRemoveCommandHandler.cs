@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using VsQuest.Util;
 
 namespace VsQuest
 {
@@ -32,10 +33,71 @@ namespace VsQuest
                 return TextCommandResult.Error("Key must not be empty.");
             }
 
-            target.Entity.WatchedAttributes.RemoveAttribute(key);
-            target.Entity.WatchedAttributes.MarkPathDirty(key);
+            string shortKey = key.StartsWith(ItemAttributeUtils.AttrPrefix, StringComparison.OrdinalIgnoreCase)
+                ? key.Substring(ItemAttributeUtils.AttrPrefix.Length)
+                : key;
 
-            return TextCommandResult.Success($"Removed attribute '{key}' for '{target.PlayerName}'.");
+            if (!TryMapToPlayerStat(shortKey, out string statKey))
+            {
+                return TextCommandResult.Error($"Attribute '{shortKey}' is not supported for players. Supported: {string.Join(", ", GetSupportedKeys())}");
+            }
+
+            if (target.Entity?.Stats == null)
+            {
+                return TextCommandResult.Error("Player stats are not available.");
+            }
+
+            target.Entity.Stats.Set(statKey, "vsquestadmin", 0f, true);
+            if (statKey == "walkspeed")
+            {
+                target.Entity.walkSpeed = target.Entity.Stats.GetBlended("walkspeed");
+            }
+
+            string storeKey = $"vsquestadmin:stat:{statKey}";
+            target.Entity.WatchedAttributes.RemoveAttribute(storeKey);
+            target.Entity.WatchedAttributes.MarkPathDirty(storeKey);
+            target.Entity.WatchedAttributes.MarkAllDirty();
+
+            return TextCommandResult.Success($"Removed player stat '{statKey}' ({shortKey}) for '{target.PlayerName}'.");
+        }
+
+        private static bool TryMapToPlayerStat(string shortKey, out string statKey)
+        {
+            statKey = null;
+            if (string.IsNullOrEmpty(shortKey)) return false;
+
+            switch (shortKey)
+            {
+                case ItemAttributeUtils.AttrWalkSpeed:
+                    statKey = "walkspeed";
+                    return true;
+                case ItemAttributeUtils.AttrHungerRate:
+                    statKey = "hungerrate";
+                    return true;
+                case ItemAttributeUtils.AttrHealingEffectiveness:
+                    statKey = "healingeffectivness";
+                    return true;
+                case ItemAttributeUtils.AttrRangedAccuracy:
+                    statKey = "rangedWeaponsAcc";
+                    return true;
+                case ItemAttributeUtils.AttrRangedSpeed:
+                    statKey = "rangedWeaponsSpeed";
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static string[] GetSupportedKeys()
+        {
+            return new[]
+            {
+                ItemAttributeUtils.AttrWalkSpeed,
+                ItemAttributeUtils.AttrHungerRate,
+                ItemAttributeUtils.AttrHealingEffectiveness,
+                ItemAttributeUtils.AttrRangedAccuracy,
+                ItemAttributeUtils.AttrRangedSpeed
+            };
         }
     }
 }
