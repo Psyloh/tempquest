@@ -151,7 +151,7 @@ namespace VsQuest
 
         internal void OnQuestInfoMessage(QuestInfoMessage message, ICoreClientAPI capi)
         {
-            new QuestSelectGui(capi, message.questGiverId, message.availableQestIds, message.activeQuests, Config, message.noAvailableQuestDescLangKey).TryOpen();
+            new QuestSelectGui(capi, message.questGiverId, message.availableQestIds, message.activeQuests, Config, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft).TryOpen();
         }
 
         internal void OnExecutePlayerCommand(ExecutePlayerCommandMessage message, ICoreClientAPI capi)

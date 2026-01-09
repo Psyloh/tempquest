@@ -17,15 +17,19 @@ namespace VsQuest
         private List<ActiveQuest> activeQuests;
         private IClientPlayer player;
         private string noAvailableQuestDescLangKey;
+        private string noAvailableQuestCooldownDescLangKey;
+        private int noAvailableQuestCooldownDaysLeft;
 
         private int curTab = 0;
         private bool closeGuiAfterAcceptingAndCompleting;
-        public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig, string noAvailableQuestDescLangKey = null) : base(capi)
+        public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig, string noAvailableQuestDescLangKey = null, string noAvailableQuestCooldownDescLangKey = null, int noAvailableQuestCooldownDaysLeft = 0) : base(capi)
         {
             this.questGiverId = questGiverId;
             this.availableQuestIds = availableQuestIds;
             this.activeQuests = activeQuests;
             this.noAvailableQuestDescLangKey = noAvailableQuestDescLangKey;
+            this.noAvailableQuestCooldownDescLangKey = noAvailableQuestCooldownDescLangKey;
+            this.noAvailableQuestCooldownDaysLeft = noAvailableQuestCooldownDaysLeft;
             selectedActiveQuest = activeQuests?.Find(quest => true);
             player = capi.World.Player;
             closeGuiAfterAcceptingAndCompleting = questConfig.CloseGuiAfterAcceptingAndCompleting;
@@ -73,7 +77,11 @@ namespace VsQuest
                 }
                 else
                 {
-                    SingleComposer.AddStaticText(LangUtil.GetFallback(noAvailableQuestDescLangKey, "vsquest:no-quest-available-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
+                    string noQuestText = (noAvailableQuestCooldownDaysLeft > 0 && !string.IsNullOrEmpty(noAvailableQuestCooldownDescLangKey))
+                        ? LangUtil.GetSafe(noAvailableQuestCooldownDescLangKey, noAvailableQuestCooldownDaysLeft)
+                        : LangUtil.GetFallback(noAvailableQuestDescLangKey, "vsquest:no-quest-available-desc");
+
+                    SingleComposer.AddStaticText(noQuestText, CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
                         .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }

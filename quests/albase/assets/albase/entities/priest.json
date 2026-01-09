@@ -66,6 +66,7 @@
           "albase:priest-allowcharselonce"
         ],
         "noAvailableQuestDescLangKey": "albase:no-quest-available-priest",
+        "noAvailableQuestCooldownDescLangKey": "albase:no-quest-available-priest-cooldown",
         "selectrandom": false,
         "selectrandomcount": 1
       }

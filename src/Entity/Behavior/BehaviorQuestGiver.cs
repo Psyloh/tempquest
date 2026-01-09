@@ -18,6 +18,7 @@ namespace VsQuest
         private bool selectRandom;
         private int selectRandomCount;
         private string noAvailableQuestDescLangKey;
+        private string noAvailableQuestCooldownDescLangKey;
 
         public EntityBehaviorQuestGiver(Entity entity) : base(entity)
         {
@@ -30,6 +31,7 @@ namespace VsQuest
             selectRandomCount = attributes["selectrandomcount"].AsInt(1);
             quests = attributes["quests"].AsArray<string>();
             noAvailableQuestDescLangKey = attributes["noAvailableQuestDescLangKey"].AsString(null);
+            noAvailableQuestCooldownDescLangKey = attributes["noAvailableQuestCooldownDescLangKey"].AsString(null);
 
             if (selectRandom)
             {
@@ -97,24 +99,42 @@ namespace VsQuest
             var serverPlayer = player.Player as IServerPlayer;
 
             var availableQuestIds = new List<string>();
+            int? minCooldownDaysLeft = null;
             foreach (var questId in quests)
             {
                 var quest = questSystem.QuestRegistry[questId];
 
                 var key = String.Format("vsquest:lastaccepted-{0}", questId);
-                if (player.WatchedAttributes.GetDouble(key, -quest.cooldown) + quest.cooldown < sapi.World.Calendar.TotalDays
-                        && allActiveQuests.Find(activeQuest => activeQuest.questId == questId) == null
-                        && predecessorsCompleted(quest, player.PlayerUID))
+                double lastAccepted = player.WatchedAttributes.GetDouble(key, -quest.cooldown);
+                bool onCooldown = lastAccepted + quest.cooldown >= sapi.World.Calendar.TotalDays;
+                bool isActive = allActiveQuests.Find(activeQuest => activeQuest.questId == questId) != null;
+                bool eligible = !isActive && predecessorsCompleted(quest, player.PlayerUID);
+
+                if (eligible && !onCooldown)
                 {
                     availableQuestIds.Add(questId);
                 }
+                else if (eligible && onCooldown)
+                {
+                    double daysLeft = (lastAccepted + quest.cooldown) - sapi.World.Calendar.TotalDays;
+                    int left = (int)Math.Ceiling(daysLeft);
+                    if (left < 0) left = 0;
+                    if (!minCooldownDaysLeft.HasValue || left < minCooldownDaysLeft.Value)
+                    {
+                        minCooldownDaysLeft = left;
+                    }
+                }
             }
+
+            int cooldownDaysLeft = (availableQuestIds.Count == 0 && minCooldownDaysLeft.HasValue) ? minCooldownDaysLeft.Value : 0;
             var message = new QuestInfoMessage()
             {
                 questGiverId = entity.EntityId,
                 availableQestIds = availableQuestIds,
                 activeQuests = activeQuests,
-                noAvailableQuestDescLangKey = noAvailableQuestDescLangKey
+                noAvailableQuestDescLangKey = noAvailableQuestDescLangKey,
+                noAvailableQuestCooldownDescLangKey = noAvailableQuestCooldownDescLangKey,
+                noAvailableQuestCooldownDaysLeft = cooldownDaysLeft
             };
 
             sapi.Network.GetChannel("vsquest").SendPacket<QuestInfoMessage>(message, player.Player as IServerPlayer);

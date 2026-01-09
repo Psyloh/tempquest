@@ -19,6 +19,20 @@ namespace VsQuest
             }
         }
 
+        public static string GetSafe(string langKey, params object[] args)
+        {
+            if (string.IsNullOrEmpty(langKey)) return "";
+
+            try
+            {
+                return Lang.Get(langKey, args);
+            }
+            catch
+            {
+                return langKey;
+            }
+        }
+
         public static string GetFallback(string primaryLangKey, string fallbackLangKey)
         {
             if (!string.IsNullOrEmpty(primaryLangKey))
