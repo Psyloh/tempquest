@@ -17,6 +17,7 @@ namespace VsQuest
         private string[] quests;
         private bool selectRandom;
         private int selectRandomCount;
+        private string noAvailableQuestDescLangKey;
 
         public EntityBehaviorQuestGiver(Entity entity) : base(entity)
         {
@@ -28,6 +29,7 @@ namespace VsQuest
             selectRandom = attributes["selectrandom"].AsBool();
             selectRandomCount = attributes["selectrandomcount"].AsInt(1);
             quests = attributes["quests"].AsArray<string>();
+            noAvailableQuestDescLangKey = attributes["noAvailableQuestDescLangKey"].AsString(null);
 
             if (selectRandom)
             {
@@ -111,7 +113,8 @@ namespace VsQuest
             {
                 questGiverId = entity.EntityId,
                 availableQestIds = availableQuestIds,
-                activeQuests = activeQuests
+                activeQuests = activeQuests,
+                noAvailableQuestDescLangKey = noAvailableQuestDescLangKey
             };
 
             sapi.Network.GetChannel("vsquest").SendPacket<QuestInfoMessage>(message, player.Player as IServerPlayer);

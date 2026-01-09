@@ -62,7 +62,7 @@
       "owner": "npc",
       "type": "talk",
       "text": [
-        { "value": "albase:dialogue-priest-closechoice" }
+        { "value": "albase:dialogue-priest-close-answer" }
       ]
     }
   ]

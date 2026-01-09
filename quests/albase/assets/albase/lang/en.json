@@ -22,9 +22,11 @@
   "albase:dialogue-priest-aboutblessing": "Tell me about the rite and the blessing.",
   "albase:dialogue-priest-openquests-confirm": "Speak, and I will listen.",
   "albase:dialogue-priest-closechoice": "I will return later.",
+  "albase:dialogue-priest-close-answer": "Go in peace. When you are ready, return.",
+  "albase:no-quest-available-priest": "The rite to change your class can be performed only once every 90 days.",
 
   "albase:dialogue-priest-whoareyou-answer": "I have served here for many years. I do not seek power—only to keep people from despair and to remind them that order is still possible.",
-  "albase:dialogue-priest-abouttemple-answer": "Once it was a quiet refuge for travelers. Now these walls stand more on prayer than on stone—yet they still offer shelter.",
+  "albase:dialogue-priest-abouttemple-answer": "You stand in the Church of the White Lotus, in the parish people call “Crossroads”. Here roads and fates meet: travelers find shelter, and the lost find a chance to begin again.",
   "albase:dialogue-priest-aboutblessing-answer": "A blessing is not a coin. It has a cost: patience and deeds. The cleansing rite is simple—find those who defile the surroundings, and prove you can finish what you start.",
 
   "albase:dialogue-priest-final-title": "Priest",

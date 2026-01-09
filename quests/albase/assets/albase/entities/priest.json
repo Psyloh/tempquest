@@ -65,6 +65,7 @@
         "quests": [
           "albase:priest-allowcharselonce"
         ],
+        "noAvailableQuestDescLangKey": "albase:no-quest-available-priest",
         "selectrandom": false,
         "selectrandomcount": 1
       }

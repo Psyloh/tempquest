@@ -16,14 +16,16 @@ namespace VsQuest
         private List<string> availableQuestIds;
         private List<ActiveQuest> activeQuests;
         private IClientPlayer player;
+        private string noAvailableQuestDescLangKey;
 
         private int curTab = 0;
         private bool closeGuiAfterAcceptingAndCompleting;
-        public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig) : base(capi)
+        public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig, string noAvailableQuestDescLangKey = null) : base(capi)
         {
             this.questGiverId = questGiverId;
             this.availableQuestIds = availableQuestIds;
             this.activeQuests = activeQuests;
+            this.noAvailableQuestDescLangKey = noAvailableQuestDescLangKey;
             selectedActiveQuest = activeQuests?.Find(quest => true);
             player = capi.World.Player;
             closeGuiAfterAcceptingAndCompleting = questConfig.CloseGuiAfterAcceptingAndCompleting;
@@ -71,7 +73,7 @@ namespace VsQuest
                 }
                 else
                 {
-                    SingleComposer.AddStaticText(Lang.Get("vsquest:no-quest-available-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
+                    SingleComposer.AddStaticText(LangUtil.GetFallback(noAvailableQuestDescLangKey, "vsquest:no-quest-available-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
                         .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }

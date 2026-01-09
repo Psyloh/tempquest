@@ -22,20 +22,6 @@ namespace VsQuest
             recompose();
         }
 
-        private static string SafeLangGet(string langKey)
-        {
-            if (string.IsNullOrEmpty(langKey)) return "";
-
-            try
-            {
-                return Lang.Get(langKey);
-            }
-            catch
-            {
-                return langKey;
-            }
-        }
-
         private void recompose()
         {
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
@@ -49,8 +35,8 @@ namespace VsQuest
 
             bgBounds.BothSizing = ElementSizing.FitToChildren;
 
-            string titleText = SafeLangGet(titleLangKey);
-            string bodyText = SafeLangGet(textLangKey);
+            string titleText = LangUtil.GetSafe(titleLangKey);
+            string bodyText = LangUtil.GetSafe(textLangKey);
 
             SingleComposer = capi.Gui.CreateCompo("QuestFinalDialog-", dialogBounds)
                 .AddShadedDialogBG(bgBounds)
@@ -63,11 +49,11 @@ namespace VsQuest
                 .EndClip()
                 .AddVerticalScrollbar(OnNewScrollbarvalue, scrollbarBounds, "scrollbar")
                 .AddIf(!string.IsNullOrEmpty(option1LangKey) && !string.IsNullOrEmpty(option2LangKey))
-                    .AddButton(SafeLangGet(option1LangKey), TryClose, leftButtonBounds)
-                    .AddButton(SafeLangGet(option2LangKey), TryClose, rightButtonBounds)
+                    .AddButton(LangUtil.GetSafe(option1LangKey), TryClose, leftButtonBounds)
+                    .AddButton(LangUtil.GetSafe(option2LangKey), TryClose, rightButtonBounds)
                 .EndIf()
                 .AddIf(!string.IsNullOrEmpty(option1LangKey) && string.IsNullOrEmpty(option2LangKey))
-                    .AddButton(SafeLangGet(option1LangKey), TryClose, closeButtonBounds)
+                    .AddButton(LangUtil.GetSafe(option1LangKey), TryClose, closeButtonBounds)
                 .EndIf()
                 .AddIf(string.IsNullOrEmpty(option1LangKey))
                     .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, closeButtonBounds)
