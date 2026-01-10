@@ -43,6 +43,10 @@ namespace VsQuest
                 {
                     action.Execute(sapi, message, player, args.ToArray());
                 }
+                else
+                {
+                    sapi.Logger.Error($"[vsquest] ActionStringExecutor: Unknown action ID '{actionId}' in quest '{message?.questId}'.");
+                }
             }
         }
     }

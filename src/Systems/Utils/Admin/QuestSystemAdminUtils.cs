@@ -15,7 +15,7 @@ namespace VsQuest
             if (sapi == null || player == null || string.IsNullOrWhiteSpace(questId)) return;
             if (player.Entity?.WatchedAttributes == null) return;
 
-            string loreCodesKey = $"vsquest:journal:{questId}:lorecodes";
+            string loreCodesKey = $"alegacyvsquest:journal:{questId}:lorecodes";
             string[] loreCodes = player.Entity.WatchedAttributes.GetStringArray(loreCodesKey, null);
 
             // Backfill from quest definition if no per-player tracking is present (e.g. journal entries created before tracking existed)
@@ -95,8 +95,9 @@ namespace VsQuest
                     serverChannel.SendPacket(journal, player);
                 }
             }
-            catch
+            catch (Exception e)
             {
+                sapi?.Logger.Warning($"[vsquest] Failed to remove journal entries for player {player.PlayerUID}: {e.Message}");
             }
             finally
             {
@@ -110,24 +111,23 @@ namespace VsQuest
         {
             if (player?.Entity?.WatchedAttributes == null) return;
 
-            string cooldownKey = string.Format("vsquest:lastaccepted-{0}", questId);
+            string cooldownKey = string.Format("alegacyvsquest:lastaccepted-{0}", questId);
             player.Entity.WatchedAttributes.RemoveAttribute(cooldownKey);
             player.Entity.WatchedAttributes.MarkPathDirty(cooldownKey);
 
-            // Clear randkill state (legacy + multi-slot)
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:code");
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:need");
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:have");
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:slots");
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:onprogress");
-            player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:oncomplete");
+            // Clear randkill state
+            string slotsKey = RandomKillQuestUtils.SlotsKey(questId);
+            int slots = player.Entity.WatchedAttributes.GetInt(slotsKey, 16); // Fallback to 16 for safety if slots key is missing
 
-            // We don't know how many slots were used, just clear a reasonable range
-            for (int slot = 0; slot < 16; slot++)
+            player.Entity.WatchedAttributes.RemoveAttribute(slotsKey);
+            player.Entity.WatchedAttributes.RemoveAttribute(RandomKillQuestUtils.OnProgressKey(questId));
+            player.Entity.WatchedAttributes.RemoveAttribute(RandomKillQuestUtils.OnCompleteKey(questId));
+
+            for (int slot = 0; slot < slots; slot++)
             {
-                player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:slot{slot}:code");
-                player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:slot{slot}:need");
-                player.Entity.WatchedAttributes.RemoveAttribute($"vsquest:randkill:{questId}:slot{slot}:have");
+                player.Entity.WatchedAttributes.RemoveAttribute(RandomKillQuestUtils.SlotCodeKey(questId, slot));
+                player.Entity.WatchedAttributes.RemoveAttribute(RandomKillQuestUtils.SlotNeedKey(questId, slot));
+                player.Entity.WatchedAttributes.RemoveAttribute(RandomKillQuestUtils.SlotHaveKey(questId, slot));
             }
         }
 
@@ -135,13 +135,13 @@ namespace VsQuest
         {
             if (player?.Entity?.WatchedAttributes == null) return;
 
-            var completed = player.Entity.WatchedAttributes.GetStringArray("vsquest:playercompleted", new string[0]);
+            var completed = player.Entity.WatchedAttributes.GetStringArray("alegacyvsquest:playercompleted", new string[0]);
             if (completed == null || completed.Length == 0) return;
 
             var filtered = completed.Where(id => id != questId).ToArray();
             if (filtered.Length == completed.Length) return;
 
-            player.Entity.WatchedAttributes.SetStringArray("vsquest:playercompleted", filtered);
+            player.Entity.WatchedAttributes.SetStringArray("alegacyvsquest:playercompleted", filtered);
             player.Entity.WatchedAttributes.MarkAllDirty();
         }
 
@@ -232,8 +232,8 @@ namespace VsQuest
             if (player.Entity?.WatchedAttributes != null)
             {
                 // Clear completed list
-                player.Entity.WatchedAttributes.RemoveAttribute("vsquest:playercompleted");
-                player.Entity.WatchedAttributes.MarkPathDirty("vsquest:playercompleted");
+                player.Entity.WatchedAttributes.RemoveAttribute("alegacyvsquest:playercompleted");
+                player.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:playercompleted");
 
                 // Clear cooldowns and any per-quest state we store on the player
                 foreach (var questId in questSystem.QuestRegistry.Keys.ToList())

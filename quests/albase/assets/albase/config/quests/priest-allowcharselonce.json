@@ -1,0 +1,85 @@
+{
+  "id": "albase:priest-allowcharselonce",
+  "cooldown": 90,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "randomkill",
+      "args": [
+        "2",
+        "2",
+        "7",
+        "albase:priest-randomkill-notify",
+        "playsound 'albase:sounds/priest_target' 0.25",
+        "playsound 'albase:sounds/priest_quest_complete' 0.5",
+        "drifter-normal",
+        "drifter-deep",
+        "locust",
+        "shiver",
+        "bowtorn",
+        "wolf"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:priest",
+        "albase:priest-allowcharselonce-journal-title",
+        "albase:priest-allowcharselonce-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:priest-allowcharselonce",
+        "0"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:priest-allowcharselonce",
+        "1"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    {
+      "id": "notify",
+      "args": [
+        "albase:priest-allowcharselonce-reward"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "albase:sounds/priest_quest_complete",
+        "0.5"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-priest-final-title",
+        "albase:dialogue-priest-final-text",
+        "albase:dialogue-priest-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:priest",
+        "albase:priest-allowcharselonce-reward-journal-title",
+        "albase:priest-allowcharselonce-reward-journal-text"
+      ]
+    },
+    {
+      "id": "allowcharselonce",
+      "args": []
+    }
+  ]
+}

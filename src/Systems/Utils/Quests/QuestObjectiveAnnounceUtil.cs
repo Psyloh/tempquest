@@ -1,4 +1,3 @@
-using System.Globalization;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -7,19 +6,6 @@ namespace VsQuest
 {
     public static class QuestObjectiveAnnounceUtil
     {
-        private static string GetWalkLabel()
-        {
-            return Lang.HasTranslation("objective-walkdistance")
-                ? Lang.Get("objective-walkdistance")
-                : (Lang.HasTranslation("vsquest:objective-walkdistance") ? Lang.Get("vsquest:objective-walkdistance") : "Walk");
-        }
-
-        private static string GetMeterUnit()
-        {
-            return Lang.HasTranslation("unit-meter-short")
-                ? Lang.Get("unit-meter-short")
-                : (Lang.HasTranslation("vsquest:unit-meter-short") ? Lang.Get("vsquest:unit-meter-short") : "m");
-        }
 
         public static void AnnounceOnAccept(IServerPlayer player, QuestAcceptedMessage message, ICoreServerAPI sapi, Quest quest)
         {
@@ -27,30 +13,19 @@ namespace VsQuest
 
             AnnounceRandomKillTargets(player, message, sapi, quest);
 
-            AnnounceTimeOfDayGate(player, sapi, quest);
-
             // walkdistance
             if (quest.actionObjectives != null)
             {
                 foreach (var obj in quest.actionObjectives)
                 {
                     if (obj?.id != "walkdistance") continue;
-                    if (obj.args == null || obj.args.Length < 2) continue;
 
-                    int needMeters = 0;
-                    if (obj.args.Length >= 3)
+                    if (WalkDistanceObjective.TryParseArgs(obj.args, out _, out _, out int needMeters) && needMeters > 0)
                     {
-                        int.TryParse(obj.args[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out needMeters);
+                        var walkLabel = LocalizationUtils.GetSafe("alegacyvsquest:objective-walkdistance");
+                        var meterUnit = LocalizationUtils.GetSafe("alegacyvsquest:unit-meter-short");
+                        sapi.SendMessage(player, GlobalConstants.GeneralChatGroup, $"{walkLabel}: 0/{needMeters} {meterUnit}", EnumChatType.Notification);
                     }
-                    else
-                    {
-                        int.TryParse(obj.args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out needMeters);
-                    }
-
-                    if (needMeters < 0) needMeters = 0;
-                    if (needMeters == 0) continue;
-
-                    sapi.SendMessage(player, GlobalConstants.GeneralChatGroup, $"{GetWalkLabel()}: 0/{needMeters} {GetMeterUnit()}", EnumChatType.Notification);
                 }
             }
 
@@ -81,22 +56,7 @@ namespace VsQuest
 
         private static void AnnounceTimeOfDayGate(IServerPlayer player, ICoreServerAPI sapi, Quest quest)
         {
-            if (quest.actionObjectives == null) return;
-
-            foreach (var obj in quest.actionObjectives)
-            {
-                if (obj?.id != "timeofday") continue;
-                if (obj.args == null || obj.args.Length < 1) continue;
-
-                string mode = obj.args[0];
-                bool night = string.Equals(mode, "night", System.StringComparison.OrdinalIgnoreCase);
-                string key = night ? "timeofday-notify-night" : "timeofday-notify-day";
-
-                sapi.Network.GetChannel("vsquest").SendPacket(new ShowNotificationMessage()
-                {
-                    Notification = key
-                }, player);
-            }
+            return;
         }
 
         private static void AnnounceRandomKillTargets(IServerPlayer player, QuestAcceptedMessage message, ICoreServerAPI sapi, Quest quest)

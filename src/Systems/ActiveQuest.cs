@@ -20,10 +20,16 @@ namespace VsQuest
         public List<EventTracker> blockPlaceTrackers { get; set; } = new List<EventTracker>();
         public List<EventTracker> blockBreakTrackers { get; set; } = new List<EventTracker>();
         public List<EventTracker> interactTrackers { get; set; } = new List<EventTracker>();
+        public bool IsCompletableOnClient { get; set; }
+        public string ProgressText { get; set; }
+
         public void OnEntityKilled(string entityCode, IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
+
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+
             checkEventTrackers(killTrackers, entityCode, null, quest.killObjectives);
         }
 
@@ -31,6 +37,9 @@ namespace VsQuest
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
+
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+
             checkEventTrackers(blockPlaceTrackers, blockCode, position, quest.blockPlaceObjectives);
         }
 
@@ -38,6 +47,9 @@ namespace VsQuest
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
+
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+
             checkEventTrackers(blockBreakTrackers, blockCode, position, quest.blockBreakObjectives);
         }
 
@@ -45,53 +57,26 @@ namespace VsQuest
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
+
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+
             checkEventTrackers(interactTrackers, blockCode, position, quest.interactObjectives);
-            for (int i = 0; i < quest.actionObjectives.Count; i++)
+            for (int i = 0; i < quest.interactObjectives.Count; i++)
             {
-                var actionObj = quest.actionObjectives[i];
-                if ((actionObj.id == "interactat" || actionObj.id == "interactcount") && actionObj.args.Length >= 2)
+                var objective = quest.interactObjectives[i];
+
+                if (!QuestObjectiveMatchUtil.InteractObjectiveMatches(objective, blockCode, position)) continue;
+
+                var serverPlayer = byPlayer as IServerPlayer;
+                if (serverPlayer != null)
                 {
-                    string actionString = actionObj.args[actionObj.args.Length - 1];
-                    int coordCount = actionObj.args.Length - 1;
-                    for (int coordIndex = 0; coordIndex < coordCount; coordIndex++)
+                    var message = new QuestAcceptedMessage { questGiverId = questGiverId, questId = questId };
+                    foreach (var actionReward in objective.actionRewards)
                     {
-                        string coordString = actionObj.args[coordIndex];
-                        string[] coords = coordString.Split(',');
-                        if (coords.Length != 3) continue;
-
-                        if (!int.TryParse(coords[0], out int targetX) ||
-                            !int.TryParse(coords[1], out int targetY) ||
-                            !int.TryParse(coords[2], out int targetZ))
+                        if (questSystem.ActionRegistry.TryGetValue(actionReward.id, out var action))
                         {
-                            continue;
+                            action.Execute(sapi, message, serverPlayer, actionReward.args);
                         }
-
-                        if (targetX != position[0] || targetY != position[1] || targetZ != position[2]) continue;
-
-                        string interactionKey = $"interactat_{targetX}_{targetY}_{targetZ}";
-                        string completedInteractions = byPlayer.Entity.WatchedAttributes.GetString("completedInteractions", "");
-                        string[] completed = completedInteractions.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-                        if (completed.Contains(interactionKey)) break;
-
-                        if (!string.IsNullOrEmpty(completedInteractions))
-                        {
-                            completedInteractions += "," + interactionKey;
-                        }
-                        else
-                        {
-                            completedInteractions = interactionKey;
-                        }
-                        byPlayer.Entity.WatchedAttributes.SetString("completedInteractions", completedInteractions);
-
-                        var serverPlayer = byPlayer as IServerPlayer;
-                        if (serverPlayer != null && !string.IsNullOrWhiteSpace(actionString))
-                        {
-                            var message = new QuestAcceptedMessage { questGiverId = questGiverId, questId = questId };
-                            ActionStringExecutor.Execute(sapi, message, serverPlayer, actionString);
-                        }
-
-                        break;
                     }
                 }
             }
@@ -149,12 +134,14 @@ namespace VsQuest
                         {
                             if (LocalizationUtils.MobCodeMatches(codeCandidate, code))
                             {
+                                if (tracker.placedPositions.Contains(candidate)) return false;
                                 tracker.placedPositions.Add(candidate);
                                 return true;
                             }
 
                             if (codeCandidate.EndsWith("*") && code.StartsWith(codeCandidate.Remove(codeCandidate.Length - 1)))
                             {
+                                if (tracker.placedPositions.Contains(candidate)) return false;
                                 tracker.placedPositions.Add(candidate);
                                 return true;
                             }
@@ -181,11 +168,11 @@ namespace VsQuest
             }
         }
 
-        public bool isCompletable(IPlayer byPlayer)
+        public bool IsCompletable(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
-            var activeActionObjectives = quest.actionObjectives.ConvertAll<ActiveActionObjective>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
+            var activeActionObjectives = quest.actionObjectives.ConvertAll<IActionObjective>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
             bool completable = true;
 
             while (blockPlaceTrackers.Count < quest.blockPlaceObjectives.Count)
@@ -224,7 +211,8 @@ namespace VsQuest
             {
                 if (quest.interactObjectives[i].positions != null && quest.interactObjectives[i].positions.Count > 0)
                 {
-                    completable &= quest.interactObjectives[i].positions.Count <= interactTrackers[i].placedPositions.Count;
+                    int demand = quest.interactObjectives[i].demand > 0 ? quest.interactObjectives[i].demand : quest.interactObjectives[i].positions.Count;
+                    completable &= demand <= interactTrackers[i].count;
                 }
                 else
                 {
@@ -242,7 +230,7 @@ namespace VsQuest
             }
             for (int i = 0; i < activeActionObjectives.Count; i++)
             {
-                completable &= activeActionObjectives[i].isCompletable(byPlayer, quest.actionObjectives[i].args);
+                completable &= activeActionObjectives[i].IsCompletable(byPlayer, quest.actionObjectives[i].args);
             }
             return completable;
         }
@@ -266,32 +254,6 @@ namespace VsQuest
                     }
                 }
             }
-
-            string completedInteractions = byPlayer.Entity.WatchedAttributes.GetString("completedInteractions", "");
-            if (!string.IsNullOrEmpty(completedInteractions))
-            {
-                List<string> completed = completedInteractions.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                foreach (var actionObj in quest.actionObjectives)
-                {
-                    if (actionObj.id == "interactat" && actionObj.args.Length >= 1)
-                    {
-                        string coordString = actionObj.args[0];
-                        string[] coords = coordString.Split(',');
-                        if (coords.Length == 3)
-                        {
-                            if (int.TryParse(coords[0], out int targetX) &&
-                                int.TryParse(coords[1], out int targetY) &&
-                                int.TryParse(coords[2], out int targetZ))
-                            {
-                                string interactionKey = $"interactat_{targetX}_{targetY}_{targetZ}";
-                                completed.Remove(interactionKey);
-                            }
-                        }
-                    }
-                }
-                byPlayer.Entity.WatchedAttributes.SetString("completedInteractions", string.Join(",", completed));
-            }
         }
 
         public List<int> trackerProgress()
@@ -314,25 +276,21 @@ namespace VsQuest
             return quest.gatherObjectives.ConvertAll<int>(gatherObjective => itemsGathered(byPlayer, gatherObjective));
         }
 
-        public List<int> actionProgress(IPlayer byPlayer)
+        public List<int> GetProgress(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
-            var activeActionObjectives = quest.actionObjectives.ConvertAll<ActiveActionObjective>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
-            List<int> result = new List<int>();
+            var activeActionObjectives = quest.actionObjectives.ConvertAll<IActionObjective>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
+
+            var result = gatherProgress(byPlayer);
+            result.AddRange(trackerProgress());
+
             for (int i = 0; i < activeActionObjectives.Count; i++)
             {
-                result.AddRange(activeActionObjectives[i].progress(byPlayer, quest.actionObjectives[i].args));
+                result.AddRange(activeActionObjectives[i].GetProgress(byPlayer, quest.actionObjectives[i].args));
             }
-            return result;
-        }
 
-        public List<int> progress(IPlayer byPlayer)
-        {
-            var progress = gatherProgress(byPlayer);
-            progress.AddRange(trackerProgress());
-            progress.AddRange(actionProgress(byPlayer));
-            return progress;
+            return result;
         }
 
         public int itemsGathered(IPlayer byPlayer, Objective gatherObjective)
@@ -351,7 +309,8 @@ namespace VsQuest
                         itemsFound += slot.Itemstack.StackSize;
                     }
                 }
-            };
+            }
+            ;
 
             return itemsFound;
         }

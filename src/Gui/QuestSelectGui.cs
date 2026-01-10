@@ -24,20 +24,23 @@ namespace VsQuest
         private bool closeGuiAfterAcceptingAndCompleting;
         public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig, string noAvailableQuestDescLangKey = null, string noAvailableQuestCooldownDescLangKey = null, int noAvailableQuestCooldownDaysLeft = 0) : base(capi)
         {
+            player = capi.World.Player;
+            closeGuiAfterAcceptingAndCompleting = questConfig.CloseGuiAfterAcceptingAndCompleting;
+            ApplyData(questGiverId, availableQuestIds, activeQuests, noAvailableQuestDescLangKey, noAvailableQuestCooldownDescLangKey, noAvailableQuestCooldownDaysLeft);
+            recompose();
+        }
+
+        private void ApplyData(long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, string noAvailableQuestDescLangKey, string noAvailableQuestCooldownDescLangKey, int noAvailableQuestCooldownDaysLeft)
+        {
             this.questGiverId = questGiverId;
             this.availableQuestIds = availableQuestIds;
             this.activeQuests = activeQuests;
             this.noAvailableQuestDescLangKey = noAvailableQuestDescLangKey;
             this.noAvailableQuestCooldownDescLangKey = noAvailableQuestCooldownDescLangKey;
             this.noAvailableQuestCooldownDaysLeft = noAvailableQuestCooldownDaysLeft;
+
             selectedActiveQuest = activeQuests?.Find(quest => true);
-            player = capi.World.Player;
-            closeGuiAfterAcceptingAndCompleting = questConfig.CloseGuiAfterAcceptingAndCompleting;
-            if (activeQuests != null && activeQuests.Count > 0)
-            {
-                curTab = 1;
-            }
-            recompose();
+            curTab = (activeQuests != null && activeQuests.Count > 0) ? 1 : 0;
         }
 
         private void recompose()
@@ -51,14 +54,14 @@ namespace VsQuest
             ElementBounds bottomRightButtonBounds = ElementBounds.Fixed(220, 570, 200, 20);
 
             GuiTab[] tabs = new GuiTab[] {
-                new GuiTab() { Name = Lang.Get("vsquest:tab-available-quests"), DataInt = 0 },
-                new GuiTab() { Name = Lang.Get("vsquest:tab-active-quests"), DataInt = 1 }
+                new GuiTab() { Name = Lang.Get("alegacyvsquest:tab-available-quests"), DataInt = 0 },
+                new GuiTab() { Name = Lang.Get("alegacyvsquest:tab-active-quests"), DataInt = 1 }
             };
 
             bgBounds.BothSizing = ElementSizing.FitToChildren;
             SingleComposer = capi.Gui.CreateCompo("QuestSelectDialog-", dialogBounds)
                             .AddShadedDialogBG(bgBounds)
-                            .AddDialogTitleBar(Lang.Get("vsquest:quest-select-title"), () => TryClose())
+                            .AddDialogTitleBar(Lang.Get("alegacyvsquest:quest-select-title"), () => TryClose())
                             .AddVerticalTabs(tabs, ElementBounds.Fixed(-200, 35, 200, 200), OnTabClicked, "tabs")
                             .BeginChildElements(bgBounds);
             SingleComposer.GetVerticalTab("tabs").ActiveElement = curTab;
@@ -68,8 +71,8 @@ namespace VsQuest
                 {
                     selectedAvailableQuestId = availableQuestIds[0];
                     SingleComposer.AddDropDown(availableQuestIds.ToArray(), availableQuestIds.ConvertAll<string>(id => Lang.Get(id + "-title")).ToArray(), 0, onAvailableQuestSelectionChanged, ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, 400, 30))
-                        .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
-                        .AddButton(Lang.Get("vsquest:button-accept"), acceptQuest, bottomRightButtonBounds)
+                        .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
+                        .AddButton(Lang.Get("alegacyvsquest:button-accept"), acceptQuest, bottomRightButtonBounds)
                         .BeginClip(clippingBounds)
                             .AddRichtext(questText(availableQuestIds[0]), CairoFont.WhiteSmallishText(), questTextBounds, "questtext")
                         .EndClip()
@@ -79,10 +82,10 @@ namespace VsQuest
                 {
                     string noQuestText = (noAvailableQuestCooldownDaysLeft > 0 && !string.IsNullOrEmpty(noAvailableQuestCooldownDescLangKey))
                         ? LocalizationUtils.GetSafe(noAvailableQuestCooldownDescLangKey, noAvailableQuestCooldownDaysLeft)
-                        : LocalizationUtils.GetFallback(noAvailableQuestDescLangKey, "vsquest:no-quest-available-desc");
+                        : LocalizationUtils.GetFallback(noAvailableQuestDescLangKey, "alegacyvsquest:no-quest-available-desc");
 
                     SingleComposer.AddStaticText(noQuestText, CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
-                        .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
+                        .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
             else
@@ -91,10 +94,11 @@ namespace VsQuest
                 {
                     int selected = selectedActiveQuest == null ? 0 : activeQuests.FindIndex(match => match.questId == selectedActiveQuest.questId);
                     SingleComposer.AddDropDown(activeQuests.ConvertAll<string>(quest => quest.questId).ToArray(), activeQuests.ConvertAll<string>(quest => Lang.Get(quest.questId + "-title")).ToArray(), selected, onActiveQuestSelectionChanged, ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, 400, 30))
-                        .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
-                        .AddIf(selectedActiveQuest.isCompletable(player))
-                            .AddButton(Lang.Get("vsquest:button-complete"), completeQuest, bottomRightButtonBounds)
+                        .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
+                        .AddIf(selectedActiveQuest.IsCompletableOnClient)
+                            .AddButton(Lang.Get("alegacyvsquest:button-complete"), completeQuest, bottomRightButtonBounds)
                         .EndIf()
+
                         .BeginClip(clippingBounds)
                             .AddRichtext(activeQuestText(selectedActiveQuest), CairoFont.WhiteSmallishText(), questTextBounds, "questtext")
                         .EndClip()
@@ -102,8 +106,8 @@ namespace VsQuest
                 }
                 else
                 {
-                    SingleComposer.AddStaticText(Lang.Get("vsquest:no-quest-active-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
-                        .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
+                    SingleComposer.AddStaticText(Lang.Get("alegacyvsquest:no-quest-active-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
+                        .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
             ;
@@ -135,20 +139,7 @@ namespace VsQuest
 
         private string activeQuestText(ActiveQuest quest)
         {
-            if (QuestProgressTextUtil.TryBuildRandomKillProgressText(capi, player, quest, out string detailedProgress))
-            {
-                return String.Format("{0}<br><br><strong>Прогресс</strong><br>{1}", questText(quest.questId), detailedProgress);
-            }
-
-            string progress = Lang.Get(quest.questId + "-obj", quest.progress(player).ConvertAll<string>(x => x.ToString()).ToArray());
-            if (string.IsNullOrEmpty(progress))
-            {
-                return questText(quest.questId);
-            }
-            else
-            {
-                return String.Format("{0}<br><br><strong>Прогресс</strong><br>{1}", questText(quest.questId), progress);
-            }
+            return quest.ProgressText;
         }
 
         private bool acceptQuest()
@@ -208,6 +199,15 @@ namespace VsQuest
                 SingleComposer.GetRichtext("questtext").SetNewText(questText(questId), CairoFont.WhiteSmallishText());
                 recompose();
             }
+        }
+
+        public void UpdateFromMessage(QuestInfoMessage message)
+        {
+            if (message == null) return;
+
+            ApplyData(message.questGiverId, message.availableQestIds, message.activeQuests, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft);
+
+            recompose();
         }
     }
 }

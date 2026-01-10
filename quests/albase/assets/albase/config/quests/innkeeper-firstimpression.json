@@ -1,0 +1,130 @@
+{
+  "id": "albase:innkeeper-firstimpression",
+  "cooldown": 1000000,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "resetwalkdistance",
+      "args": [
+        "albase:innkeeper-firstimpression",
+        "1"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-firstimpression-journal-title",
+        "albase:innkeeper-firstimpression-journal-text"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "2",
+        "1",
+        "2",
+        "albase:innkeeper-randomkill-notify",
+        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'sounds/tutorialstepsuccess' 0.7",
+        "drifter-normal",
+        "bowtorn",
+        "wolf",
+        "bear",
+        "fox"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:innkeeper-firstimpression",
+        "0"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:innkeeper-firstimpression",
+        "1"
+      ]
+    },
+    {
+      "id": "walkdistance",
+      "args": [
+        "albase:innkeeper-firstimpression",
+        "600"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [
+    {
+      "itemCode": "game:redmeat-raw",
+      "amount": 6
+    },
+    {
+      "itemCode": "game:bread-spelt-perfect",
+      "amount": 2
+    },
+    {
+      "itemCode": "game:bandage-clean",
+      "amount": 2
+    },
+    {
+      "itemCode": "game:torch-basic-extinct-up",
+      "amount": 4
+    }
+  ],
+  "randomItemRewards": {
+    "selectAmount": 1,
+    "items": [
+      {
+        "itemCode": "game:redmeat-raw",
+        "minAmount": 2,
+        "maxAmount": 4
+      },
+      {
+        "itemCode": "game:bread-spelt-perfect",
+        "minAmount": 1,
+        "maxAmount": 2
+      },
+      {
+        "itemCode": "game:bandage-clean",
+        "minAmount": 1,
+        "maxAmount": 2
+      },
+      {
+        "itemCode": "game:torch-basic-extinct-up",
+        "minAmount": 2,
+        "maxAmount": 4
+      }
+    ]
+  },
+  "actionRewards": [
+    {
+      "id": "playsound",
+      "args": [
+        "sounds/effect/writing",
+        "0.5"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-innkeeper-final-title",
+        "albase:dialogue-innkeeper-firstimpression-final-text",
+        "albase:dialogue-innkeeper-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-firstimpression-reward-journal-title",
+        "albase:innkeeper-firstimpression-reward-journal-text"
+      ]
+    }
+  ]
+}

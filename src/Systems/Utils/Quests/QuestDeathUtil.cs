@@ -14,13 +14,21 @@ namespace VsQuest
             string killedCode = killedEntity?.Code?.Path;
             var serverPlayer = player.Player as IServerPlayer;
 
+            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+
             foreach (var quest in quests)
             {
                 quest.OnEntityKilled(killedCode, player.Player);
 
                 if (serverPlayer != null)
                 {
-                    RandomKillQuestUtils.TryHandleKill(sapi, serverPlayer, quest, killedCode);
+                    Quest questDef = null;
+                    if (questSystem != null) questSystem.QuestRegistry.TryGetValue(quest.questId, out questDef);
+
+                    if (QuestTimeGateUtil.AllowsProgress(serverPlayer, questDef, questSystem?.ActionObjectiveRegistry))
+                    {
+                        RandomKillQuestUtils.TryHandleKill(sapi, serverPlayer, quest, killedCode);
+                    }
                 }
             }
         }

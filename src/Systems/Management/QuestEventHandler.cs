@@ -27,6 +27,7 @@ namespace VsQuest
             sapi.Event.OnEntityDeath += OnEntityDeath;
             sapi.Event.DidBreakBlock += OnBlockBroken;
             sapi.Event.DidPlaceBlock += OnBlockPlaced;
+            sapi.Event.DidUseBlock += OnBlockUsed;
             sapi.Event.RegisterGameTickListener(OnQuestTick, 1000);
         }
 
@@ -63,6 +64,22 @@ namespace VsQuest
             var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
             persistenceManager.GetPlayerQuests(byPlayer?.PlayerUID)
                 .ForEach(quest => quest.OnBlockPlaced(blockCode, position, byPlayer));
+        }
+
+        private void OnBlockUsed(IServerPlayer byPlayer, BlockSelection blockSel)
+        {
+            if (blockSel == null) return;
+
+            var blockCode = sapi.World.BlockAccessor.GetBlock(blockSel.Position)?.Code?.Path;
+            var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
+
+            var quests = persistenceManager.GetPlayerQuests(byPlayer?.PlayerUID);
+            if (blockCode != null && blockCode.IndexOf("present", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                sapi.Logger.VerboseDebug($"[vsquest] DidUseBlock player='{byPlayer?.PlayerUID}' block='{blockCode}' pos={position[0]},{position[1]},{position[2]} quests={quests?.Count ?? 0}");
+            }
+
+            quests?.ForEach(quest => quest.OnBlockUsed(blockCode, position, byPlayer, sapi));
         }
 
         private void OnQuestTick(float dt)

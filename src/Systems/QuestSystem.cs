@@ -1,31 +1,28 @@
 using HarmonyLib;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 
 namespace VsQuest
 {
-    public delegate void QuestAction(ICoreServerAPI sapi, QuestMessage message, IServerPlayer player, string[] args);
-
     public class QuestSystem : ModSystem
     {
         public Dictionary<string, Quest> QuestRegistry { get; private set; } = new Dictionary<string, Quest>();
         public Dictionary<string, IQuestAction> ActionRegistry { get; private set; } = new Dictionary<string, IQuestAction>();
-        public Dictionary<string, ActiveActionObjective> ActionObjectiveRegistry { get; private set; } = new Dictionary<string, ActiveActionObjective>();
-        
+        public Dictionary<string, IActionObjective> ActionObjectiveRegistry { get; private set; } = new Dictionary<string, IActionObjective>();
+
         private QuestPersistenceManager persistenceManager;
         private QuestLifecycleManager lifecycleManager;
         private QuestEventHandler eventHandler;
         private QuestActionRegistry actionRegistry;
         private QuestObjectiveRegistry objectiveRegistry;
-        
+        private QuestNetworkChannelRegistry networkChannelRegistry;
+        private QuestChatCommandRegistry chatCommandRegistry;
+
         public QuestConfig Config { get; set; }
         private ICoreAPI api;
         public override void Start(ICoreAPI api)
@@ -41,7 +38,9 @@ namespace VsQuest
 
             // Register objectives
             objectiveRegistry = new QuestObjectiveRegistry(ActionObjectiveRegistry, api);
-            objectiveRegistry.RegisterObjectives();
+            objectiveRegistry.Register();
+
+            networkChannelRegistry = new QuestNetworkChannelRegistry(this);
 
             try
             {
@@ -71,7 +70,7 @@ namespace VsQuest
         {
             base.StartClientSide(capi);
 
-            QuestNetworkChannelRegistry.RegisterClient(capi, this);
+            networkChannelRegistry.RegisterClient(capi);
         }
 
         internal void OnShowNotificationMessage(ShowNotificationMessage message, ICoreClientAPI capi)
@@ -85,7 +84,7 @@ namespace VsQuest
             string text = null;
 
             // Preferred path: server sends template + mob code, client localizes mob name in its own language.
-            text = NotificationTextUtil.Build(message);
+            text = NotificationTextUtil.Build(message, capi.Logger);
 
             capi.ShowChatMessage(text);
         }
@@ -94,20 +93,23 @@ namespace VsQuest
         {
             base.StartServerSide(sapi);
 
+            sapi.Logger.VerboseDebug($"[vsquest] QuestSystem.StartServerSide loaded ({DateTime.UtcNow:O})");
+
             // Initialize managers
             persistenceManager = new QuestPersistenceManager(sapi);
             lifecycleManager = new QuestLifecycleManager(QuestRegistry, ActionRegistry, api);
             eventHandler = new QuestEventHandler(QuestRegistry, persistenceManager, sapi);
 
-            QuestNetworkChannelRegistry.RegisterServer(sapi, this);
+            networkChannelRegistry.RegisterServer(sapi);
 
             // Register actions
-            actionRegistry = new QuestActionRegistry(ActionRegistry, api);
-            actionRegistry.RegisterActions(sapi, OnQuestAccepted);
-            
+            actionRegistry = new QuestActionRegistry(ActionRegistry, api, sapi, OnQuestAccepted);
+            actionRegistry.Register();
+
             eventHandler.RegisterEventHandlers();
 
-            QuestChatCommandRegistry.Register(sapi, api, this);
+            chatCommandRegistry = new QuestChatCommandRegistry(sapi, api, this);
+            chatCommandRegistry.Register();
         }
 
         public override void AssetsLoaded(ICoreAPI api)
@@ -117,10 +119,21 @@ namespace VsQuest
             LocalizationUtils.LoadFromAssets(api);
             foreach (var mod in api.ModLoader.Mods)
             {
-                api.Assets
-                    .GetMany<List<Quest>>(api.Logger, "config/quests", mod.Info.ModID)
-                    .SelectMany(pair => pair.Value)
-                    .Foreach(quest => QuestRegistry.Add(quest.id, quest));
+                var questAssets = api.Assets.GetMany<Quest>(api.Logger, "config/quests", mod.Info.ModID);
+                foreach (var questAsset in questAssets)
+                {
+                    try
+                    {
+                        if (questAsset.Value != null && !QuestRegistry.ContainsKey(questAsset.Value.id))
+                        {
+                            QuestRegistry.Add(questAsset.Value.id, questAsset.Value);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        api.Logger.Error($"Failed to load quest from {questAsset.Key}: {e.Message}");
+                    }
+                }
             }
         }
 
@@ -139,6 +152,8 @@ namespace VsQuest
             return lifecycleManager.ForceCompleteQuest(player, message, sapi, GetPlayerQuests);
         }
 
+        private QuestSelectGui questSelectGui;
+
         internal void OnQuestAccepted(IServerPlayer fromPlayer, QuestAcceptedMessage message, ICoreServerAPI sapi)
         {
             lifecycleManager.OnQuestAccepted(fromPlayer, message, sapi, GetPlayerQuests);
@@ -151,7 +166,34 @@ namespace VsQuest
 
         internal void OnQuestInfoMessage(QuestInfoMessage message, ICoreClientAPI capi)
         {
-            new QuestSelectGui(capi, message.questGiverId, message.availableQestIds, message.activeQuests, Config, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft).TryOpen();
+            if (questSelectGui == null)
+            {
+                questSelectGui = CreateQuestSelectGui(message, capi);
+                questSelectGui.TryOpen();
+                return;
+            }
+
+            if (questSelectGui.IsOpened())
+            {
+                questSelectGui.UpdateFromMessage(message);
+                return;
+            }
+
+            questSelectGui = CreateQuestSelectGui(message, capi);
+            questSelectGui.TryOpen();
+        }
+
+        private QuestSelectGui CreateQuestSelectGui(QuestInfoMessage message, ICoreClientAPI capi)
+        {
+            var gui = new QuestSelectGui(capi, message.questGiverId, message.availableQestIds, message.activeQuests, Config, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft);
+            gui.OnClosed += () =>
+            {
+                if (questSelectGui != null && !questSelectGui.IsOpened())
+                {
+                    questSelectGui = null;
+                }
+            };
+            return gui;
         }
 
         internal void OnExecutePlayerCommand(ExecutePlayerCommandMessage message, ICoreClientAPI capi)

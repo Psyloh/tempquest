@@ -7,7 +7,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
-using VsQuest.Util;
 
 namespace VsQuest.Harmony
 {
@@ -24,14 +23,14 @@ namespace VsQuest.Harmony
         public static void ModifyTooltip(ItemSlot inSlot, StringBuilder dsc)
         {
             if (inSlot?.Itemstack?.Attributes == null) return;
-            
-            string actionsJson = inSlot.Itemstack.Attributes.GetString("vsquest:actions");
+
+            string actionsJson = inSlot.Itemstack.Attributes.GetString("alegacyvsquest:actions");
             if (string.IsNullOrEmpty(actionsJson)) return;
-            
+
             ITreeAttribute attrs = inSlot.Itemstack.Attributes;
 
             HashSet<string> hideVanilla = new HashSet<string>();
-            string hideVanillaJson = attrs.GetString("vsquest:hideVanilla");
+            string hideVanillaJson = attrs.GetString("alegacyvsquest:hideVanilla");
             if (!string.IsNullOrEmpty(hideVanillaJson))
             {
                 try { hideVanilla = new HashSet<string>(JsonConvert.DeserializeObject<List<string>>(hideVanillaJson)); } catch { }
@@ -42,11 +41,11 @@ namespace VsQuest.Harmony
             bool hideDesc = hasCustomDesc || hideVanilla.Contains("description");
 
             string currentTooltip = dsc.ToString();
-            
+
 
             dsc.Clear();
 
-            string vanillaDesc = inSlot.Itemstack.Collectible.GetItemDescText(); 
+            string vanillaDesc = inSlot.Itemstack.Collectible.GetItemDescText();
             if (hideDesc && !string.IsNullOrEmpty(vanillaDesc))
             {
                 currentTooltip = currentTooltip.Replace(vanillaDesc, "");
@@ -63,7 +62,7 @@ namespace VsQuest.Harmony
             }
 
             string[] lines = currentTooltip.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            bool lastLineWasEmpty = true; 
+            bool lastLineWasEmpty = true;
 
             foreach (string line in lines)
             {
@@ -102,16 +101,16 @@ namespace VsQuest.Harmony
 
                 if (!shouldHide && (hideVanilla.Contains("protection") || hideVanilla.Contains("armor")))
                 {
-                     if (trimmed.StartsWith("Flat damage reduction:") || trimmed.StartsWith(GetPatternStart("Flat damage reduction: {0} hp"))) shouldHide = true;
-                     else if (trimmed.StartsWith("Percent protection:") || trimmed.StartsWith(GetPatternStart("Percent protection: {0}%"))) shouldHide = true;
-                     else if (trimmed.StartsWith("Protection tier:") || trimmed.StartsWith(GetPatternStart("Protection tier: {0}"))) shouldHide = true;
-                     else if (trimmed.Contains("Protection from rain")) shouldHide = true;
-                     else if (trimmed.StartsWith("High damage tier resistant")) shouldHide = true;
+                    if (trimmed.StartsWith("Flat damage reduction:") || trimmed.StartsWith(GetPatternStart("Flat damage reduction: {0} hp"))) shouldHide = true;
+                    else if (trimmed.StartsWith("Percent protection:") || trimmed.StartsWith(GetPatternStart("Percent protection: {0}%"))) shouldHide = true;
+                    else if (trimmed.StartsWith("Protection tier:") || trimmed.StartsWith(GetPatternStart("Protection tier: {0}"))) shouldHide = true;
+                    else if (trimmed.Contains("Protection from rain")) shouldHide = true;
+                    else if (trimmed.StartsWith("High damage tier resistant")) shouldHide = true;
                 }
-                
+
                 if (!shouldHide && hideVanilla.Contains("warmth"))
                 {
-                    if (trimmed.Contains("°C") && (trimmed.Contains("+") || trimmed.Contains("Warmth"))) shouldHide = true; 
+                    if (trimmed.Contains("°C") && (trimmed.Contains("+") || trimmed.Contains("Warmth"))) shouldHide = true;
                 }
 
                 if (!shouldHide && hideVanilla.Contains("temperature"))
@@ -161,13 +160,13 @@ namespace VsQuest.Harmony
             }
 
             HashSet<string> showAttrs = new HashSet<string>();
-            string showAttrsJson = attrs.GetString("vsquest:showAttrs");
+            string showAttrsJson = attrs.GetString("alegacyvsquest:showAttrs");
             if (!string.IsNullOrEmpty(showAttrsJson))
             {
                 try { showAttrs = new HashSet<string>(JsonConvert.DeserializeObject<List<string>>(showAttrsJson)); } catch { }
             }
 
-            string currentDsc = dsc.ToString(); 
+            string currentDsc = dsc.ToString();
 
             foreach (var kvp in attrs)
             {
@@ -175,7 +174,7 @@ namespace VsQuest.Harmony
                 {
                     string shortKey = kvp.Key.Substring(ItemAttributeUtils.AttrPrefix.Length);
                     if (!showAttrs.Contains(shortKey)) continue;
-                    
+
                     float value = attrs.GetFloat(kvp.Key, 0f);
                     if (value != 0f)
                     {

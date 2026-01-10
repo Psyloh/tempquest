@@ -12,16 +12,13 @@ namespace VsQuest
             return LocalizationUtils.GetMobDisplayName(code);
         }
 
-        public static string CodeKey(string questId) => $"vsquest:randkill:{questId}:code";
-        public static string NeedKey(string questId) => $"vsquest:randkill:{questId}:need";
-        public static string HaveKey(string questId) => $"vsquest:randkill:{questId}:have";
 
-        public static string SlotsKey(string questId) => $"vsquest:randkill:{questId}:slots";
-        public static string SlotCodeKey(string questId, int slot) => $"vsquest:randkill:{questId}:slot{slot}:code";
-        public static string SlotNeedKey(string questId, int slot) => $"vsquest:randkill:{questId}:slot{slot}:need";
-        public static string SlotHaveKey(string questId, int slot) => $"vsquest:randkill:{questId}:slot{slot}:have";
-        public static string OnProgressKey(string questId) => $"vsquest:randkill:{questId}:onprogress";
-        public static string OnCompleteKey(string questId) => $"vsquest:randkill:{questId}:oncomplete";
+        public static string SlotsKey(string questId) => $"alegacyvsquest:randkill:{questId}:slots";
+        public static string SlotCodeKey(string questId, int slot) => $"alegacyvsquest:randkill:{questId}:slot{slot}:code";
+        public static string SlotNeedKey(string questId, int slot) => $"alegacyvsquest:randkill:{questId}:slot{slot}:need";
+        public static string SlotHaveKey(string questId, int slot) => $"alegacyvsquest:randkill:{questId}:slot{slot}:have";
+        public static string OnProgressKey(string questId) => $"alegacyvsquest:randkill:{questId}:onprogress";
+        public static string OnCompleteKey(string questId) => $"alegacyvsquest:randkill:{questId}:oncomplete";
 
         public static bool TryHandleKill(ICoreServerAPI sapi, IServerPlayer serverPlayer, ActiveQuest activeQuest, string killedCode)
         {
@@ -34,8 +31,6 @@ namespace VsQuest
             string questId = activeQuest.questId;
             if (string.IsNullOrWhiteSpace(questId)) return false;
 
-            // Legacy single-objective keys
-            if (RandomKillLegacyUtils.TryHandleLegacyKill(sapi, serverPlayer, activeQuest, killedCode)) return true;
 
             // Multi-slot keys
             int slots = wa.GetInt(SlotsKey(questId), 0);
@@ -48,6 +43,7 @@ namespace VsQuest
             }
             return any;
         }
+
 
         private static bool TryHandleSlotKill(ICoreServerAPI sapi, IServerPlayer serverPlayer, ActiveQuest activeQuest, string killedCode, int slot)
         {

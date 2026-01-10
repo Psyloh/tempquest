@@ -9,10 +9,10 @@ namespace VsQuest
 {
     public class WalkDistanceObjective : ActionObjectiveBase
     {
-        public static string HaveKey(string questId, int slot) => $"vsquest:walkdist:{questId}:slot{slot}:have";
-        private static string LastXKey(string questId, int slot) => $"vsquest:walkdist:{questId}:slot{slot}:lastx";
-        private static string LastZKey(string questId, int slot) => $"vsquest:walkdist:{questId}:slot{slot}:lastz";
-        private static string HasLastKey(string questId, int slot) => $"vsquest:walkdist:{questId}:slot{slot}:haslast";
+        public static string HaveKey(string questId, int slot) => $"alegacyvsquest:walkdist:{questId}:slot{slot}:have";
+        private static string LastXKey(string questId, int slot) => $"alegacyvsquest:walkdist:{questId}:slot{slot}:lastx";
+        private static string LastZKey(string questId, int slot) => $"alegacyvsquest:walkdist:{questId}:slot{slot}:lastz";
+        public static string HasLastKey(string questId, int slot) => $"alegacyvsquest:walkdist:{questId}:slot{slot}:haslast";
 
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
@@ -135,7 +135,7 @@ namespace VsQuest
             wa.MarkPathDirty(HasLastKey(questId, slot));
         }
 
-        private static bool TryParseArgs(string[] args, out string questId, out int slot, out int needMeters)
+        public static bool TryParseArgs(string[] args, out string questId, out int slot, out int needMeters)
         {
             questId = null;
             slot = 0;

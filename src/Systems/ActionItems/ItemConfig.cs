@@ -16,11 +16,11 @@ namespace VsQuest
         public string description { get; set; }
         public List<ItemAction> actions { get; set; } = new List<ItemAction>();
         public Dictionary<string, float> attributes { get; set; } = new Dictionary<string, float>();
-        
+
         /// List of custom attribute keys to show in tooltip (e.g., ["attackpower", "warmth"])
         /// If empty, NO custom attributes are shown.
         public List<string> showAttributes { get; set; } = new List<string>();
-        
+
         /// List of vanilla tooltip sections to hide/suppress.
         /// Available values:
         /// - "durability" : Hides "Durability: X / Y"

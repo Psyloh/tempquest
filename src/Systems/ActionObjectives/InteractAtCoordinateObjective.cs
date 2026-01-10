@@ -10,31 +10,32 @@ namespace VsQuest
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
             if (args.Length < 1) return false;
-            
-            string coordString = args[0];
-            string[] coords = coordString.Split(',');
-            if (coords.Length != 3) return false;
-            
-            int targetX, targetY, targetZ;
-            if (!int.TryParse(coords[0], out targetX) || 
-                !int.TryParse(coords[1], out targetY) || 
-                !int.TryParse(coords[2], out targetZ)) 
+
+            foreach (var coordString in args)
             {
-                return false;
+                var key = $"alegacyvsquest:interactat:{coordString}";
+                if (!byPlayer.Entity.WatchedAttributes.GetBool(key, false))
+                {
+                    return false;
+                }
             }
-            
-
-            string interactionKey = $"interactat_{targetX}_{targetY}_{targetZ}";
-            string completedInteractions = byPlayer.Entity.WatchedAttributes.GetString("completedInteractions", "");
-            string[] completed = completedInteractions.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-            return completed.Contains(interactionKey);
+            return true;
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            bool completed = IsCompletable(byPlayer, args);
-            return new List<int>(new int[] { completed ? 1 : 0 });
+            if (args.Length < 1) return new List<int> { 0, 1 };
+
+            int completedCount = 0;
+            foreach (var coordString in args)
+            {
+                var key = $"alegacyvsquest:interactat:{coordString}";
+                if (byPlayer.Entity.WatchedAttributes.GetBool(key, false))
+                {
+                    completedCount++;
+                }
+            }
+            return new List<int> { completedCount, args.Length };
         }
     }
 }

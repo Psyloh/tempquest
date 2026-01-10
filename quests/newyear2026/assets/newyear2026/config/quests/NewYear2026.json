@@ -1,0 +1,160 @@
+{
+  "id": "newyear2026:NewYear2026",
+  "cooldown": 1000000,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "newyear2026:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "newyear2026:newyear2026",
+        "Привет, 2026",
+        "Слова свидетеля падали в церковной тишине, как камни в воду.\n\n — Восемь подарков. От ушедшего года. Они здесь, в коробках, в старом бумажном кожухе. Найди и открой. Пока время не кончилось."
+      ]
+    }
+  ],
+  "interactObjectives": [
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512000" ],
+      "_oldPositions": [ "512174,191,512056" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512000" ], "_oldArgs": [ "512174,191,512056" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-1" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512001" ],
+      "_oldPositions": [ "512135,199,512046" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512001" ], "_oldArgs": [ "512135,199,512046" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-2" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512002" ],
+      "_oldPositions": [ "512208,227,511982" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512002" ], "_oldArgs": [ "512208,227,511982" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-3" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512003" ],
+      "_oldPositions": [ "512213,188,512029" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512003" ], "_oldArgs": [ "512213,188,512029" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-4" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512004" ],
+      "_oldPositions": [ "512172,171,511985" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512004" ], "_oldArgs": [ "512172,171,511985" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-5" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512005" ],
+      "_oldPositions": [ "512138,180,511977" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512005" ], "_oldArgs": [ "512138,180,511977" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-6" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512006" ],
+      "_oldPositions": [ "512226,172,512008" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512006" ], "_oldArgs": [ "512226,172,512008" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-7" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    },
+    {
+      "validCodes": [ "game:placedblock-present-plain" ],
+      "positions": [ "512000,3,512007" ],
+      "_oldPositions": [ "512216,182,511982" ],
+      "actionRewards": [
+        { "id": "markinteraction", "args": [ "512000,3,512007" ], "_oldArgs": [ "512216,182,511982" ] },
+        { "id": "notify", "args": [ "newyear2026:gift-found-8" ] },
+        { "id": "playsound", "args": [ "newyear2026:sounds/giftfound", "0.175" ] }
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "interactat",
+      "args": [
+        "512000,3,512000",
+        "512000,3,512001",
+        "512000,3,512002",
+        "512000,3,512003",
+        "512000,3,512004",
+        "512000,3,512005",
+        "512000,3,512006",
+        "512000,3,512007"
+      ]
+    }
+  ],
+  "itemRewards": [
+    {
+      "itemCode": "game:looseores-anthracite-shale-free",
+      "amount": 16
+    },
+    {
+      "itemCode": "game:gear-temporal",
+      "amount": 1
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "playsound",
+      "args": [
+        "newyear2026:sounds/qcomplet",
+        "0.175"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "game:tradingwindow-questgiver",
+        "newyear2026:dialogue-witness-postquest",
+        "newyear2026:dialogue-witness-final-silent"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "newyear2026:newyear2026",
+        "Привет, 2026",
+        "Все восемь подарков собраны.\n\nСвидетель молчит так долго, что кажется — полночь проходит прямо в паузе.\n\nПотом он отдаёт награду и говорит, что в коробках осталась лишь тишина: она поможет услышать, когда тьма подойдёт ближе.\n\nПосле этого он замолкает окончательно."
+      ]
+    },
+    {
+      "id": "questitem",
+      "args": [
+        "memorial-scarf-2026"
+      ]
+    }
+  ]
+}

@@ -3,9 +3,16 @@ using Vintagestory.API.Server;
 
 namespace VsQuest
 {
-    public static class QuestNetworkChannelRegistry
+    public class QuestNetworkChannelRegistry
     {
-        public static void RegisterClient(ICoreClientAPI capi, QuestSystem questSystem)
+        private readonly QuestSystem questSystem;
+
+        public QuestNetworkChannelRegistry(QuestSystem questSystem)
+        {
+            this.questSystem = questSystem;
+        }
+
+        public void RegisterClient(ICoreClientAPI capi)
         {
             capi.Network.RegisterChannel("vsquest")
                 .RegisterMessageType<QuestAcceptedMessage>()
@@ -17,7 +24,7 @@ namespace VsQuest
                 .RegisterMessageType<ShowQuestDialogMessage>().SetMessageHandler<ShowQuestDialogMessage>(message => questSystem.OnShowQuestDialogMessage(message, capi));
         }
 
-        public static void RegisterServer(ICoreServerAPI sapi, QuestSystem questSystem)
+        public void RegisterServer(ICoreServerAPI sapi)
         {
             sapi.Network.RegisterChannel("vsquest")
                 .RegisterMessageType<QuestAcceptedMessage>().SetMessageHandler<QuestAcceptedMessage>((player, message) => questSystem.OnQuestAccepted(player, message, sapi))

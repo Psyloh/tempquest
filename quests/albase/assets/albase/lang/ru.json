@@ -150,5 +150,7 @@
   "tradingwindow-innkeeper": "Трактирщик",
   "game:tradingwindow-innkeeper": "Трактирщик",
   "albase:tradingwindow-innkeeper": "Трактирщик",
-  "item-creature-innkeeper": "Трактирщик"
+  "item-creature-innkeeper": "Трактирщик",
+  "game:nametag-трактирщик": "Трактирщик",
+  "game:nametag-священник": "Священник"
 }

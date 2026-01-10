@@ -1,0 +1,26 @@
+{
+  "id": "vsquestexample:talktome",
+  "cooldown": 20,
+  "perPlayer": true,
+  "itemRewards": [
+    {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "addplayerattribute",
+      "args": [
+        "talkedto",
+        "3"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "game:sounds/voice/saxophone"
+      ]
+    }
+  ]
+}

@@ -6,6 +6,34 @@ namespace VsQuest
 {
     public class TimeOfDayObjective : ActionObjectiveBase
     {
+        public static bool TryGetModeLabelKey(string[] args, out string labelLangKey)
+        {
+            labelLangKey = null;
+
+            string mode = (args != null && args.Length >= 1) ? args[0] : null;
+            mode = string.IsNullOrWhiteSpace(mode) ? "day" : mode.Trim().ToLowerInvariant();
+
+            if (mode == "night")
+            {
+                labelLangKey = "alegacyvsquest:objective-timeofday-night";
+                return true;
+            }
+
+            if (mode == "day")
+            {
+                labelLangKey = "alegacyvsquest:objective-timeofday-day";
+                return true;
+            }
+
+            // Custom hours like "8,16" - no dedicated translation key
+            if (mode.Contains(","))
+            {
+                return false;
+            }
+
+            return false;
+        }
+
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
             if (byPlayer?.Entity?.World?.Calendar == null) return false;
@@ -49,8 +77,9 @@ namespace VsQuest
                 }
             }
 
-            // Unknown mode -> allow
-            return true;
+            // Unknown mode -> disallow and log error
+            byPlayer.Entity.Api.Logger.Error($"[vsquest] TimeOfDayObjective: Unknown mode '{mode}' for quest. Returning false.");
+            return false;
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)

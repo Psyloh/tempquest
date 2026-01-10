@@ -68,7 +68,7 @@ namespace VsQuest
             if (slot?.Itemstack == null) return;
 
             var attributes = slot.Itemstack.Attributes;
-            var actions = attributes.GetString("vsquest:actions");
+            var actions = attributes.GetString("alegacyvsquest:actions");
 
             if (actions != null)
             {
@@ -83,7 +83,7 @@ namespace VsQuest
             if (slot?.Itemstack == null) return;
 
             var attributes = slot.Itemstack.Attributes;
-            var actionsJson = attributes.GetString("vsquest:actions");
+            var actionsJson = attributes.GetString("alegacyvsquest:actions");
             if (actionsJson == null) return;
 
             var actions = JsonConvert.DeserializeObject<List<ItemAction>>(actionsJson);

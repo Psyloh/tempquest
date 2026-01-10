@@ -3,7 +3,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using VsQuest.Util;
 
 namespace VsQuest.Harmony
 {
@@ -50,8 +49,8 @@ namespace VsQuest.Harmony
                 {
                     if (!slot.Empty && slot.Itemstack?.Item is ItemWearable)
                     {
-                         flatReduction += ItemAttributeUtils.GetAttributeFloat(slot.Itemstack, ItemAttributeUtils.AttrProtection);
-                         percReduction += ItemAttributeUtils.GetAttributeFloat(slot.Itemstack, ItemAttributeUtils.AttrProtectionPerc);
+                        flatReduction += ItemAttributeUtils.GetAttributeFloat(slot.Itemstack, ItemAttributeUtils.AttrProtection);
+                        percReduction += ItemAttributeUtils.GetAttributeFloat(slot.Itemstack, ItemAttributeUtils.AttrProtectionPerc);
                     }
                 }
 
@@ -72,7 +71,7 @@ namespace VsQuest.Harmony
                 if (player == null || player.Entity == null || player.Entity.Stats == null) return;
 
                 StatModifiers bonusMods = new StatModifiers();
-                bonusMods.walkSpeed = 0f; 
+                bonusMods.walkSpeed = 0f;
                 bonusMods.healingeffectivness = 0f;
                 bonusMods.hungerrate = 0f;
                 bonusMods.rangedWeaponsAcc = 0f;
@@ -95,7 +94,7 @@ namespace VsQuest.Harmony
                 player.Entity.Stats.Set("hungerrate", "vsquestmod", bonusMods.hungerrate, true);
                 player.Entity.Stats.Set("rangedWeaponsAcc", "vsquestmod", bonusMods.rangedWeaponsAcc, true);
                 player.Entity.Stats.Set("rangedWeaponsSpeed", "vsquestmod", bonusMods.rangedWeaponsSpeed, true);
-                
+
                 player.Entity.walkSpeed = player.Entity.Stats.GetBlended("walkspeed");
             }
         }

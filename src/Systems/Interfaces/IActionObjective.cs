@@ -5,7 +5,7 @@ namespace VsQuest
 {
     public interface IActionObjective
     {
-        bool isCompletable(IPlayer byPlayer, params string[] args);
-        List<int> progress(IPlayer byPlayer, params string[] args);
+        bool IsCompletable(IPlayer byPlayer, params string[] args);
+        List<int> GetProgress(IPlayer byPlayer, params string[] args);
     }
 }

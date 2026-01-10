@@ -1,0 +1,20 @@
+{
+  "id": "vsquestexample:quest2",
+  "cooldown": 25,
+  "perPlayer": true,
+  "gatherObjectives": [],
+  "killObjectives": [
+    {
+      "validCodes": [
+        "drifter-normal"
+      ],
+      "demand": 3
+    }
+  ],
+  "itemRewards": [
+    {
+      "itemCode": "game:gear-rusty",
+      "amount": 5
+    }
+  ]
+}

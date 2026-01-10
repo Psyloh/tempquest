@@ -1,0 +1,20 @@
+{
+  "id": "vsquestexample:kill1deepdrifter",
+  "cooldown": 20,
+  "predecessor": "vsquestexample:kill1drifter",
+  "perPlayer": true,
+  "killObjectives": [
+    {
+      "validCodes": [
+        "drifter-deep"
+      ],
+      "demand": 1
+    }
+  ],
+  "itemRewards": [
+    {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    }
+  ]
+}

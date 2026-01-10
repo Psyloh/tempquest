@@ -1,0 +1,111 @@
+{
+  "id": "albase:innkeeper-foxthief",
+  "cooldown": 40,
+  "predecessor": "albase:innkeeper-firstimpression",
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-foxthief-journal-title",
+        "albase:innkeeper-foxthief-journal-text"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "1",
+        "1",
+        "2",
+        "albase:innkeeper-randomkill-notify",
+        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'sounds/tutorialstepsuccess' 0.7",
+        "fox"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:innkeeper-foxthief",
+        "0"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [
+    {
+      "itemCode": "game:redmeat-raw",
+      "amount": 8
+    },
+    {
+      "itemCode": "game:bread-spelt-perfect",
+      "amount": 3
+    },
+    {
+      "itemCode": "game:food-driedpoultry",
+      "amount": 4
+    },
+    {
+      "itemCode": "game:torch-basic-extinct-up",
+      "amount": 4
+    }
+  ],
+  "randomItemRewards": {
+    "selectAmount": 2,
+    "items": [
+      {
+        "itemCode": "game:redmeat-raw",
+        "minAmount": 2,
+        "maxAmount": 6
+      },
+      {
+        "itemCode": "game:bread-spelt-perfect",
+        "minAmount": 1,
+        "maxAmount": 2
+      },
+      {
+        "itemCode": "game:food-driedpoultry",
+        "minAmount": 1,
+        "maxAmount": 3
+      },
+      {
+        "itemCode": "game:torch-basic-extinct-up",
+        "minAmount": 2,
+        "maxAmount": 6
+      },
+      {
+        "itemCode": "game:bandage-clean",
+        "minAmount": 1,
+        "maxAmount": 2
+      }
+    ]
+  },
+  "actionRewards": [
+    {
+      "id": "playsound",
+      "args": [
+        "sounds/effect/writing",
+        "0.5"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-innkeeper-final-title",
+        "albase:dialogue-innkeeper-foxthief-final-text",
+        "albase:dialogue-innkeeper-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-foxthief-reward-journal-title",
+        "albase:innkeeper-foxthief-reward-journal-text"
+      ]
+    }
+  ]
+}

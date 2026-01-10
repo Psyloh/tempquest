@@ -26,6 +26,7 @@ namespace VsQuest
         public int demand { get; set; }
         public List<string> positions { get; set; }
         public bool removeAfterFinished { get; set; }
+        public List<ActionWithArgs> actionRewards { get; set; } = new List<ActionWithArgs>();
     }
 
     public class ItemReward

@@ -1,5 +1,4 @@
 using System;
-using VsQuest.Util;
 
 namespace VsQuest
 {
@@ -36,7 +35,7 @@ namespace VsQuest
                     statKey = "hungerrate";
                     return true;
                 case ItemAttributeUtils.AttrHealingEffectiveness:
-                    statKey = "healingeffectivness";
+                    statKey = "healingeffectiveness";
                     return true;
                 case ItemAttributeUtils.AttrRangedAccuracy:
                     statKey = "rangedWeaponsAcc";

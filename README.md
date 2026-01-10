@@ -247,7 +247,7 @@ Action Items are defined in `assets/{modid}/config/itemconfig.json`.
 
 | Property | Description |
 |----------|-------------|
-| `id` | Unique ID for the action item (used in `giveactionitem`) |
+| `id` | Unique ID for the action item (used in `questitem`) |
 | `itemCode` | The base game item/block code to use as a template |
 | `name` | Custom display name (supports HTML formatting) |
 | `description` | Custom tooltip description |
@@ -255,11 +255,11 @@ Action Items are defined in `assets/{modid}/config/itemconfig.json`.
 
 ### Obtaining Action Items
 
-Players receive these items via the `giveactionitem` action (in quests or commands):
+Players receive these items via the `questitem` action (in quests or commands):
 
 ```json
 {
-  "id": "giveactionitem",
+  "id": "questitem",
   "args": ["memorial-scarf-2026"]
 }
 ```
@@ -429,7 +429,7 @@ Checks a player's integer attribute against a value using comparison operators. 
 
 ---
 
-### `hasAttribute` — Player Has Attribute
+### `hasattribute` — Player Has Attribute
 
 Completes when the player has a specific string attribute set to a specific value.
 

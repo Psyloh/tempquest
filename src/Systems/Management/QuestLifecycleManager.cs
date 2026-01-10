@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using System.Linq;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
@@ -38,7 +39,11 @@ namespace VsQuest
 
         public void OnQuestAccepted(IServerPlayer fromPlayer, QuestAcceptedMessage message, ICoreServerAPI sapi, System.Func<string, List<ActiveQuest>> getPlayerQuests)
         {
-            var quest = questRegistry[message.questId];
+            if (!questRegistry.TryGetValue(message.questId, out var quest))
+            {
+                sapi.Logger.Error($"[vsquest] Could not accept quest with id '{message.questId}' because it was not found in the QuestRegistry.");
+                return;
+            }
             var playerQuests = getPlayerQuests(fromPlayer.PlayerUID);
 
             if (playerQuests.Exists(q => q.questId == message.questId))
@@ -49,6 +54,7 @@ namespace VsQuest
             var killTrackers = CreateTrackers(quest.killObjectives);
             var blockPlaceTrackers = CreateTrackers(quest.blockPlaceObjectives);
             var blockBreakTrackers = CreateTrackers(quest.blockBreakObjectives);
+            var interactTrackers = CreateTrackers(quest.interactObjectives);
 
             var activeQuest = new ActiveQuest()
             {
@@ -56,11 +62,12 @@ namespace VsQuest
                 questId = message.questId,
                 killTrackers = killTrackers,
                 blockPlaceTrackers = blockPlaceTrackers,
-                blockBreakTrackers = blockBreakTrackers
+                blockBreakTrackers = blockBreakTrackers,
+                interactTrackers = interactTrackers
             };
             playerQuests.Add(activeQuest);
             var questgiver = sapi.World.GetEntityById(message.questGiverId);
-            var key = String.Format("vsquest:lastaccepted-{0}", quest.id);
+            var key = String.Format("alegacyvsquest:lastaccepted-{0}", quest.id);
             fromPlayer.Entity.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
             fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
 
@@ -87,9 +94,9 @@ namespace VsQuest
             {
                 QuestObjectiveAnnounceUtil.AnnounceOnAccept(fromPlayer, message, sapi, quest);
             }
-            catch
+            catch (Exception e)
             {
-                // ignore announce errors
+                sapi.Logger.Warning($"[vsquest] Error announcing quest objective on accept for quest '{message.questId}': {e.Message}");
             }
         }
 
@@ -97,7 +104,7 @@ namespace VsQuest
         {
             var playerQuests = getPlayerQuests(fromPlayer.PlayerUID);
             var activeQuest = playerQuests.Find(item => item.questId == message.questId);
-            if (activeQuest.isCompletable(fromPlayer))
+            if (activeQuest.IsCompletable(fromPlayer))
             {
                 activeQuest.completeQuest(fromPlayer);
                 playerQuests.Remove(activeQuest);
@@ -107,7 +114,7 @@ namespace VsQuest
             }
             else
             {
-                sapi.SendMessage(fromPlayer, GlobalConstants.InfoLogChatGroup, "Something went wrong, the quest could not be completed", EnumChatType.Notification);
+                sapi.SendMessage(fromPlayer, GlobalConstants.InfoLogChatGroup, LocalizationUtils.GetSafe("alegacyvsquest:quest-could-not-complete"), EnumChatType.Notification);
             }
         }
 
@@ -131,7 +138,11 @@ namespace VsQuest
 
         private void RewardPlayer(IServerPlayer fromPlayer, QuestCompletedMessage message, ICoreServerAPI sapi, Entity questgiver)
         {
-            var quest = questRegistry[message.questId];
+            if (!questRegistry.TryGetValue(message.questId, out var quest))
+            {
+                sapi.Logger.Error($"[vsquest] Could not reward player for quest with id '{message.questId}' because it was not found in the QuestRegistry.");
+                return;
+            }
             foreach (var reward in quest.itemRewards)
             {
                 CollectibleObject item = sapi.World.GetItem(new AssetLocation(reward.itemCode));
@@ -141,7 +152,7 @@ namespace VsQuest
                 }
                 if (item == null)
                 {
-                    sapi.Logger.Error($"vsquest: Quest '{quest.id}' has invalid item reward code '{reward.itemCode}'. Skipping reward.");
+                    sapi.Logger.Error($"alegacyvsquest: Quest '{quest.id}' has invalid item reward code '{reward.itemCode}'. Skipping reward.");
                     continue;
                 }
 
@@ -168,7 +179,7 @@ namespace VsQuest
                 }
                 if (item == null)
                 {
-                    sapi.Logger.Error($"vsquest: Quest '{quest.id}' has invalid random item reward code '{randomItem.itemCode}'. Skipping reward.");
+                    sapi.Logger.Error($"alegacyvsquest: Quest '{quest.id}' has invalid random item reward code '{randomItem.itemCode}'. Skipping reward.");
                     continue;
                 }
 
@@ -194,12 +205,14 @@ namespace VsQuest
 
         private static void MarkQuestCompleted(IServerPlayer fromPlayer, QuestCompletedMessage message, Entity questgiver)
         {
-            var completedQuests = new HashSet<string>(fromPlayer.Entity.WatchedAttributes.GetStringArray("vsquest:playercompleted", new string[0]));
-            completedQuests.Add(message.questId);
-            var completedQuestsArray = new string[completedQuests.Count];
-            completedQuests.CopyTo(completedQuestsArray);
-            fromPlayer.Entity.WatchedAttributes.SetStringArray("vsquest:playercompleted", completedQuestsArray);
-            fromPlayer.Entity.WatchedAttributes.MarkAllDirty();
+            var key = "alegacyvsquest:playercompleted";
+            var completedQuests = fromPlayer.Entity.WatchedAttributes.GetStringArray(key, new string[0]).ToList();
+            if (!completedQuests.Contains(message.questId))
+            {
+                completedQuests.Add(message.questId);
+                fromPlayer.Entity.WatchedAttributes.SetStringArray(key, completedQuests.ToArray());
+                fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
+            }
         }
     }
 }

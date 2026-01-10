@@ -6,15 +6,15 @@ namespace VsQuest
 {
     public static class BlockEntitySearchUtils
     {
-        public static int CountBlockEntities(Vec3i pos, IBlockAccessor blockAccessor, System.Func<BlockEntity, bool> matcher)
+        public static int CountBlockEntities(Vec3i pos, int radiusX, int radiusY, int radiusZ, IBlockAccessor blockAccessor, System.Func<BlockEntity, bool> matcher)
         {
             int blockCount = 0;
             int chunksize = GlobalConstants.ChunkSize;
-            for (int x = pos.X - 100; x <= pos.X + 100; x += chunksize)
+            for (int x = pos.X - radiusX; x <= pos.X + radiusX; x += chunksize)
             {
-                for (int y = pos.Y - 15; y <= pos.Y + 15; y += chunksize)
+                for (int y = pos.Y - radiusY; y <= pos.Y + radiusY; y += chunksize)
                 {
-                    for (int z = pos.Z - 100; z <= pos.Z + 100; z += chunksize)
+                    for (int z = pos.Z - radiusZ; z <= pos.Z + radiusZ; z += chunksize)
                     {
                         var chunk = blockAccessor.GetChunkAtBlockPos(new BlockPos(x, y, z, 0));
                         if (chunk == null) { continue; }

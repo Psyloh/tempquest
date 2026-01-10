@@ -7,7 +7,7 @@ namespace VsQuest
     {
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
-            return GetProgress(byPlayer)[0] >= int.Parse(args[0]);
+            return GetProgress(byPlayer, args)[0] >= int.Parse(args[0]);
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)

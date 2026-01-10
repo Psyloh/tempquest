@@ -56,7 +56,7 @@ namespace VsQuest
                     .AddButton(LocalizationUtils.GetSafe(option1LangKey), TryClose, closeButtonBounds)
                 .EndIf()
                 .AddIf(string.IsNullOrEmpty(option1LangKey))
-                    .AddButton(Lang.Get("vsquest:button-cancel"), TryClose, closeButtonBounds)
+                    .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, closeButtonBounds)
                 .EndIf()
                 .EndChildElements()
                 .Compose();

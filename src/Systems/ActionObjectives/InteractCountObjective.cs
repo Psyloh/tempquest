@@ -38,24 +38,19 @@ namespace VsQuest
 
         private static int CountCompleted(IPlayer byPlayer, string[] coordArgs)
         {
-            string completedInteractions = byPlayer.Entity.WatchedAttributes.GetString("completedInteractions", "");
-            if (string.IsNullOrEmpty(completedInteractions)) return 0;
+            if (byPlayer?.Entity?.WatchedAttributes == null) return 0;
 
-            var completed = new HashSet<string>(
-                completedInteractions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-            );
+            var wa = byPlayer.Entity.WatchedAttributes;
 
             int count = 0;
             foreach (var coordString in coordArgs)
             {
                 if (string.IsNullOrWhiteSpace(coordString)) continue;
-                var coords = coordString.Split(',');
-                if (coords.Length != 3) continue;
 
-                if (int.TryParse(coords[0], out int x) && int.TryParse(coords[1], out int y) && int.TryParse(coords[2], out int z))
+                var key = $"alegacyvsquest:interactat:{coordString}";
+                if (wa.GetBool(key, false))
                 {
-                    string key = $"interactat_{x}_{y}_{z}";
-                    if (completed.Contains(key)) count++;
+                    count++;
                 }
             }
 

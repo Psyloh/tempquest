@@ -3,9 +3,20 @@ using Vintagestory.API.Server;
 
 namespace VsQuest
 {
-    public static class QuestChatCommandRegistry
+    public class QuestChatCommandRegistry
     {
-        public static void Register(ICoreServerAPI sapi, ICoreAPI api, QuestSystem questSystem)
+        private readonly ICoreServerAPI sapi;
+        private readonly ICoreAPI api;
+        private readonly QuestSystem questSystem;
+
+        public QuestChatCommandRegistry(ICoreServerAPI sapi, ICoreAPI api, QuestSystem questSystem)
+        {
+            this.sapi = sapi;
+            this.api = api;
+            this.questSystem = questSystem;
+        }
+
+        public void Register()
         {
             var itemSystem = api.ModLoader.GetModSystem<ItemSystem>();
             var getActionItemHandler = new GetActionItemCommandHandler(api, itemSystem);

@@ -7,42 +7,42 @@ namespace VsQuest
     {
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
-            if (byPlayer?.Entity?.WatchedAttributes == null) return false;
-            if (args == null || args.Length < 1) return false;
-
+            if (args.Length < 1) return false;
             string questId = args[0];
-            int slot = 0;
-            bool useSlot = args.Length >= 2 && int.TryParse(args[1], out slot);
+            var wa = byPlayer.Entity.WatchedAttributes;
 
-            string needKey = useSlot ? $"vsquest:randkill:{questId}:slot{slot}:need" : $"vsquest:randkill:{questId}:need";
-            string haveKey = useSlot ? $"vsquest:randkill:{questId}:slot{slot}:have" : $"vsquest:randkill:{questId}:have";
+            int slots = wa.GetInt(RandomKillQuestUtils.SlotsKey(questId), 0);
+            if (slots <= 0) return false;
 
-            int need = byPlayer.Entity.WatchedAttributes.GetInt(needKey, 0);
-            int have = byPlayer.Entity.WatchedAttributes.GetInt(haveKey, 0);
+            for (int slot = 0; slot < slots; slot++)
+            {
+                int need = wa.GetInt(RandomKillQuestUtils.SlotNeedKey(questId, slot), 0);
+                int have = wa.GetInt(RandomKillQuestUtils.SlotHaveKey(questId, slot), 0);
+                if (have < need) return false;
+            }
 
-            return need > 0 && have >= need;
+            return true;
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            if (byPlayer?.Entity?.WatchedAttributes == null) return new List<int>(new int[] { 0, 0 });
-            if (args == null || args.Length < 1) return new List<int>(new int[] { 0, 0 });
-
+            if (args.Length < 1) return new List<int> { 0, 0 };
             string questId = args[0];
-            int slot = 0;
-            bool useSlot = args.Length >= 2 && int.TryParse(args[1], out slot);
+            var wa = byPlayer.Entity.WatchedAttributes;
 
-            string needKey = useSlot ? $"vsquest:randkill:{questId}:slot{slot}:need" : $"vsquest:randkill:{questId}:need";
-            string haveKey = useSlot ? $"vsquest:randkill:{questId}:slot{slot}:have" : $"vsquest:randkill:{questId}:have";
+            int slots = wa.GetInt(RandomKillQuestUtils.SlotsKey(questId), 0);
+            if (slots <= 0) return new List<int> { 0, 0 };
 
-            int need = byPlayer.Entity.WatchedAttributes.GetInt(needKey, 0);
-            int have = byPlayer.Entity.WatchedAttributes.GetInt(haveKey, 0);
+            int totalHave = 0;
+            int totalNeed = 0;
 
-            if (need < 0) need = 0;
-            if (have < 0) have = 0;
-            if (have > need && need > 0) have = need;
+            for (int slot = 0; slot < slots; slot++)
+            {
+                totalNeed += wa.GetInt(RandomKillQuestUtils.SlotNeedKey(questId, slot), 0);
+                totalHave += wa.GetInt(RandomKillQuestUtils.SlotHaveKey(questId, slot), 0);
+            }
 
-            return new List<int>(new int[] { have, need });
+            return new List<int> { totalHave, totalNeed };
         }
     }
 }

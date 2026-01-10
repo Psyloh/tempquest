@@ -5,63 +5,63 @@ using Vintagestory.API.Server;
 
 namespace VsQuest
 {
-    public class QuestActionRegistry : IQuestActionRegistry
+    public class QuestActionRegistry : IRegistry
     {
         private readonly Dictionary<string, IQuestAction> actionRegistry;
         private readonly ICoreAPI api;
+        private readonly ICoreServerAPI sapi;
+        private readonly Action<IServerPlayer, QuestAcceptedMessage, ICoreServerAPI> onQuestAcceptedCallback;
 
-        public QuestActionRegistry(Dictionary<string, IQuestAction> actionRegistry, ICoreAPI api)
+        public QuestActionRegistry(Dictionary<string, IQuestAction> actionRegistry, ICoreAPI api, ICoreServerAPI sapi, Action<IServerPlayer, QuestAcceptedMessage, ICoreServerAPI> onQuestAcceptedCallback)
         {
             this.actionRegistry = actionRegistry;
             this.api = api;
+            this.sapi = sapi;
+            this.onQuestAcceptedCallback = onQuestAcceptedCallback;
         }
 
-        public void RegisterActions(ICoreServerAPI sapi, Action<IServerPlayer, QuestAcceptedMessage, ICoreServerAPI> onQuestAcceptedCallback)
+        public void Register()
         {
-            actionRegistry.Add("despawnquestgiver", new DelegateQuestAction((api, message, byPlayer, args) =>
-                api.World.RegisterCallback(dt => api.World.GetEntityById(message.questGiverId).Die(EnumDespawnReason.Removed), int.Parse(args[0]))));
-            
-            actionRegistry.Add("playsound", new DelegateQuestAction(PlaySoundAction.Execute));
-            
-            actionRegistry.Add("spawnentities", new DelegateQuestAction(SpawnActions.SpawnEntities));
-            actionRegistry.Add("spawnany", new DelegateQuestAction(SpawnActions.SpawnAnyOfEntities));
-            actionRegistry.Add("spawnsmoke", new DelegateQuestAction(SpawnActions.SpawnSmoke));
-            actionRegistry.Add("recruitentity", new DelegateQuestAction(SpawnActions.RecruitEntity));
-            
-            actionRegistry.Add("healplayer", new DelegateQuestAction((api, message, byPlayer, args) =>
-                byPlayer.Entity.ReceiveDamage(new DamageSource() { Type = EnumDamageType.Heal }, 100)));
-            
-            actionRegistry.Add("addplayerattribute", new DelegateQuestAction((api, message, byPlayer, args) =>
-                byPlayer.Entity.WatchedAttributes.SetString(args[0], args[1])));
-            
-            actionRegistry.Add("removeplayerattribute", new DelegateQuestAction((api, message, byPlayer, args) =>
-                byPlayer.Entity.WatchedAttributes.RemoveAttribute(args[0])));
-            
-            actionRegistry.Add("completequest", new DelegateQuestAction(QuestLifecycleActions.CompleteQuest));
-            
-            actionRegistry.Add("acceptquest", new DelegateQuestAction((api, message, byPlayer, args) =>
-                onQuestAcceptedCallback(byPlayer, new QuestAcceptedMessage() { questGiverId = long.Parse(args[0]), questId = args[1] }, sapi)));
-            
-            actionRegistry.Add("giveitem", new DelegateQuestAction(ItemActions.GiveItem));
-            actionRegistry.Add("addtraits", new DelegateQuestAction(TraitActions.AddTraits));
-            actionRegistry.Add("removetraits", new DelegateQuestAction(TraitActions.RemoveTraits));
-            actionRegistry.Add("servercommand", new DelegateQuestAction(CommandActions.ServerCommand));
-            actionRegistry.Add("playercommand", new DelegateQuestAction(CommandActions.PlayerCommand));
-            actionRegistry.Add("questitem", new DelegateQuestAction(ItemActions.GiveActionItem));
+            actionRegistry.Add("despawnquestgiver", new DespawnQuestGiverAction());
+            actionRegistry.Add("openquests", new OpenQuestsAction());
 
-            actionRegistry.Add("allowcharselonce", new DelegateQuestAction((api, message, byPlayer, args) =>
-            {
-                byPlayer?.Entity?.WatchedAttributes?.SetBool("allowcharselonce", true);
-                byPlayer?.Entity?.WatchedAttributes?.MarkPathDirty("allowcharselonce");
-            }));
+            actionRegistry.Add("playsound", new PlaySoundQuestAction());
 
-            actionRegistry.Add("randomkill", new DelegateQuestAction(RandomKillAction.Execute));
+            actionRegistry.Add("spawnentities", new SpawnEntitiesAction());
+            actionRegistry.Add("spawnany", new SpawnAnyOfEntitiesAction());
+            actionRegistry.Add("spawnsmoke", new SpawnSmokeAction());
+            actionRegistry.Add("recruitentity", new RecruitEntityAction());
 
-            actionRegistry.Add("resetwalkdistance", new DelegateQuestAction(ResetWalkDistanceAction.Execute));
+            actionRegistry.Add("healplayer", new HealPlayerAction());
 
-            actionRegistry.Add("setquestgiverattribute", new DelegateQuestAction(SetQuestGiverAttributeAction.Execute));
-            actionRegistry.Add("notify", new DelegateQuestAction(NotifyAction.Execute));
-            actionRegistry.Add("showquestfinaldialog", new DelegateQuestAction(ShowQuestFinalDialogAction.Execute));
+            actionRegistry.Add("addplayerattribute", new AddPlayerAttributeAction());
+
+            actionRegistry.Add("removeplayerattribute", new RemovePlayerAttributeAction());
+
+            actionRegistry.Add("completequest", new CompleteQuestAction());
+
+            actionRegistry.Add("acceptquest", new AcceptQuestAction(sapi, onQuestAcceptedCallback));
+
+            actionRegistry.Add("addjournalentry", new AddJournalEntryQuestAction());
+
+            actionRegistry.Add("giveitem", new GiveItemAction());
+            actionRegistry.Add("addtraits", new AddTraitsAction());
+            actionRegistry.Add("removetraits", new RemoveTraitsAction());
+            actionRegistry.Add("servercommand", new ServerCommandAction());
+            actionRegistry.Add("playercommand", new PlayerCommandAction());
+            actionRegistry.Add("questitem", new GiveActionItemAction());
+
+            actionRegistry.Add("allowcharselonce", new AllowCharSelOnceAction());
+
+            actionRegistry.Add("randomkill", new RollKillObjectivesAction());
+
+            actionRegistry.Add("resetwalkdistance", new ResetWalkDistanceQuestAction());
+            actionRegistry.Add("checkobjective", new CheckObjectiveAction());
+            actionRegistry.Add("markinteraction", new MarkInteractionAction());
+
+            actionRegistry.Add("setquestgiverattribute", new SetQuestGiverAttributeQuestAction());
+            actionRegistry.Add("notify", new NotifyQuestAction());
+            actionRegistry.Add("showquestfinaldialog", new ShowQuestFinalDialogQuestAction());
         }
     }
 }
