@@ -1,6 +1,6 @@
 {
   "id": "albase:priest-allowcharselonce",
-  "cooldown": 90,
+  "cooldown": 360,
   "perPlayer": true,
   "onAcceptedActions": [
     {
@@ -23,7 +23,7 @@
     {
       "id": "addjournalentry",
       "args": [
-        "albase:priest",
+        "albase:priest-allowcharselonce",
         "albase:priest-allowcharselonce-journal-title",
         "albase:priest-allowcharselonce-journal-text"
       ]
@@ -33,15 +33,7 @@
     {
       "id": "randomkill",
       "args": [
-        "albase:priest-allowcharselonce",
-        "0"
-      ]
-    },
-    {
-      "id": "randomkill",
-      "args": [
-        "albase:priest-allowcharselonce",
-        "1"
+        "albase:priest-allowcharselonce"
       ]
     }
   ],
@@ -72,7 +64,7 @@
     {
       "id": "addjournalentry",
       "args": [
-        "albase:priest",
+        "albase:priest-allowcharselonce",
         "albase:priest-allowcharselonce-reward-journal-title",
         "albase:priest-allowcharselonce-reward-journal-text"
       ]

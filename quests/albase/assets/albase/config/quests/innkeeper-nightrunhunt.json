@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-nightrunhunt",
-  "cooldown": 80,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -31,12 +31,11 @@
       "args": [
         "1",
         "2",
-        "3",
+        "4",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
-        "wolf",
-        "fox"
+        "wolf"
       ]
     }
   ],
@@ -65,8 +64,12 @@
   "killObjectives": [],
   "itemRewards": [
     {
-      "itemCode": "game:driedredmeat",
+      "itemCode": "game:gear-rusty",
       "amount": 2
+    },
+    {
+      "itemCode": "game:redmeat-cured",
+      "amount": 9
     },
     {
       "itemCode": "game:bandage-clean",

@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-foxthief",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -26,7 +26,7 @@
         "1",
         "2",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "fox"
       ]
@@ -36,16 +36,19 @@
     {
       "id": "randomkill",
       "args": [
-        "albase:innkeeper-foxthief",
-        "0"
+        "albase:innkeeper-foxthief"
       ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    },
+    {
       "itemCode": "game:redmeat-raw",
-      "amount": 6
+      "amount": 10
     },
     {
       "itemCode": "game:bread-spelt-perfect",
@@ -53,7 +56,7 @@
     },
     {
       "itemCode": "game:poultry-cured",
-      "amount": 2
+      "amount": 6
     },
     {
       "itemCode": "game:torch-basic-extinct-up",

@@ -30,15 +30,14 @@
       "args": [
         "2",
         "1",
-        "2",
+        "3",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
+        "drifter-deep",
         "bowtorn",
-        "wolf",
-        "bear",
-        "fox"
+        "shiver"
       ]
     }
   ],
@@ -68,12 +67,16 @@
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    },
+    {
       "itemCode": "game:redmeat-raw",
-      "amount": 4
+      "amount": 8
     },
     {
       "itemCode": "game:bread-spelt-perfect",
-      "amount": 1
+      "amount": 2
     },
     {
       "itemCode": "game:bandage-clean",

@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-raccoonraid",
-  "cooldown": 60,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -9,13 +9,6 @@
       "args": [
         "alegacyvsquest:sounds/queacc",
         "0.175"
-      ]
-    },
-    {
-      "id": "resetwalkdistance",
-      "args": [
-        "albase:innkeeper-raccoonraid",
-        "1"
       ]
     },
     {
@@ -30,12 +23,12 @@
       "id": "randomkill",
       "args": [
         "1",
-        "1",
-        "2",
+        "3",
+        "7",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
-        "raccoon"
+        "wolf"
       ]
     }
   ],
@@ -43,23 +36,19 @@
     {
       "id": "randomkill",
       "args": [
-        "albase:innkeeper-raccoonraid",
-        "0"
-      ]
-    },
-    {
-      "id": "walkdistance",
-      "args": [
-        "albase:innkeeper-raccoonraid",
-        "700"
+        "albase:innkeeper-raccoonraid"
       ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
-      "itemCode": "game:driedredmeat",
+      "itemCode": "game:gear-rusty",
       "amount": 1
+    },
+    {
+      "itemCode": "game:redmeat-cured",
+      "amount": 8
     },
     {
       "itemCode": "game:flaxtwine",

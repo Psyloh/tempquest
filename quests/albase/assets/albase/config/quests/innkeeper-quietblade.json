@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-quietblade",
-  "cooldown": 90,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -31,9 +31,9 @@
       "args": [
         "2",
         "1",
-        "2",
+        "9",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-deep",
         "bowtorn",
@@ -67,22 +67,25 @@
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 3
+    },
+    {
+      "itemCode": "game:blade-falx-copper",
+      "amount": 1
+    },
+    {
       "itemCode": "game:bandage-clean",
       "amount": 2
     },
     {
-      "itemCode": "game:driedredmeat",
-      "amount": 1
+      "itemCode": "game:redmeat-cured",
+      "amount": 11
     }
   ],
   "randomItemRewards": {
     "selectAmount": 1,
     "items": [
-      {
-        "itemCode": "game:blade-falx-copper",
-        "minAmount": 1,
-        "maxAmount": 1
-      },
       {
         "itemCode": "game:resin",
         "minAmount": 1,

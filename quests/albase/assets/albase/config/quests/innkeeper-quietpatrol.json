@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-quietpatrol",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -31,16 +31,14 @@
       "args": [
         "2",
         "1",
-        "2",
+        "9",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
         "drifter-deep",
         "shiver",
-        "wolf",
-        "bear",
-        "fox"
+        "wolf"
       ]
     }
   ],
@@ -60,6 +58,12 @@
       ]
     },
     {
+      "id": "timeofday",
+      "args": [
+        "night"
+      ]
+    },
+    {
       "id": "walkdistance",
       "args": [
         "albase:innkeeper-quietpatrol",
@@ -70,12 +74,16 @@
   "killObjectives": [],
   "itemRewards": [
     {
-      "itemCode": "game:redmeat-raw",
-      "amount": 6
+      "itemCode": "game:gear-rusty",
+      "amount": 2
     },
     {
-      "itemCode": "game:driedredmeat",
-      "amount": 2
+      "itemCode": "game:redmeat-raw",
+      "amount": 10
+    },
+    {
+      "itemCode": "game:redmeat-cured",
+      "amount": 8
     },
     {
       "itemCode": "game:bandage-clean",
@@ -95,9 +103,9 @@
         "maxAmount": 5
       },
       {
-        "itemCode": "game:driedredmeat",
-        "minAmount": 1,
-        "maxAmount": 2
+        "itemCode": "game:redmeat-cured",
+        "minAmount": 3,
+        "maxAmount": 6
       },
       {
         "itemCode": "game:bread-spelt-perfect",

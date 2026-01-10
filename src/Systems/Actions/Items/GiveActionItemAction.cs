@@ -1,4 +1,5 @@
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
 namespace VsQuest
@@ -35,6 +36,9 @@ namespace VsQuest
             {
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.ServerPos.XYZ);
             }
+
+            var itemName = collectible.GetHeldItemName(stack);
+            sapi.SendMessage(byPlayer, GlobalConstants.InfoLogChatGroup, $"{stack.StackSize}x {itemName}", EnumChatType.Notification);
         }
     }
 }

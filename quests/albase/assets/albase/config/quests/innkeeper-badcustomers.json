@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-badcustomers",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -9,13 +9,6 @@
       "args": [
         "alegacyvsquest:sounds/queacc",
         "0.175"
-      ]
-    },
-    {
-      "id": "resetwalkdistance",
-      "args": [
-        "albase:innkeeper-badcustomers",
-        "1"
       ]
     },
     {
@@ -29,17 +22,16 @@
     {
       "id": "randomkill",
       "args": [
-        "2",
+        "3",
         "1",
-        "2",
+        "4",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
+        "drifter-deep",
         "bowtorn",
-        "shiver",
-        "bear",
-        "fox"
+        "shiver"
       ]
     }
   ],
@@ -59,18 +51,22 @@
       ]
     },
     {
-      "id": "walkdistance",
+      "id": "randomkill",
       "args": [
         "albase:innkeeper-badcustomers",
-        "800"
+        "2"
       ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    },
+    {
       "itemCode": "game:redmeat-raw",
-      "amount": 8
+      "amount": 12
     },
     {
       "itemCode": "game:linensack",
@@ -78,7 +74,7 @@
     },
     {
       "itemCode": "game:flaxtwine",
-      "amount": 4
+      "amount": 2
     },
     {
       "itemCode": "game:bandage-clean",

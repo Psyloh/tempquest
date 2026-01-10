@@ -7,7 +7,7 @@
       "base": "game:entity/humanoid/trader"
     },
     "texture": {
-      "base": "game:entity/humanoid/traderclothes/set2"
+      "base": "game:entity/humanoid/trader"
     },
     "behaviors": [
       {
@@ -33,7 +33,7 @@
       }
     ]
   },
-  "code": "innkeeper",
+  "code": "tinnkeeper",
   "hitboxSize": {
     "x": 0.6,
     "y": 1.75
@@ -44,7 +44,7 @@
         "code": "nametag",
         "showtagonlywhentargeted": true,
         "selectFromRandomName": [
-          "Трактирщик"
+          "Трактирщик (тест)"
         ]
       },
       {
@@ -62,10 +62,9 @@
       },
       {
         "code": "questgiver",
-        "alwaysquests": [
-          "albase:innkeeper-firstimpression"
-        ],
-        "rotationpool": [
+        "ignorepredecessors": true,
+        "quests": [
+          "albase:innkeeper-firstimpression",
           "albase:innkeeper-quietpatrol",
           "albase:innkeeper-badcustomers",
           "albase:innkeeper-silentdeliveries",
@@ -79,11 +78,9 @@
           "albase:innkeeper-quietblade",
           "albase:innkeeper-nightjog"
         ],
-        "rotationdays": 30,
-        "rotationcount": 1,
         "noAvailableQuestDescLangKey": "albase:no-quest-available-innkeeper",
         "noAvailableQuestCooldownDescLangKey": "albase:no-quest-available-innkeeper-cooldown",
-        "selectrandom": true,
+        "selectrandom": false,
         "selectrandomcount": 1
       }
     ]

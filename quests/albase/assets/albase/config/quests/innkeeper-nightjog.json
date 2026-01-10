@@ -1,0 +1,89 @@
+{
+  "id": "albase:innkeeper-nightjog",
+  "cooldown": 30,
+  "predecessor": "albase:innkeeper-firstimpression",
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "resetwalkdistance",
+      "args": [
+        "albase:innkeeper-nightjog",
+        "1"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-nightjog-journal-title",
+        "albase:innkeeper-nightjog-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "walkdistance",
+      "args": [
+        "albase:innkeeper-nightjog",
+        "10000"
+      ]
+    },
+    {
+      "id": "timeofday",
+      "args": [
+        "night"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [
+    {
+      "itemCode": "game:gear-rusty",
+      "amount": 2
+    },
+    {
+      "itemCode": "game:redmeat-raw",
+      "amount": 16
+    },
+    {
+      "itemCode": "game:bread-rye-perfect",
+      "amount": 4
+    },
+    {
+      "itemCode": "game:poultry-cured",
+      "amount": 8
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "playsound",
+      "args": [
+        "game:sounds/player/coin1",
+        "0.35"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-innkeeper-final-title",
+        "albase:dialogue-innkeeper-nightjog-final-text",
+        "albase:dialogue-innkeeper-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-nightjog-reward-journal-title",
+        "albase:innkeeper-nightjog-reward-journal-text"
+      ]
+    }
+  ]
+}

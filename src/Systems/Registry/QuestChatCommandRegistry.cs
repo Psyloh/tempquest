@@ -34,6 +34,8 @@ namespace VsQuest
             var questAttrRemoveHandler = new QuestAttrRemoveCommandHandler(sapi);
             var questAttrListHandler = new QuestAttrListCommandHandler(sapi);
 
+            var questStartHandler = new QuestStartCommandHandler(sapi, questSystem);
+
             var questEntityHandler = new QuestEntityCommandHandler(sapi, questSystem);
 
             sapi.ChatCommands.GetOrCreate("quest")
@@ -75,6 +77,12 @@ namespace VsQuest
                     .RequiresPrivilege(Privilege.give)
                     .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
                     .HandleWith(questCompleteActiveHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("start")
+                    .WithDescription("Starts a quest for a player.")
+                    .RequiresPrivilege(Privilege.give)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("questId"), sapi.ChatCommands.Parsers.Word("playerName"))
+                    .HandleWith(questStartHandler.Handle)
                 .EndSubCommand()
                 .BeginSubCommand("attr")
                     .WithDescription("Admin player attributes.")

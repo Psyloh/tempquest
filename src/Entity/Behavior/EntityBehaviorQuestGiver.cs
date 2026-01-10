@@ -21,6 +21,8 @@ namespace VsQuest
         private int selectRandomCount;
         private int rotationDays;
         private int rotationCount;
+        private bool ignorePredecessors;
+        private bool allQuests;
         private string noAvailableQuestDescLangKey;
         private string noAvailableQuestCooldownDescLangKey;
 
@@ -35,6 +37,8 @@ namespace VsQuest
             selectRandomCount = attributes["selectrandomcount"].AsInt(1);
             rotationDays = attributes["rotationdays"].AsInt(0);
             rotationCount = attributes["rotationcount"].AsInt(1);
+            ignorePredecessors = attributes["ignorepredecessors"].AsBool(false);
+            allQuests = attributes["allquests"].AsBool(false);
 
             quests = attributes["quests"].AsArray<string>() ?? Array.Empty<string>();
             alwaysQuests = attributes["alwaysquests"].AsArray<string>() ?? Array.Empty<string>();
@@ -175,7 +179,9 @@ namespace VsQuest
         {
             var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
             var allActiveQuests = questSystem.GetPlayerQuests(player.PlayerUID);
-            var allQuestIds = BuildAllQuestIds();
+            var allQuestIds = allQuests
+                ? new HashSet<string>(questSystem.QuestRegistry.Keys, StringComparer.OrdinalIgnoreCase)
+                : BuildAllQuestIds();
 
             var activeQuests = allActiveQuests
                 .Where(activeQuest => allQuestIds.Contains(activeQuest.questId))
@@ -192,7 +198,7 @@ namespace VsQuest
             var availableQuestIds = new List<string>();
             int? minCooldownDaysLeft = null;
 
-            var selection = GetCurrentQuestSelection(sapi);
+            var selection = allQuests ? questSystem.QuestRegistry.Keys.ToList() : GetCurrentQuestSelection(sapi);
             foreach (var questId in selection)
             {
                 var quest = questSystem.QuestRegistry[questId];
@@ -201,7 +207,7 @@ namespace VsQuest
                 double lastAccepted = player.WatchedAttributes.GetDouble(key, -quest.cooldown);
                 bool onCooldown = lastAccepted + quest.cooldown >= sapi.World.Calendar.TotalDays;
                 bool isActive = allActiveQuests.Find(activeQuest => activeQuest.questId == questId) != null;
-                bool eligible = !isActive && predecessorsCompleted(quest, player.PlayerUID);
+                bool eligible = !isActive && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID));
 
                 if (eligible && !onCooldown)
                 {

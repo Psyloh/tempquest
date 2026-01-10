@@ -7,7 +7,7 @@
       "base": "game:entity/humanoid/trader"
     },
     "texture": {
-      "base": "game:entity/humanoid/traderclothes/set2"
+      "base": "game:entity/humanoid/trader"
     },
     "behaviors": [
       {
@@ -33,7 +33,7 @@
       }
     ]
   },
-  "code": "innkeeper",
+  "code": "hub",
   "hitboxSize": {
     "x": 0.6,
     "y": 1.75
@@ -44,7 +44,7 @@
         "code": "nametag",
         "showtagonlywhentargeted": true,
         "selectFromRandomName": [
-          "Трактирщик"
+          "Hub"
         ]
       },
       {
@@ -62,28 +62,11 @@
       },
       {
         "code": "questgiver",
-        "alwaysquests": [
-          "albase:innkeeper-firstimpression"
-        ],
-        "rotationpool": [
-          "albase:innkeeper-quietpatrol",
-          "albase:innkeeper-badcustomers",
-          "albase:innkeeper-silentdeliveries",
-          "albase:innkeeper-foxthief",
-          "albase:innkeeper-cellarwatch",
-          "albase:innkeeper-missingmugs",
-          "albase:innkeeper-talkingbarrel",
-          "albase:innkeeper-doorposter",
-          "albase:innkeeper-nightrunhunt",
-          "albase:innkeeper-raccoonraid",
-          "albase:innkeeper-quietblade",
-          "albase:innkeeper-nightjog"
-        ],
-        "rotationdays": 30,
-        "rotationcount": 1,
+        "allquests": true,
+        "ignorepredecessors": true,
         "noAvailableQuestDescLangKey": "albase:no-quest-available-innkeeper",
         "noAvailableQuestCooldownDescLangKey": "albase:no-quest-available-innkeeper-cooldown",
-        "selectrandom": true,
+        "selectrandom": false,
         "selectrandomcount": 1
       }
     ]

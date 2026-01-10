@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-cellarwatch",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -22,11 +22,11 @@
     {
       "id": "randomkill",
       "args": [
-        "2",
+        "3",
         "1",
-        "2",
+        "4",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
         "drifter-deep",
@@ -35,6 +35,12 @@
     }
   ],
   "actionObjectives": [
+    {
+      "id": "timeofday",
+      "args": [
+        "night"
+      ]
+    },
     {
       "id": "randomkill",
       "args": [
@@ -48,24 +54,35 @@
         "albase:innkeeper-cellarwatch",
         "1"
       ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:innkeeper-cellarwatch",
+        "2"
+      ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 2
+    },
+    {
       "itemCode": "game:redmeat-raw",
-      "amount": 8
+      "amount": 12
     },
     {
       "itemCode": "game:bandage-clean",
       "amount": 2
     },
     {
-      "itemCode": "game:driedredmeat",
-      "amount": 2
+      "itemCode": "game:redmeat-cured",
+      "amount": 8
     },
     {
-      "itemCode": "game:flaxtwine",
+      "itemCode": "game:fat",
       "amount": 3
     }
   ],
@@ -78,9 +95,9 @@
         "maxAmount": 5
       },
       {
-        "itemCode": "game:driedredmeat",
-        "minAmount": 1,
-        "maxAmount": 2
+        "itemCode": "game:redmeat-cured",
+        "minAmount": 3,
+        "maxAmount": 6
       },
       {
         "itemCode": "game:bread-rye-perfect",

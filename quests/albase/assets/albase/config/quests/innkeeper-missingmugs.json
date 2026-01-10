@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-missingmugs",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -22,18 +22,16 @@
     {
       "id": "randomkill",
       "args": [
-        "2",
+        "3",
         "1",
-        "2",
+        "4",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
+        "drifter-deep",
         "bowtorn",
-        "shiver",
-        "wolf",
-        "bear",
-        "fox"
+        "shiver"
       ]
     }
   ],
@@ -53,31 +51,40 @@
       ]
     },
     {
-      "id": "walkdistance",
+      "id": "randomkill",
       "args": [
         "albase:innkeeper-missingmugs",
-        "900"
+        "2"
       ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
-      "itemCode": "game:redmeat-raw",
-      "amount": 6
-    },
-    {
-      "itemCode": "game:bread-spelt-perfect",
+      "itemCode": "game:gear-rusty",
       "amount": 1
     },
     {
+      "itemCode": "game:redmeat-raw",
+      "amount": 10
+    },
+    {
+      "itemCode": "game:bread-spelt-perfect",
+      "amount": 3
+    },
+    {
       "itemCode": "game:bandage-clean",
-      "amount": 2
+      "amount": 1
     }
   ],
   "randomItemRewards": {
     "selectAmount": 2,
     "items": [
+      {
+        "itemCode": "game:metalplate-copper",
+        "minAmount": 1,
+        "maxAmount": 2
+      },
       {
         "itemCode": "game:redmeat-raw",
         "minAmount": 2,
@@ -89,9 +96,9 @@
         "maxAmount": 2
       },
       {
-        "itemCode": "game:driedredmeat",
-        "minAmount": 1,
-        "maxAmount": 2
+        "itemCode": "game:redmeat-cured",
+        "minAmount": 3,
+        "maxAmount": 7
       },
       {
         "itemCode": "game:torch-basic-extinct-up",

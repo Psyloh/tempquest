@@ -1,6 +1,6 @@
 {
   "id": "albase:innkeeper-doorposter",
-  "cooldown": 40,
+  "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
   "perPlayer": true,
   "onAcceptedActions": [
@@ -22,17 +22,16 @@
     {
       "id": "randomkill",
       "args": [
-        "2",
+        "3",
         "1",
-        "2",
+        "4",
         "albase:innkeeper-randomkill-notify",
-        "playsound 'sounds/effect/writing' 0.35",
+        "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
         "drifter-normal",
+        "drifter-deep",
         "bowtorn",
-        "wolf",
-        "bear",
-        "fox"
+        "shiver"
       ]
     }
   ],
@@ -52,22 +51,26 @@
       ]
     },
     {
-      "id": "walkdistance",
+      "id": "randomkill",
       "args": [
         "albase:innkeeper-doorposter",
-        "700"
+        "2"
       ]
     }
   ],
   "killObjectives": [],
   "itemRewards": [
     {
+      "itemCode": "game:gear-rusty",
+      "amount": 1
+    },
+    {
       "itemCode": "game:redmeat-raw",
-      "amount": 5
+      "amount": 9
     },
     {
       "itemCode": "game:bread-rye-perfect",
-      "amount": 1
+      "amount": 3
     },
     {
       "itemCode": "game:torch-basic-extinct-up",
@@ -101,11 +104,6 @@
         "itemCode": "game:flaxtwine",
         "minAmount": 2,
         "maxAmount": 6
-      },
-      {
-        "itemCode": "game:torch-basic-extinct-up",
-        "minAmount": 1,
-        "maxAmount": 2
       },
       {
         "itemCode": "game:resin",
