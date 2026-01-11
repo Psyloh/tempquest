@@ -6,38 +6,44 @@ namespace VsQuest
 {
     public class InteractWithEntityObjective : ActionObjectiveBase
     {
-        public static string CountKey(string questId, long entityId) => $"vsquest:interactentity:{questId}:{entityId}:count";
+        public static string CountKey(string questId, long entityId) => CountKey(questId, entityId.ToString());
+
+        public static string CountKey(string questId, string targetIdOrCode)
+        {
+            targetIdOrCode = targetIdOrCode?.Trim()?.ToLowerInvariant();
+            return $"vsquest:interactentity:{questId}:{targetIdOrCode}:count";
+        }
 
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
-            if (!TryParseArgs(args, out string questId, out long entityId, out int need)) return false;
-            int have = GetHave(byPlayer, questId, entityId);
+            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need)) return false;
+            int have = GetHave(byPlayer, questId, targetIdOrCode);
             return have >= need;
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            if (!TryParseArgs(args, out string questId, out long entityId, out int need)) return new List<int>(new int[] { 0, 0 });
+            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need)) return new List<int>(new int[] { 0, 0 });
 
-            int have = GetHave(byPlayer, questId, entityId);
+            int have = GetHave(byPlayer, questId, targetIdOrCode);
             if (have > need) have = need;
             if (need < 0) need = 0;
 
             return new List<int>(new int[] { have, need });
         }
 
-        private static int GetHave(IPlayer byPlayer, string questId, long entityId)
+        private static int GetHave(IPlayer byPlayer, string questId, string targetIdOrCode)
         {
             var wa = byPlayer?.Entity?.WatchedAttributes;
             if (wa == null) return 0;
 
-            return wa.GetInt(CountKey(questId, entityId), 0);
+            return wa.GetInt(CountKey(questId, targetIdOrCode), 0);
         }
 
-        private static bool TryParseArgs(string[] args, out string questId, out long entityId, out int need)
+        private static bool TryParseArgs(string[] args, out string questId, out string targetIdOrCode, out int need)
         {
             questId = null;
-            entityId = 0;
+            targetIdOrCode = null;
             need = 0;
 
             if (args == null || args.Length < 3) return false;
@@ -45,7 +51,9 @@ namespace VsQuest
             questId = args[0];
             if (string.IsNullOrWhiteSpace(questId)) return false;
 
-            if (!long.TryParse(args[1], out entityId)) return false;
+            targetIdOrCode = args[1];
+            if (string.IsNullOrWhiteSpace(targetIdOrCode)) return false;
+
             if (!int.TryParse(args[2], out need)) need = 0;
             if (need < 0) need = 0;
 

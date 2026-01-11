@@ -39,6 +39,7 @@ namespace VsQuest
     {
         public string id { get; set; }
         public string objectiveId { get; set; }
+        public string onCompleteActions { get; set; }
         public string[] args { get; set; } = new string[0];
     }
 

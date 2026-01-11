@@ -1,0 +1,59 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-elrik-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-elrik-who", "jumpTo": "who" },
+        { "value": "alstory:dialogue-elrik-what", "jumpTo": "what" },
+        { "value": "alstory:dialogue-elrik-quests", "jumpTo": "openquests" },
+        { "value": "alstory:dialogue-elrik-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "who",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-elrik-who-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "what",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-elrik-what-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "openquests",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "openquests",
+      "text": [
+        { "value": "alstory:dialogue-elrik-openquests-confirm" }
+      ]
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-elrik-close-answer" }
+      ]
+    }
+  ]
+}

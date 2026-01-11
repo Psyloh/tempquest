@@ -31,6 +31,7 @@ namespace VsQuest
             }
 
             var stack = new ItemStack(collectible);
+            int quantity = stack.StackSize;
             ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
             if (!byPlayer.InventoryManager.TryGiveItemstack(stack))
             {
@@ -38,7 +39,7 @@ namespace VsQuest
             }
 
             var itemName = collectible.GetHeldItemName(stack);
-            sapi.SendMessage(byPlayer, GlobalConstants.InfoLogChatGroup, $"{stack.StackSize}x {itemName}", EnumChatType.Notification);
+            sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, $"{quantity}x {itemName}", EnumChatType.Notification);
         }
     }
 }

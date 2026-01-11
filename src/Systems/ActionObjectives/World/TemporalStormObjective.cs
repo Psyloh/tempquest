@@ -64,6 +64,11 @@ namespace VsQuest
                     have++;
                     wa.SetInt(haveKey, have);
                     wa.MarkPathDirty(haveKey);
+
+                    if (have >= need)
+                    {
+                        QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, player, activeQuest, objectiveDef, objectiveDef.objectiveId, true);
+                    }
                 }
             }
 

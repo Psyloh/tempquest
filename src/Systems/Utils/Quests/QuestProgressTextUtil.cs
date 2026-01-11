@@ -36,35 +36,66 @@ namespace VsQuest
 
             try
             {
-                string timeOfDayPrefix = null;
-                string landPrefix = null;
-                if (questDef.actionObjectives != null)
+                string ApplyPrefixes(string text, string objectiveId)
                 {
-                    foreach (var ao in questDef.actionObjectives)
-                    {
-                        if (ao?.id != "timeofday") continue;
+                    if (string.IsNullOrWhiteSpace(text)) return text;
 
-                        if (TimeOfDayObjective.TryGetModeLabelKey(ao.args, out string labelKey))
+                    string timeOfDayPrefix = null;
+                    string landPrefix = null;
+
+                    if (questDef.actionObjectives != null)
+                    {
+                        // timeofday prefix: only apply if there is a gate targeting this objectiveId,
+                        // or if the gate has no objectiveId (legacy behavior).
+                        foreach (var ao in questDef.actionObjectives)
                         {
-                            timeOfDayPrefix = LocalizationUtils.GetSafe(labelKey);
+                            if (ao?.id != "timeofday") continue;
+                            if (ao.args == null || ao.args.Length == 0) continue;
+
+                            bool applies = false;
+                            if (ao.args.Length == 1)
+                            {
+                                // Legacy: show prefix globally
+                                applies = true;
+                            }
+                            else if (ao.args.Length == 2)
+                            {
+                                applies = !string.IsNullOrWhiteSpace(objectiveId)
+                                    && string.Equals(ao.args[1], objectiveId, StringComparison.OrdinalIgnoreCase);
+                            }
+
+                            if (!applies) continue;
+
+                            if (TimeOfDayObjective.TryGetModeLabelKey(ao.args, out string labelKey))
+                            {
+                                timeOfDayPrefix = LocalizationUtils.GetSafe(labelKey);
+                            }
+                            break;
                         }
-                        break;
+
+                        // landgate prefix
+                        foreach (var ao in questDef.actionObjectives)
+                        {
+                            if (ao?.id != "landgate") continue;
+
+                            if (!LandGateObjective.TryParseArgs(ao.args, out _, out string gateObjectiveId, out string prefix, out bool hidePrefix))
+                            {
+                                continue;
+                            }
+
+                            bool applies = string.IsNullOrWhiteSpace(gateObjectiveId)
+                                || (!string.IsNullOrWhiteSpace(objectiveId) && string.Equals(gateObjectiveId, objectiveId, StringComparison.OrdinalIgnoreCase));
+
+                            if (!applies) continue;
+
+                            if (!hidePrefix)
+                            {
+                                landPrefix = prefix;
+                            }
+                            break;
+                        }
                     }
 
-                    foreach (var ao in questDef.actionObjectives)
-                    {
-                        if (ao?.id != "landgate") continue;
-
-                        if (LandGateObjective.TryParseArgs(ao.args, out _, out _, out string prefix, out bool hidePrefix) && !hidePrefix)
-                        {
-                            landPrefix = prefix;
-                        }
-                        break;
-                    }
-                }
-
-                string ApplyPrefixes(string text)
-                {
                     // Order matters: landgate wraps timeofday so that final text becomes "land: time: ..."
                     string[] prefixes = new[] { timeOfDayPrefix, landPrefix };
                     foreach (var p in prefixes)
@@ -85,7 +116,7 @@ namespace VsQuest
                         string code = wa.GetString(RandomKillQuestUtils.SlotCodeKey(activeQuest.questId, slot), "?");
                         int have = wa.GetInt(RandomKillQuestUtils.SlotHaveKey(activeQuest.questId, slot), 0);
                         int need = wa.GetInt(RandomKillQuestUtils.SlotNeedKey(activeQuest.questId, slot), 0);
-                        lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
+                        lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}", null)}");
                     }
                 }
 
@@ -101,7 +132,7 @@ namespace VsQuest
                     var custom = LocalizationUtils.GetSafe(customKey, progress.Cast<object>().ToArray());
                     if (!string.IsNullOrWhiteSpace(custom) && !string.Equals(custom, customKey, StringComparison.OrdinalIgnoreCase))
                     {
-                        lines.Add($"- {ApplyPrefixes(custom)}");
+                        lines.Add($"- {ApplyPrefixes(custom, null)}");
                         return string.Join("\n", lines);
                     }
                 }
@@ -132,7 +163,7 @@ namespace VsQuest
                                             template = $"{have}/{need}";
                                         }
 
-                                        lines.Add($"- {ApplyPrefixes(template)}");
+                                        lines.Add($"- {ApplyPrefixes(template, null)}");
                                         return string.Join("\n", lines);
                                     }
                                 }
@@ -155,7 +186,7 @@ namespace VsQuest
                             int have = progress[progressIndex++];
                             int need = objective.demand;
                             string code = objective.validCodes.FirstOrDefault() ?? "?";
-                            lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
+                            lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}", null)}");
                         }
                     }
                 }
@@ -166,7 +197,7 @@ namespace VsQuest
                 AddProgressLines(questDef.blockBreakObjectives);
                 AddProgressLines(questDef.interactObjectives);
 
-                // Action objectives (e.g. walkdistance)
+                // Action objectives
                 if (questDef.actionObjectives != null)
                 {
                     var questSystem = api.ModLoader.GetModSystem<QuestSystem>();
@@ -174,27 +205,60 @@ namespace VsQuest
                     foreach (var actionObjective in questDef.actionObjectives)
                     {
                         if (actionObjective == null) continue;
+                        if (string.IsNullOrWhiteSpace(actionObjective.id)) continue;
 
-                        if (actionObjective.id == "walkdistance")
+                        // Do not show gates as progress lines
+                        if (actionObjective.id == "timeofday") continue;
+                        if (actionObjective.id == "landgate") continue;
+
+                        // randomkill already has its own slot lines
+                        if (actionObjective.id == "randomkill") continue;
+
+                        var impl = questSystem?.ActionObjectiveRegistry != null && questSystem.ActionObjectiveRegistry.TryGetValue(actionObjective.id, out var objectiveImpl)
+                            ? objectiveImpl
+                            : null;
+
+                        var prog = impl?.GetProgress(player, actionObjective.args);
+                        if (prog == null || prog.Count == 0) continue;
+
+                        // Try custom per-objective progress string first
+                        string customKeyBase = activeQuest.questId + "-obj-" + (string.IsNullOrWhiteSpace(actionObjective.objectiveId) ? actionObjective.id : actionObjective.objectiveId);
+                        string customProgress = LocalizationUtils.GetSafe(customKeyBase, prog.Cast<object>().ToArray());
+                        if (!string.IsNullOrWhiteSpace(customProgress) && !string.Equals(customProgress, customKeyBase, StringComparison.OrdinalIgnoreCase))
                         {
-                            // Do not rely on progressIndex here: other action objectives (e.g. randomkill)
-                            // may contribute variable-length progress arrays and desync indices.
-                            var impl = questSystem?.ActionObjectiveRegistry != null && questSystem.ActionObjectiveRegistry.TryGetValue(actionObjective.id, out var objectiveImpl)
-                                ? objectiveImpl
-                                : null;
-
-                            var prog = impl?.GetProgress(player, actionObjective.args);
-                            if (prog != null && prog.Count >= 2)
-                            {
-                                int have = prog[0];
-                                int need = prog[1];
-
-                                var walkLabel = LocalizationUtils.GetSafe("alegacyvsquest:objective-walkdistance");
-                                var meterUnit = LocalizationUtils.GetSafe("alegacyvsquest:unit-meter-short");
-                                lines.Add($"- {ApplyPrefixes($"{walkLabel}: {have}/{need} {meterUnit}")}");
-                            }
+                            lines.Add($"- {ApplyPrefixes(customProgress, actionObjective.objectiveId)}");
                             continue;
                         }
+
+                        string objectiveLabel;
+                        if (actionObjective.id == "walkdistance")
+                        {
+                            objectiveLabel = LocalizationUtils.GetSafe("alegacyvsquest:objective-walkdistance");
+                        }
+                        else
+                        {
+                            var candidate = LocalizationUtils.GetSafe($"alegacyvsquest:objective-{actionObjective.id}");
+                            objectiveLabel = string.Equals(candidate, $"alegacyvsquest:objective-{actionObjective.id}", StringComparison.OrdinalIgnoreCase)
+                                ? actionObjective.id
+                                : candidate;
+                        }
+
+                        string line;
+                        if (actionObjective.id == "walkdistance" && prog.Count >= 2)
+                        {
+                            var meterUnit = LocalizationUtils.GetSafe("alegacyvsquest:unit-meter-short");
+                            line = $"{objectiveLabel}: {prog[0]}/{prog[1]} {meterUnit}";
+                        }
+                        else if (prog.Count >= 2)
+                        {
+                            line = $"{objectiveLabel}: {prog[0]}/{prog[1]}";
+                        }
+                        else
+                        {
+                            line = $"{objectiveLabel}: {prog[0]}";
+                        }
+
+                        lines.Add($"- {ApplyPrefixes(line, actionObjective.objectiveId)}");
                     }
                 }
 

@@ -37,7 +37,55 @@ namespace VsQuest
                             objectiveImplementation?.OnTick(serverPlayer, activeQuest, objective, sapi);
                         }
                     }
+
+                    TryFirePassiveActionObjectiveCompletions(serverPlayer, activeQuest, quest, actionObjectiveRegistry, sapi);
                 }
+            }
+        }
+
+        private static void TryFirePassiveActionObjectiveCompletions(IServerPlayer player, ActiveQuest activeQuest, Quest questDef, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, ICoreServerAPI sapi)
+        {
+            if (player == null || activeQuest == null || questDef?.actionObjectives == null) return;
+            if (sapi == null || actionObjectiveRegistry == null) return;
+
+            var wa = player.Entity?.WatchedAttributes;
+            if (wa == null) return;
+
+            string throttleKey = $"vsquest:ao:lastcheck:{activeQuest.questId}";
+            double now = sapi.World.Calendar.TotalHours;
+            double last = wa.GetDouble(throttleKey, -999999);
+            if (now - last < (1.0 / 3600.0)) return;
+            wa.SetDouble(throttleKey, now);
+            wa.MarkPathDirty(throttleKey);
+
+            for (int i = 0; i < questDef.actionObjectives.Count; i++)
+            {
+                var ao = questDef.actionObjectives[i];
+                if (ao == null) continue;
+                if (string.IsNullOrWhiteSpace(ao.onCompleteActions)) continue;
+
+                // Skip event-driven objectives; they fire completion in their own hooks.
+                if (ao.id == "walkdistance") continue;
+                if (ao.id == "temporalstorm") continue;
+                if (ao.id == "killnear") continue;
+                if (ao.id == "randomkill") continue;
+                if (ao.id == "interactwithentity") continue;
+                if (ao.id == "interactat") continue;
+                if (ao.id == "interactcount") continue;
+
+                if (!actionObjectiveRegistry.TryGetValue(ao.id, out var impl) || impl == null) continue;
+
+                bool ok;
+                try
+                {
+                    ok = impl.IsCompletable(player, ao.args);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, player, activeQuest, ao, ao.objectiveId, ok);
             }
         }
     }

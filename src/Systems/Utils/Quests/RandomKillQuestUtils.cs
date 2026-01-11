@@ -73,7 +73,41 @@ namespace VsQuest
             wa.MarkPathDirty(haveKey);
 
             FireActions(sapi, serverPlayer, activeQuest, have >= need);
+
+            if (have >= need)
+            {
+                TryFireObjectiveCompletedActions(sapi, serverPlayer, activeQuest);
+            }
             return true;
+        }
+
+        private static void TryFireObjectiveCompletedActions(ICoreServerAPI sapi, IServerPlayer player, ActiveQuest activeQuest)
+        {
+            if (sapi == null || player == null || activeQuest == null) return;
+            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+            if (questSystem?.QuestRegistry == null || questSystem.ActionObjectiveRegistry == null) return;
+
+            if (!questSystem.QuestRegistry.TryGetValue(activeQuest.questId, out var questDef) || questDef?.actionObjectives == null) return;
+            if (!questSystem.ActionObjectiveRegistry.TryGetValue("randomkill", out var impl) || impl == null) return;
+
+            for (int i = 0; i < questDef.actionObjectives.Count; i++)
+            {
+                var ao = questDef.actionObjectives[i];
+                if (ao?.id != "randomkill") continue;
+
+                bool ok;
+                try
+                {
+                    ok = impl.IsCompletable(player, ao.args);
+                }
+                catch
+                {
+                    ok = false;
+                }
+
+                QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, player, activeQuest, ao, ao.objectiveId, ok);
+                break;
+            }
         }
 
         internal static void FireActions(ICoreServerAPI sapi, IServerPlayer serverPlayer, ActiveQuest activeQuest, bool completedThisTick)

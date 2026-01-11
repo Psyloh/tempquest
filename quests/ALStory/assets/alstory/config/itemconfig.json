@@ -1,0 +1,239 @@
+{
+  "actionItems": [
+    {
+      "id": "alstory-note-rustprophet",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#F59E0B\">Записка: Проповедь Ржавого Пророка</font>",
+      "description": "<font color=\"#60A5FA\">Грубо написанные строки, пахнет медью и гнилью.\nИспользуй, чтобы прочитать.</font>",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:lore-rustprophet",
+            "Проповедь Ржавого Пророка",
+            "Слушайте глас Гниения, братья и сестры по Кровавой Длани!\n\nПлоть — это тюрьма, боль — это ключ. Древние, Обреченные, выковали из Гнили доспехи — и испугались собственного величия.\n\nМы не совершим их ошибку. Пусть железо прорастает через плоть! Пусть ржавчина станет новой кровью!\n\n— Ржавой Правды Кожевник"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-book-witheringheart",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#F59E0B\">Книга: Хроники Увядающего Сердца</font>",
+      "description": "<font color=\"#60A5FA\">Тонкая книга в кожаном переплёте. Почерк торопливый, нервный.</font>",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:lore-witheringheart",
+            "Хроники Увядающего Сердца",
+            "...и так Лорэн, Магистр наш, принес ее к Камню. Не к целителю, нет. К старому камню, что стоял здесь испокон веков.\n\nОн не изгнал Скверну. Он переплёл её: вытянул яд из Иллы и вплёл в землю, в деревню, в нас. Камень бьётся, как сердце. Мы слышим его под ногами.\n\n— Генрих, последний староста обречённой деревни."
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "alstory-armor-helm",
+      "itemCode": "game:armor-head-antique-forlorn-pristine",
+      "name": "<font color=\"#8B5CF6\">Шлем Ордена Обречённых</font>",
+      "description": "<font color=\"#60A5FA\">Ржавый металл и чёрные прожилки. Кажется, он дышит.\nПКМ: отметить находку.</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:armorparts",
+            "1",
+            "4",
+            "alstory:found-helm"
+          ]
+        },
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:armor-found",
+            "Доспехи Обречённых",
+            "Найдена часть доспехов: Шлем.\n\nЧёрные прожилки пульсируют, будто в металле ещё живёт эхо клятвы."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-armor-chest",
+      "itemCode": "game:armor-body-antique-forlorn-pristine",
+      "name": "<font color=\"#8B5CF6\">Нагрудник Ордена Обречённых</font>",
+      "description": "<font color=\"#60A5FA\">Тяжёлый нагрудник, испещрённый тёмными каналами.\nПКМ: отметить находку.</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:armorparts",
+            "1",
+            "4",
+            "alstory:found-chest"
+          ]
+        },
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:armor-found",
+            "Доспехи Обречённых",
+            "Найдена часть доспехов: Нагрудник.\n\nОн тёплый, будто только что снят с живого тела."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-armor-legs",
+      "itemCode": "game:armor-legs-antique-forlorn-pristine",
+      "name": "<font color=\"#8B5CF6\">Поножи Ордена Обречённых</font>",
+      "description": "<font color=\"#60A5FA\">Поножи, будто связаны с землёй невидимыми корнями.\nПКМ: отметить находку.</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:armorparts",
+            "1",
+            "4",
+            "alstory:found-legs"
+          ]
+        },
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:armor-found",
+            "Доспехи Обречённых",
+            "Найдена часть доспехов: Поножи.\n\nВнутри слышится тихий звон — как треснувший колокол."
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "alstory-armor-boots",
+      "itemCode": "game:clothes-foot-forlorn-shoes",
+      "name": "<font color=\"#8B5CF6\">Сабатоны Ордена Обречённых</font>",
+      "description": "<font color=\"#60A5FA\">Тяжёлая обувь, будто приросшая к земле.\nПКМ: отметить находку.</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:armorparts",
+            "1",
+            "4",
+            "alstory:found-boots"
+          ]
+        },
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:armor-found",
+            "Доспехи Обречённых",
+            "Найдена часть доспехов: Сабатоны.\n\nКамень под ногами на миг будто отвечает на их шаг."
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "alstory-crystal-1",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#EF4444\">Кристалл Скверны</font>",
+      "description": "<font color=\"#60A5FA\">Заглушка для уничтожения кристалла.\nПКМ: отметить уничтожение (1/3).</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:ritualcrystals",
+            "1",
+            "3",
+            "alstory:crystal-1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-crystal-2",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#EF4444\">Кристалл Скверны</font>",
+      "description": "<font color=\"#60A5FA\">Заглушка для уничтожения кристалла.\nПКМ: отметить уничтожение (2/3).</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:ritualcrystals",
+            "1",
+            "3",
+            "alstory:crystal-2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-crystal-3",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#EF4444\">Кристалл Скверны</font>",
+      "description": "<font color=\"#60A5FA\">Заглушка для уничтожения кристалла.\nПКМ: отметить уничтожение (3/3).</font>",
+      "actions": [
+        {
+          "id": "addplayerint",
+          "args": [
+            "alstory:ritualcrystals",
+            "1",
+            "3",
+            "alstory:crystal-3"
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "alstory-note-ritualinstructions",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#F59E0B\">Записка: Инструкция по поддержанию Ритуала</font>",
+      "description": "<font color=\"#60A5FA\">Аккуратный, безэмоциональный почерк. От него становится холодно.</font>",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:lore-ritualinstructions",
+            "Инструкция по поддержанию Ритуала",
+            "Для поддержания Плетения Жизни необходимо:\n1. Три Кристалла Скверны, размещенные в точках силового напряжения.\n2. Регулярная подпитка кристаллов негативной энергией (страх, отчаяние, боль жителей).\n3. Запрет на выход носителей связи за пределы зоны действия Камня.\n\nНарушение любого из условий приведет к коллапсу Плетения и немедленной кончине Реципиента (Илла).\n\n— Лорэн."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-tablet-epitaph",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#F59E0B\">Скрижаль: Эпитафия Падшему Защитнику</font>",
+      "description": "<font color=\"#60A5FA\">Тусклые руны светятся багровым. Кажется, камень помнит боль.</font>",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:lore-epitaph",
+            "Эпитафия Падшему Защитнику",
+            "Здесь покоится Лорэн Железное Сердце, Последний Магистр Ордена Обречённых.\n\nОн пал не от меча, но от своей любви. Он защищал королей, но предал их народ.\n\nПусть его трон будет его тюрьмой.\n\nИбо средство рано или поздно становится сутью."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alstory-book-crackedbell",
+      "itemCode": "game:gear-rusty",
+      "name": "<font color=\"#8B5CF6\">Книга: Легенда о Треснувшем Колоколе</font>",
+      "description": "<font color=\"#60A5FA\">Пергамент и чернила. Слова — как предостережение.</font>",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "alstory:lore-crackedbell",
+            "Сказание о Треснувшем Колоколе",
+            "Да не будут произнесены вслух имена тех, кто пал от собственного благородства.\n\nНаш Магистр нашел свою слабость — любовь. Дабы спасти один цветок, он выжег ядом весь сад.\n\nИ если ты найдёшь эту записку, знай: любая битва, даже с самой тьмой, должна завершиться. Иначе ты станешь частью её.\n\nДа падет занавес. Представление окончено."
+          ]
+        }
+      ]
+    }
+  ]
+}

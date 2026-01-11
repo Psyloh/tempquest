@@ -10,27 +10,11 @@ namespace VsQuest
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
             if (args.Length < 1) return false;
-            var wa = byPlayer?.Entity?.WatchedAttributes;
-            if (wa == null) return false;
 
             string coordString = args[0];
-            if (string.IsNullOrWhiteSpace(coordString)) return false;
+            if (!QuestInteractAtUtil.TryParsePos(coordString, out int targetX, out int targetY, out int targetZ)) return false;
 
-            // Legacy storage (comma-separated list)
-            string[] coords = coordString.Split(',');
-            if (coords.Length != 3) return false;
-
-            if (!int.TryParse(coords[0], out int targetX) ||
-                !int.TryParse(coords[1], out int targetY) ||
-                !int.TryParse(coords[2], out int targetZ))
-            {
-                return false;
-            }
-
-            string interactionKey = $"interactat_{targetX}_{targetY}_{targetZ}";
-            string completedInteractions = wa.GetString("completedInteractions", "");
-            string[] completed = completedInteractions.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-            return completed.Contains(interactionKey);
+            return QuestInteractAtUtil.HasInteraction(byPlayer, targetX, targetY, targetZ);
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)

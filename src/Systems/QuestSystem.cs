@@ -226,6 +226,7 @@ namespace VsQuest
 
     public class QuestConfig
     {
-        public bool CloseGuiAfterAcceptingAndCompleting = true;
+        public bool CloseGuiAfterAcceptingAndCompleting { get; set; } = true;
+        public string defaultObjectiveCompletionSound { get; set; } = "survival:sounds/tutorialstepsuccess";
     }
 }

@@ -48,6 +48,7 @@ namespace VsQuest.Harmony
             if (activeQuests == null || activeQuests.Count == 0) return;
 
             long targetEntityId = entity.EntityId;
+            string targetEntityCode = entity?.Code?.ToString()?.Trim()?.ToLowerInvariant();
 
             foreach (var activeQuest in activeQuests)
             {
@@ -63,16 +64,38 @@ namespace VsQuest.Harmony
                     string questIdArg = ao.args[0];
                     if (!string.Equals(questIdArg, activeQuest.questId, System.StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!long.TryParse(ao.args[1], out long desiredEntityId)) continue;
-                    if (desiredEntityId != targetEntityId) continue;
+                    string desired = ao.args[1];
+                    if (string.IsNullOrWhiteSpace(desired)) continue;
+
+                    desired = desired.Trim().ToLowerInvariant();
+
+                    bool matched = false;
+                    if (long.TryParse(desired, out long desiredEntityId))
+                    {
+                        matched = desiredEntityId == targetEntityId;
+                    }
+                    else
+                    {
+                        matched = !string.IsNullOrWhiteSpace(targetEntityCode) && desired == targetEntityCode;
+                    }
+
+                    if (!matched) continue;
 
                     var wa = serverPlayer.Entity?.WatchedAttributes;
                     if (wa == null) continue;
 
-                    string key = InteractWithEntityObjective.CountKey(activeQuest.questId, desiredEntityId);
+                    string key = InteractWithEntityObjective.CountKey(activeQuest.questId, desired);
                     int cur = wa.GetInt(key, 0);
                     wa.SetInt(key, cur + 1);
                     wa.MarkPathDirty(key);
+
+                    if (questSystem.ActionObjectiveRegistry != null && questSystem.ActionObjectiveRegistry.TryGetValue("interactwithentity", out var impl) && impl != null)
+                    {
+                        if (impl.IsCompletable(serverPlayer, ao.args))
+                        {
+                            QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, serverPlayer, activeQuest, ao, ao.objectiveId, true);
+                        }
+                    }
                 }
             }
         }

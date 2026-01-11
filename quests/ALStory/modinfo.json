@@ -1,0 +1,15 @@
+{
+  "type": "content",
+  "modid": "alstory",
+  "name": "AL Story Quest Pack",
+  "side": "universal",
+  "authors": [
+    "AshenLegacy"
+  ],
+  "description": "Story quest pack: Последний Вздох Ордена Обреченных.",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "1.21.6",
+    "alegacyvsquest": "*"
+  }
+}

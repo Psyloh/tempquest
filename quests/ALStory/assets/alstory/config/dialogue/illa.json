@@ -1,0 +1,50 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-illa-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-illa-stopmusic", "jumpTo": "stopmusic" },
+        { "value": "alstory:dialogue-illa-whereloran", "jumpTo": "whereloran" },
+        { "value": "alstory:dialogue-illa-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "stopmusic",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "addplayerint alstory:illareward 1 1 alstory:illarewardonce; questitem alstory-armor-legs",
+      "text": [
+        { "value": "alstory:dialogue-illa-stopmusic-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "whereloran",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-illa-whereloran-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-illa-close-answer" }
+      ]
+    }
+  ]
+}

@@ -44,7 +44,7 @@ namespace VsQuest
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            return new List<int> { IsCompletable(byPlayer, args) ? 1 : 0 };
+            return new List<int>(new int[] { IsCompletable(byPlayer, args) ? 1 : 0 });
         }
 
         public void CheckAndFire(IServerPlayer player, Quest quest, ActiveQuest activeQuest, int objectiveIndex, ICoreServerAPI sapi)
@@ -93,6 +93,9 @@ namespace VsQuest
                         action.Execute(sapi, message, player, actionArgs.ToArray());
                     }
                 }
+
+                var objectiveDef = quest.actionObjectives[objectiveIndex];
+                QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, player, activeQuest, objectiveDef, objectiveDef.objectiveId, true);
 
                 player.Entity.WatchedAttributes.SetBool(firedAttribute, true);
             }

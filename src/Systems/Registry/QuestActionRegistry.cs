@@ -36,6 +36,8 @@ namespace VsQuest
 
             actionRegistry.Add("addplayerattribute", new AddPlayerAttributeAction());
 
+            actionRegistry.Add("addplayerint", new AddPlayerIntAction());
+
             actionRegistry.Add("removeplayerattribute", new RemovePlayerAttributeAction());
 
             actionRegistry.Add("completequest", new CompleteQuestAction());

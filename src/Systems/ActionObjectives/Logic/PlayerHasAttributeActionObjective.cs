@@ -12,7 +12,8 @@ namespace VsQuest
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            return IsCompletable(byPlayer, args) ? new List<int>(new int[] { 1 }) : new List<int>(new int[] { 0 });
+            bool completed = IsCompletable(byPlayer, args);
+            return new List<int>(new int[] { completed ? 1 : 0 });
         }
     }
 }

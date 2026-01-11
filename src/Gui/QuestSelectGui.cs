@@ -40,7 +40,30 @@ namespace VsQuest
             this.noAvailableQuestCooldownDaysLeft = noAvailableQuestCooldownDaysLeft;
 
             selectedActiveQuest = activeQuests?.Find(quest => true);
-            curTab = (activeQuests != null && activeQuests.Count > 0) ? 1 : 0;
+
+            // Preserve the currently selected tab when updating data.
+            // Only switch tabs if the current tab has no content.
+            bool hasAvailable = availableQuestIds != null && availableQuestIds.Count > 0;
+            bool hasActive = activeQuests != null && activeQuests.Count > 0;
+
+            if (curTab == 0 && !hasAvailable && hasActive)
+            {
+                curTab = 1;
+            }
+            else if (curTab == 1 && !hasActive && hasAvailable)
+            {
+                curTab = 0;
+            }
+            else if (!hasAvailable && hasActive)
+            {
+                // Initial state fallback
+                curTab = 1;
+            }
+            else if (hasAvailable)
+            {
+                // Initial state fallback
+                curTab = 0;
+            }
         }
 
         private void recompose()
@@ -64,7 +87,11 @@ namespace VsQuest
                             .AddDialogTitleBar(Lang.Get("alegacyvsquest:quest-select-title"), () => TryClose())
                             .AddVerticalTabs(tabs, ElementBounds.Fixed(-200, 35, 200, 200), OnTabClicked, "tabs")
                             .BeginChildElements(bgBounds);
-            SingleComposer.GetVerticalTab("tabs").ActiveElement = curTab;
+
+            // GuiElementVerticalTabs constructor forces tabs[0].Active = true.
+            // Force the correct active tab for visual highlight.
+            SingleComposer.GetVerticalTab("tabs").SetValue(curTab, false);
+
             if (curTab == 0)
             {
                 if (availableQuestIds != null && availableQuestIds.Count > 0)

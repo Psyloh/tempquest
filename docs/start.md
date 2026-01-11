@@ -158,16 +158,30 @@ Actions/
 
 ```
 ActionObjectives/
-├── ActionObjectiveBase.cs            # Base class
-├── CheckVariableObjective.cs         # Check variable value
-├── EventCountObjectiveBase.cs        # Count events
-├── InteractAtCoordinateObjective.cs  # Interact at location
-├── InteractCountObjective.cs         # Interact X times
-├── NearbyFlowersActionObjective.cs   # Find flowers nearby
-├── PlayerHasAttributeActionObjective.cs
-├── RandomKillObjective.cs            # Kill random mobs
-├── TimeOfDayObjective.cs             # Time-based objectives
-└── WalkDistanceObjective.cs          # Walk X distance (7KB)
+├── Combat/
+│   ├── KillNearObjective.cs
+│   └── RandomKillObjective.cs
+├── Gates/
+│   ├── LandGateObjective.cs
+│   └── TimeOfDayObjective.cs
+├── Interaction/
+│   ├── InteractAtCoordinateObjective.cs
+│   ├── InteractCountObjective.cs
+│   ├── InteractWithEntityObjective.cs
+│   └── NearbyFlowersActionObjective.cs
+├── Inventory/
+│   ├── HasItemObjective.cs
+│   └── WearingObjective.cs
+├── Logic/
+│   ├── CheckVariableObjective.cs
+│   ├── EventCountObjectiveBase.cs
+│   ├── PlayerHasAttributeActionObjective.cs
+│   └── SequenceObjective.cs
+└── World/
+    ├── InLandObjective.cs
+    ├── ReachWaypointObjective.cs
+    ├── TemporalStormObjective.cs
+    └── WalkDistanceObjective.cs
 ```
 
 #### `Systems/ActionItems/` — Special Item Behaviors

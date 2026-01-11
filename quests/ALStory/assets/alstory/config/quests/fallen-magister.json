@@ -1,0 +1,80 @@
+{
+  "id": "alstory:fallen-magister",
+  "cooldown": 0,
+  "perPlayer": true,
+  "predecessor": "alstory:ritual-crystals",
+  "onAcceptedActions": [
+    {
+      "id": "addjournalentry",
+      "args": [
+        "alstory:fallen-magister",
+        "alstory:fallen-magister-journal-title",
+        "alstory:fallen-magister-journal-step0"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "sequence",
+      "objectiveId": "main",
+      "args": [
+        "alstory:fallen-magister",
+        "main",
+        "final",
+        "loran",
+        "elrikreturn"
+      ]
+    },
+    {
+      "id": "inland",
+      "objectiveId": "final",
+      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step1",
+      "args": [
+        "nekropol kvest"
+      ]
+    },
+    {
+      "id": "interactwithentity",
+      "objectiveId": "loran",
+      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step2",
+      "args": [
+        "alstory:fallen-magister",
+        "alstory:loran",
+        "1"
+      ]
+    },
+    {
+      "id": "interactwithentity",
+      "objectiveId": "elrikreturn",
+      "args": [
+        "alstory:fallen-magister",
+        "alstory:elrik",
+        "1"
+      ]
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "addjournalentry",
+      "args": [
+        "alstory:fallen-magister",
+        "alstory:fallen-magister-journal-title",
+        "alstory:fallen-magister-journal-step3"
+      ]
+    },
+    {
+      "id": "questitem",
+      "args": [
+        "alstory-book-crackedbell"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "alstory:final-necropolis-title",
+        "alstory:final-necropolis-text",
+        "alstory:final-necropolis-option"
+      ]
+    }
+  ]
+}

@@ -175,5 +175,25 @@
   "albase:tradingwindow-innkeeper": "Innkeeper",
   "item-creature-innkeeper": "Innkeeper",
   "game:nametag-трактирщик": "Innkeeper",
-  "game:nametag-священник": "Priest"
+  "game:nametag-священник": "Priest",
+
+  "albase:test-title": "Test: All Objectives",
+  "albase:test-desc": "Debug quest for checking every VSQuest objective type.\n\nTest area: 512000 3 512000 (do not go below y=3).\n\nAuto-setup on accept:\n- Gives 1 stick (for Have item).\n- Sets player attribute vsquest:test-attr=1 (for Player attribute).\n- Pre-marks interact points for interactat/interactcount.\n- Rolls 1 randomkill slot.\n\nManual checks:\n- Travel: run a bit during DAY (06:00–18:00), progress should increase.\n- Block interacts: right-click blocks at 512000,3,512000 then 512000,4,512000 then 512000,5,512000.\n- Interact with NPC: interact with the Innkeeper once.\n- Nearby flowers: place 1 flower-* block near you.\n- Reach point: get within radius 5 of 512000,3,512000.\n- Kill near point: kill any mob within radius 15 of 512000,3,512000.\n- Inside land claim: enter a land claim named TestClaim.\n- Survive temporal storm: wait for 1 temporal storm to end.\n\nTip: each completed objective will print a message and play a sound.",
+  "albase:test-randomkill-notify": "Test: kill {0}x {1}.",
+
+  "albase:test-obj-walk": "Run during day: {0}/{1} m",
+  "albase:test-obj-interactat": "Interact with block (512000,3,512000): {0}",
+  "albase:test-obj-interactcount": "Interact with blocks (3 points): {0}/{1}",
+  "albase:test-obj-reach": "Reach point (512000,3,512000, radius 5): {0}/{1}",
+  "albase:test-obj-killnear": "Kill nearby (radius 15): {0}/{1}",
+  "albase:test-obj-hasitem": "Have a stick in inventory: {0}/{1}",
+  "albase:test-obj-wearing": "Wear a shirt: {0}/{1}",
+  "albase:test-obj-inland": "Enter land claim TestClaim: {0}/{1}",
+  "albase:test-obj-storm": "Survive temporal storm: {0}/{1}",
+  "albase:test-obj-randomkill": "Randomkill: {0}/{1}",
+  "albase:test-obj-flowers": "Place a flower nearby: {0}/{1}",
+  "albase:test-obj-interactentity": "Interact with Innkeeper: {0}/{1}",
+  "albase:test-obj-var": "Variable check: {0}/{1}",
+  "albase:test-obj-attr": "Player attribute: {0}/{1}",
+  "albase:test-obj-sequence": "Sequence (stick + run): {0}/{1}"
 }

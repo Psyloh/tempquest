@@ -1,0 +1,50 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-loran-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-loran-illa", "jumpTo": "illa" },
+        { "value": "alstory:dialogue-loran-judgement", "jumpTo": "judgement" },
+        { "value": "alstory:dialogue-loran-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "illa",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-loran-illa-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "judgement",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "addplayerint alstory:loranmet 1 1 alstory:loranmetonce",
+      "text": [
+        { "value": "alstory:dialogue-loran-judgement-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "alstory:dialogue-loran-close-answer" }
+      ]
+    }
+  ]
+}

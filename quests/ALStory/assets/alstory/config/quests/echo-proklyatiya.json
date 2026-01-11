@@ -1,0 +1,65 @@
+{
+  "id": "alstory:echo-proklyatiya",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "addjournalentry",
+      "args": [
+        "alstory:echo-proklyatiya",
+        "alstory:echo-proklyatiya-journal-title",
+        "alstory:echo-proklyatiya-journal-step0"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "game:sounds/effect/writing"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "inland",
+      "objectiveId": "bloodhandcamp",
+      "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step1",
+      "args": [
+        "lager rasboinik"
+      ]
+    },
+    {
+      "id": "inland",
+      "objectiveId": "ordertower",
+      "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step2",
+      "args": [
+        "basnya kvest"
+      ]
+    },
+    {
+      "id": "inland",
+      "objectiveId": "village",
+      "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step3",
+      "args": [
+        "derevnia"
+      ]
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "addjournalentry",
+      "args": [
+        "alstory:echo-proklyatiya",
+        "alstory:echo-proklyatiya-journal-title",
+        "alstory:echo-proklyatiya-journal-step4"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "alstory:final-elrik-title",
+        "alstory:final-elrik-text",
+        "alstory:final-elrik-option"
+      ]
+    }
+  ]
+}

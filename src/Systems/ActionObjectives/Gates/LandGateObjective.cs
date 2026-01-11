@@ -74,6 +74,13 @@ namespace VsQuest
                     claimName = desc;
                     return true;
                 }
+
+                var ownerName = claims[i]?.LastKnownOwnerName;
+                if (!string.IsNullOrWhiteSpace(ownerName))
+                {
+                    claimName = ownerName;
+                    return true;
+                }
             }
 
             return false;

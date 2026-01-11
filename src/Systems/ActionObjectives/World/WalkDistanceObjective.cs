@@ -116,6 +116,28 @@ namespace VsQuest
             wa.SetFloat(HaveKey(questId, slot), have);
             wa.MarkPathDirty(HaveKey(questId, slot));
 
+            if (have >= needMeters)
+            {
+                try
+                {
+                    var questSystem = sapi?.ModLoader?.GetModSystem<QuestSystem>();
+                    if (questSystem?.QuestRegistry != null && questSystem.QuestRegistry.TryGetValue(activeQuest.questId, out var questDef))
+                    {
+                        var objectiveDef = questDef?.actionObjectives != null && objectiveIndex >= 0 && objectiveIndex < questDef.actionObjectives.Count
+                            ? questDef.actionObjectives[objectiveIndex]
+                            : null;
+
+                        if (objectiveDef != null)
+                        {
+                            QuestActionObjectiveCompletionUtil.TryFireOnComplete(sapi, player, activeQuest, objectiveDef, objectiveDef.objectiveId, true);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
             wa.SetDouble(LastXKey(questId, slot), curX);
             wa.SetDouble(LastZKey(questId, slot), curZ);
             wa.MarkPathDirty(LastXKey(questId, slot));
