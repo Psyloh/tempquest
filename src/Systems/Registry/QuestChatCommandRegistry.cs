@@ -75,7 +75,7 @@ namespace VsQuest
                 .BeginSubCommand("completeactive")
                     .WithDescription("Force-completes the player's currently active quest.")
                     .RequiresPrivilege(Privilege.give)
-                    .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
+                    .WithArgs(sapi.ChatCommands.Parsers.OptionalWord("playerName"))
                     .HandleWith(questCompleteActiveHandler.Handle)
                 .EndSubCommand()
                 .BeginSubCommand("start")
@@ -135,7 +135,7 @@ namespace VsQuest
                 .BeginSubCommand("forgiveall")
                     .WithDescription("Resets all quests for a player: clears active quests, completed flags, and cooldowns.")
                     .RequiresPrivilege(Privilege.give)
-                    .WithArgs(sapi.ChatCommands.Parsers.Word("playerName"))
+                    .WithArgs(sapi.ChatCommands.Parsers.OptionalWord("playerName"))
                     .HandleWith(forgiveAllQuestHandler.Handle)
                 .EndSubCommand();
         }

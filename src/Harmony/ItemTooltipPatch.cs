@@ -26,10 +26,17 @@ namespace VsQuest.Harmony
 
         private static string GetPatternStart(string keyOrPattern)
         {
-            string localized = Lang.Get(keyOrPattern);
-            int idx = localized.IndexOf('{');
-            if (idx > 0) return localized.Substring(0, idx).Trim();
-            return localized.Trim();
+            // If this is already a pattern string (contains format braces), do not pass it to Lang.Get()
+            // because TranslationService will try to format it and may throw if args are missing.
+            string source = keyOrPattern;
+            if (keyOrPattern != null && keyOrPattern.IndexOf('{') < 0)
+            {
+                source = Lang.Get(keyOrPattern);
+            }
+
+            int idx = source.IndexOf('{');
+            if (idx > 0) return source.Substring(0, idx).Trim();
+            return source.Trim();
         }
 
         public static void ModifyTooltip(ItemSlot inSlot, StringBuilder dsc)

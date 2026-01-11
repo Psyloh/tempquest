@@ -7,7 +7,7 @@
       "base": "game:entity/humanoid/trader"
     },
     "texture": {
-      "base": "game:entity/humanoid/trader"
+      "base": "game:entity/humanoid/traderclothes/set3"
     },
     "behaviors": [
       {

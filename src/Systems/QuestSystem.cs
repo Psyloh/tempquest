@@ -37,6 +37,7 @@ namespace VsQuest
 
             api.RegisterEntityBehaviorClass("questgiver", typeof(EntityBehaviorQuestGiver));
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));
+            api.RegisterItemClass("ItemEntitySpawner", typeof(ItemEntitySpawner));
 
             // Register objectives
             objectiveRegistry = new QuestObjectiveRegistry(ActionObjectiveRegistry, api);

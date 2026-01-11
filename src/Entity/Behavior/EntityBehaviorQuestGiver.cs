@@ -183,6 +183,12 @@ namespace VsQuest
                 ? new HashSet<string>(questSystem.QuestRegistry.Keys, StringComparer.OrdinalIgnoreCase)
                 : BuildAllQuestIds();
 
+            var completedQuests = new HashSet<string>(
+                entity.World.PlayerByUid(player.PlayerUID)?.Entity?.WatchedAttributes.GetStringArray("alegacyvsquest:playercompleted", new string[0])
+                ?? new string[0],
+                StringComparer.OrdinalIgnoreCase
+            );
+
             var activeQuests = allActiveQuests
                 .Where(activeQuest => allQuestIds.Contains(activeQuest.questId))
                 .Select(aq =>
@@ -204,10 +210,41 @@ namespace VsQuest
                 var quest = questSystem.QuestRegistry[questId];
 
                 var key = String.Format("alegacyvsquest:lastaccepted-{0}", questId);
-                double lastAccepted = player.WatchedAttributes.GetDouble(key, -quest.cooldown);
-                bool onCooldown = lastAccepted + quest.cooldown >= sapi.World.Calendar.TotalDays;
+                double lastAccepted = player.WatchedAttributes.GetDouble(key, double.NaN);
+                if (double.IsNaN(lastAccepted))
+                {
+                    // Legacy cooldown storage was kept on the questgiver entity.
+                    // Preserve old progress after updates by reading it and migrating it to the per-player key.
+                    string legacyKey = quest.perPlayer
+                        ? String.Format("lastaccepted-{0}-{1}", questId, player.PlayerUID)
+                        : String.Format("lastaccepted-{0}", questId);
+
+                    if (entity?.WatchedAttributes != null)
+                    {
+                        lastAccepted = entity.WatchedAttributes.GetDouble(legacyKey, double.NaN);
+                        if (!double.IsNaN(lastAccepted))
+                        {
+                            player.WatchedAttributes.SetDouble(key, lastAccepted);
+                            player.WatchedAttributes.MarkPathDirty(key);
+
+                            entity.WatchedAttributes.RemoveAttribute(legacyKey);
+                            entity.WatchedAttributes.MarkPathDirty(legacyKey);
+                        }
+                    }
+                }
+
+                if (double.IsNaN(lastAccepted)) lastAccepted = -quest.cooldown;
+
+                bool onCooldown = quest.cooldown >= 0 && lastAccepted + quest.cooldown >= sapi.World.Calendar.TotalDays;
                 bool isActive = allActiveQuests.Find(activeQuest => activeQuest.questId == questId) != null;
-                bool eligible = !isActive && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID));
+
+                // cooldown < 0 means "one-time": once completed, never offer again.
+                bool completed = completedQuests.Contains(questId);
+                bool oneTimeBlocked = quest.cooldown < 0 && completed;
+
+                bool eligible = !isActive
+                    && !oneTimeBlocked
+                    && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID));
 
                 if (eligible && !onCooldown)
                 {

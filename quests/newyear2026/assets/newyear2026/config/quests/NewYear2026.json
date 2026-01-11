@@ -1,6 +1,6 @@
 {
   "id": "newyear2026:NewYear2026",
-  "cooldown": 1000000,
+  "cooldown": -1,
   "perPlayer": true,
   "onAcceptedActions": [
     {

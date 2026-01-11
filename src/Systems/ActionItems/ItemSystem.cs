@@ -47,42 +47,80 @@ namespace VsQuest
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            if (api?.Side != EnumAppSide.Client) return;
+            // Must run on both sides: creative tab list is synced/validated server-side when moving items.
+            if (api == null) return;
             InjectActionItemsCreativeTab(api);
         }
 
         private void InjectActionItemsCreativeTab(ICoreAPI api)
         {
-            if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
-
             var debugTool = api.World.GetItem(new AssetLocation("alegacyvsquest:debugtool"));
             if (debugTool == null || debugTool.IsMissing) return;
 
+            var entitySpawner = api.World.GetItem(new AssetLocation("alegacyvsquest:entityspawner"));
+
             var stacks = new List<JsonItemStack>();
-            foreach (var kvp in ActionItemRegistry)
+            if (ActionItemRegistry != null && ActionItemRegistry.Count > 0)
             {
-                var actionItem = kvp.Value;
-                if (actionItem == null || string.IsNullOrWhiteSpace(actionItem.itemCode)) continue;
-
-                CollectibleObject collectible = api.World.GetItem(new AssetLocation(actionItem.itemCode));
-                if (collectible == null)
+                foreach (var kvp in ActionItemRegistry)
                 {
-                    collectible = api.World.GetBlock(new AssetLocation(actionItem.itemCode));
+                    var actionItem = kvp.Value;
+                    if (actionItem == null || string.IsNullOrWhiteSpace(actionItem.itemCode)) continue;
+
+                    CollectibleObject collectible = api.World.GetItem(new AssetLocation(actionItem.itemCode));
+                    if (collectible == null)
+                    {
+                        collectible = api.World.GetBlock(new AssetLocation(actionItem.itemCode));
+                    }
+                    if (collectible == null || collectible.IsMissing) continue;
+
+                    var stack = new ItemStack(collectible);
+                    ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
+
+                    var jis = new JsonItemStack
+                    {
+                        Type = collectible is Block ? EnumItemClass.Block : EnumItemClass.Item,
+                        Code = collectible.Code,
+                        StackSize = stack.StackSize,
+                        ResolvedItemstack = stack
+                    };
+
+                    stacks.Add(jis);
                 }
-                if (collectible == null || collectible.IsMissing) continue;
+            }
 
-                var stack = new ItemStack(collectible);
-                ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
-
-                var jis = new JsonItemStack
+            if (entitySpawner != null && !entitySpawner.IsMissing && api.World?.EntityTypes != null)
+            {
+                var allowedDomains = new HashSet<string>();
+                if (questSystem?.QuestRegistry != null)
                 {
-                    Type = collectible is Block ? EnumItemClass.Block : EnumItemClass.Item,
-                    Code = collectible.Code,
-                    StackSize = stack.StackSize,
-                    ResolvedItemstack = stack
-                };
+                    foreach (var quest in questSystem.QuestRegistry.Values)
+                    {
+                        if (quest?.id == null) continue;
+                        int idx = quest.id.IndexOf(':');
+                        if (idx <= 0) continue;
+                        allowedDomains.Add(quest.id.Substring(0, idx));
+                    }
+                }
 
-                stacks.Add(jis);
+                foreach (var et in api.World.EntityTypes)
+                {
+                    if (et?.Code == null) continue;
+                    if (allowedDomains.Count > 0 && !allowedDomains.Contains(et.Code.Domain)) continue;
+
+                    var stack = new ItemStack(entitySpawner);
+                    stack.Attributes.SetString("type", et.Code.ToShortString());
+
+                    var jis = new JsonItemStack
+                    {
+                        Type = EnumItemClass.Item,
+                        Code = entitySpawner.Code,
+                        StackSize = stack.StackSize,
+                        ResolvedItemstack = stack
+                    };
+
+                    stacks.Add(jis);
+                }
             }
 
             if (stacks.Count == 0) return;

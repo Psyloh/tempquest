@@ -20,12 +20,25 @@ namespace VsQuest
         {
             string playerName = (string)args[0];
 
-            var target = sapi.World.AllOnlinePlayers
-                .FirstOrDefault(p => p.PlayerName.Equals(playerName, StringComparison.OrdinalIgnoreCase)) as IServerPlayer;
+            IServerPlayer target;
 
-            if (target == null)
+            if (string.IsNullOrWhiteSpace(playerName))
             {
-                return TextCommandResult.Error($"Player '{playerName}' not found online.");
+                target = args.Caller?.Player as IServerPlayer;
+                if (target == null)
+                {
+                    return TextCommandResult.Error("No player specified and command caller is not a player.");
+                }
+            }
+            else
+            {
+                target = sapi.World.AllOnlinePlayers
+                    .FirstOrDefault(p => p.PlayerName.Equals(playerName, StringComparison.OrdinalIgnoreCase)) as IServerPlayer;
+
+                if (target == null)
+                {
+                    return TextCommandResult.Error($"Player '{playerName}' not found online.");
+                }
             }
 
             bool completed = QuestSystemAdminUtils.ForceCompleteActiveQuestForPlayer(questSystem, target, sapi, out string questId);
