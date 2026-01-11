@@ -77,13 +77,14 @@
           "albase:innkeeper-nightrunhunt",
           "albase:innkeeper-raccoonraid",
           "albase:innkeeper-quietblade",
-          "albase:innkeeper-nightjog"
+          "albase:innkeeper-nightjog",
+          "albase:innkeeper-nightmantle"
         ],
         "rotationdays": 30,
         "rotationcount": 1,
         "noAvailableQuestDescLangKey": "albase:no-quest-available-innkeeper",
         "noAvailableQuestCooldownDescLangKey": "albase:no-quest-available-innkeeper-cooldown",
-        "selectrandom": true,
+        "selectrandom": false,
         "selectrandomcount": 1
       }
     ]

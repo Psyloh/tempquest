@@ -76,7 +76,8 @@
           "albase:innkeeper-nightrunhunt",
           "albase:innkeeper-raccoonraid",
           "albase:innkeeper-quietblade",
-          "albase:innkeeper-nightjog"
+          "albase:innkeeper-nightjog",
+          "albase:innkeeper-nightmantle"
         ],
         "noAvailableQuestDescLangKey": "albase:no-quest-available-innkeeper",
         "noAvailableQuestCooldownDescLangKey": "albase:no-quest-available-innkeeper-cooldown",

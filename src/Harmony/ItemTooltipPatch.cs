@@ -12,6 +12,18 @@ namespace VsQuest.Harmony
 {
     public static class ItemTooltipPatcher
     {
+        private static void TrimEndNewlines(StringBuilder sb)
+        {
+            if (sb == null) return;
+
+            while (sb.Length > 0)
+            {
+                char c = sb[sb.Length - 1];
+                if (c == '\n' || c == '\r') sb.Length--;
+                else break;
+            }
+        }
+
         private static string GetPatternStart(string keyOrPattern)
         {
             string localized = Lang.Get(keyOrPattern);
@@ -167,6 +179,7 @@ namespace VsQuest.Harmony
             }
 
             string currentDsc = dsc.ToString();
+            bool startedAttrBlock = false;
 
             foreach (var kvp in attrs)
             {
@@ -181,7 +194,16 @@ namespace VsQuest.Harmony
                         string lineToAdd = ItemAttributeUtils.FormatAttributeForTooltip(kvp.Key, value);
                         if (!currentDsc.Contains(lineToAdd))
                         {
+                            if (!startedAttrBlock)
+                            {
+                                TrimEndNewlines(dsc);
+                                if (dsc.Length > 0) dsc.AppendLine();
+                                startedAttrBlock = true;
+                                currentDsc = dsc.ToString();
+                            }
+
                             dsc.AppendLine(lineToAdd);
+                            currentDsc += "\n" + lineToAdd;
                         }
                     }
                 }

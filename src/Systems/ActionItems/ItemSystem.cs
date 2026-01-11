@@ -17,6 +17,8 @@ namespace VsQuest
         private IClientNetworkChannel clientChannel;
         private IServerNetworkChannel serverChannel;
 
+        private const string ActionItemsCreativeTabCode = "vsquest-actionitems";
+
         public Dictionary<string, ActionItem> ActionItemRegistry { get; private set; } = new Dictionary<string, ActionItem>();
 
         public override void StartPre(ICoreAPI api)
@@ -43,6 +45,82 @@ namespace VsQuest
             }
         }
 
+        public override void AssetsFinalize(ICoreAPI api)
+        {
+            if (api?.Side != EnumAppSide.Client) return;
+            InjectActionItemsCreativeTab(api);
+        }
+
+        private void InjectActionItemsCreativeTab(ICoreAPI api)
+        {
+            if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
+
+            var debugTool = api.World.GetItem(new AssetLocation("alegacyvsquest:debugtool"));
+            if (debugTool == null || debugTool.IsMissing) return;
+
+            var stacks = new List<JsonItemStack>();
+            foreach (var kvp in ActionItemRegistry)
+            {
+                var actionItem = kvp.Value;
+                if (actionItem == null || string.IsNullOrWhiteSpace(actionItem.itemCode)) continue;
+
+                CollectibleObject collectible = api.World.GetItem(new AssetLocation(actionItem.itemCode));
+                if (collectible == null)
+                {
+                    collectible = api.World.GetBlock(new AssetLocation(actionItem.itemCode));
+                }
+                if (collectible == null || collectible.IsMissing) continue;
+
+                var stack = new ItemStack(collectible);
+                ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
+
+                var jis = new JsonItemStack
+                {
+                    Type = collectible is Block ? EnumItemClass.Block : EnumItemClass.Item,
+                    Code = collectible.Code,
+                    StackSize = stack.StackSize,
+                    ResolvedItemstack = stack
+                };
+
+                stacks.Add(jis);
+            }
+
+            if (stacks.Count == 0) return;
+
+            var tabStackList = new CreativeTabAndStackList
+            {
+                Tabs = new[] { ActionItemsCreativeTabCode },
+                Stacks = stacks.ToArray()
+            };
+
+            var merged = new List<CreativeTabAndStackList>();
+            if (debugTool.CreativeInventoryStacks != null)
+            {
+                foreach (var existing in debugTool.CreativeInventoryStacks)
+                {
+                    if (existing?.Tabs == null) { merged.Add(existing); continue; }
+
+                    bool hasOurTab = false;
+                    for (int i = 0; i < existing.Tabs.Length; i++)
+                    {
+                        if (existing.Tabs[i] == ActionItemsCreativeTabCode)
+                        {
+                            hasOurTab = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasOurTab)
+                    {
+                        merged.Add(existing);
+                    }
+                }
+            }
+
+            merged.Add(tabStackList);
+            debugTool.CreativeInventoryStacks = merged.ToArray();
+        }
+
         public override void StartServerSide(ICoreServerAPI api)
         {
             sapi = api;
@@ -58,6 +136,11 @@ namespace VsQuest
                 .RegisterMessageType<ExecuteActionItemPacket>();
 
             api.Event.MouseDown += OnMouseDown;
+
+            api.Event.BlockTexturesLoaded += () =>
+            {
+                InjectActionItemsCreativeTab(api);
+            };
         }
 
         private void OnMouseDown(MouseEvent args)

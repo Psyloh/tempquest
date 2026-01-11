@@ -70,6 +70,13 @@
       "id": "timeofday",
       "args": [
         "night",
+        "kill1"
+      ]
+    },
+    {
+      "id": "timeofday",
+      "args": [
+        "night",
         "walk"
       ]
     },

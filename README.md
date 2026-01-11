@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# VS Quest
+# Alegacy VS Quest
 
 **A powerful and extensible quest system mod for Vintage Story**
 
@@ -16,7 +16,7 @@
 
 ## 📖 Overview
 
-**VS Quest** is a fork of the original quest mod, enhanced with additional functionality for the [alegacy.online](https://alegacy.online) server. This mod adds a comprehensive quest system to Vintage Story, allowing players to accept, track, and complete quests from custom NPCs (Quest Givers).
+**Alegacy VS Quest** is a fork of the original quest mod, enhanced with additional functionality for the [alegacy.online](https://alegacy.online) server. This mod adds a comprehensive quest system to Vintage Story, allowing players to accept, track, and complete quests from custom NPCs (Quest Givers).
 
 ---
 

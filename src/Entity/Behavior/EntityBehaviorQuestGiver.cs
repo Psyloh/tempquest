@@ -257,8 +257,32 @@ namespace VsQuest
         private bool predecessorsCompleted(Quest quest, string playerUID)
         {
             var completedQuests = new List<string>(entity.World.PlayerByUid(playerUID)?.Entity?.WatchedAttributes.GetStringArray("alegacyvsquest:playercompleted", new string[0]) ?? new string[0]);
-            return String.IsNullOrEmpty(quest.predecessor)
-                || completedQuests.Contains(quest.predecessor);
+
+            // Legacy: single predecessor
+            if (!String.IsNullOrEmpty(quest.predecessor))
+            {
+                if (!completedQuests.Contains(quest.predecessor))
+                {
+                    return false;
+                }
+            }
+
+            // New: list of predecessors (all must be completed)
+            if (quest.predecessors != null)
+            {
+                for (int i = 0; i < quest.predecessors.Count; i++)
+                {
+                    string pred = quest.predecessors[i];
+                    if (String.IsNullOrWhiteSpace(pred)) continue;
+
+                    if (!completedQuests.Contains(pred))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public override string PropertyName() => "questgiver";

@@ -147,6 +147,18 @@
   "albase:innkeeper-nightjog-reward-journal-text": "The night walk is over. I'm back. The innkeeper silently handed me some food. I don't think he expected me to return.",
   "albase:dialogue-innkeeper-nightjog-final-text": "You're back. Alive. Well, what do you know. Here, you earned it.",
 
+  "albase:innkeeper-nightmantle-title": "Innkeeper: Last Shift",
+  "albase:innkeeper-nightmantle-desc": "The innkeeper watches you in silence, as if counting every job you've done. Then he nods: you've proven you can finish quiet work without stories.\n\nOne last test: no speeches — he'll name a couple of targets. How many will be up to chance.",
+  "albase:innkeeper-nightmantle-obj-kills": "Kills on the list: {0}/{1}",
+
+  "albase:innkeeper-nightmantle-journal-title": "Innkeeper",
+  "albase:innkeeper-nightmantle-journal-text": "He called me over without explanation. The test isn't over yet. The innkeeper handed me a list of targets — prowlers on the roads and outskirts. How many there will be is up to chance.\n\nIf I do it clean, I'll get his mark.",
+
+  "albase:dialogue-innkeeper-nightmantle-final-text": "People love talking about \"heroes\". Talk makes me sick. You didn't talk. You worked.\n\nTake this pin. It's simple, but I don't hand these to strangers. Wear it—and keep a low profile. And remember: it's not decoration. It's a mark.",
+
+  "albase:innkeeper-nightmantle-reward-journal-title": "Innkeeper",
+  "albase:innkeeper-nightmantle-reward-journal-text": "The innkeeper gave me a plain silver pin. Not for looks — for work. I think I'm no longer just hired hands to him. I'm one of his.",
+
   "albase:dialogue-innkeeper-missingmugs-final-text": "The mugs are in place. Means the night was quiet. Take the supplies. And don't ask questions.",
   "albase:dialogue-innkeeper-talkingbarrel-final-text": "It's quiet now. Good. Take this. If anyone asks, you heard nothing.",
   "albase:dialogue-innkeeper-doorposter-final-text": "No notes. Better this way. Take the supplies. Let them write at their own homes from now on.",

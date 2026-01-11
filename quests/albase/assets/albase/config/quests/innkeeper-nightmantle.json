@@ -1,0 +1,111 @@
+{
+  "id": "albase:innkeeper-nightmantle",
+  "cooldown": 1000000,
+  "perPlayer": true,
+  "predecessors": [
+    "albase:innkeeper-firstimpression",
+    "albase:innkeeper-quietpatrol",
+    "albase:innkeeper-badcustomers",
+    "albase:innkeeper-silentdeliveries",
+    "albase:innkeeper-foxthief",
+    "albase:innkeeper-cellarwatch",
+    "albase:innkeeper-missingmugs",
+    "albase:innkeeper-talkingbarrel",
+    "albase:innkeeper-doorposter",
+    "albase:innkeeper-nightrunhunt",
+    "albase:innkeeper-raccoonraid",
+    "albase:innkeeper-quietblade",
+    "albase:innkeeper-nightjog"
+  ],
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "6",
+        "1",
+        "7",
+        "albase:innkeeper-randomkill-notify",
+        "drifter-normal",
+        "drifter-deep",
+        "drifter-tainted",
+        "drifter-corrupt",
+        "drifter-nightmare",
+        "drifter-double-headed",
+        "shiver-surface",
+        "shiver-deep",
+        "shiver-tainted",
+        "shiver-corrupt",
+        "shiver-nightmare",
+        "shiver-stilt",
+        "shiver-bellhead",
+        "shiver-deepsplit",
+        "bowtorn-surface",
+        "bowtorn-deep",
+        "bowtorn-tainted",
+        "bowtorn-corrupt",
+        "bowtorn-nightmare",
+        "bowtorn-gearfoot",
+        "locust-bronze",
+        "locust-corrupt",
+        "locust-corrupt-sawblade"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-nightmantle-journal-title",
+        "albase:innkeeper-nightmantle-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "randomkill",
+      "objectiveId": "kills",
+      "args": [
+        "albase:innkeeper-nightmantle"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    {
+      "id": "questitem",
+      "args": [
+        "albase:innkeeper-nightmantle"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "game:sounds/player/coin1",
+        "0.35"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-innkeeper-final-title",
+        "albase:dialogue-innkeeper-nightmantle-final-text",
+        "albase:dialogue-innkeeper-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:innkeeper",
+        "albase:innkeeper-nightmantle-reward-journal-title",
+        "albase:innkeeper-nightmantle-reward-journal-text"
+      ]
+    }
+  ]
+}

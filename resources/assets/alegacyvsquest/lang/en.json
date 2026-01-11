@@ -40,6 +40,8 @@
     "objective-timeofday-night": "Night only",
     "timeofday-notify-day": "This job can only be turned in during the day.",
     "timeofday-notify-night": "This job can only be turned in during the night.",
+    "game:tabname-vsquest-actionitems": "Quest items",
+    "tabname-vsquest-actionitems": "Quest items",
     "alegacyvsquest:item-debugtool": "Debug tool",
     "alegacyvsquest:journal-updated": "Journal updated",
     "alegacyvsquest:quest-could-not-complete": "Something went wrong, the quest could not be completed",

@@ -36,18 +36,18 @@
   ],
   "actionObjectives": [
     {
-      "id": "timeofday",
-      "args": [
-        "night",
-        "kill0"
-      ]
-    },
-    {
       "id": "randomkill",
       "objectiveId": "kill0",
       "args": [
         "albase:innkeeper-cellarwatch",
         "0"
+      ]
+    },
+    {
+      "id": "timeofday",
+      "args": [
+        "night",
+        "kill0"
       ]
     },
     {
@@ -59,11 +59,25 @@
       ]
     },
     {
+      "id": "timeofday",
+      "args": [
+        "night",
+        "kill1"
+      ]
+    },
+    {
       "id": "randomkill",
       "objectiveId": "kill2",
       "args": [
         "albase:innkeeper-cellarwatch",
         "2"
+      ]
+    },
+    {
+      "id": "timeofday",
+      "args": [
+        "night",
+        "kill2"
       ]
     }
   ],

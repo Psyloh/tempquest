@@ -8,6 +8,7 @@ namespace VsQuest
         public int cooldown { get; set; }
         public bool perPlayer { get; set; }
         public string predecessor { get; set; }
+        public List<string> predecessors { get; set; } = new List<string>();
         public List<ActionWithArgs> onAcceptedActions { get; set; } = new List<ActionWithArgs>();
         public List<Objective> gatherObjectives { get; set; } = new List<Objective>();
         public List<Objective> killObjectives { get; set; } = new List<Objective>();
