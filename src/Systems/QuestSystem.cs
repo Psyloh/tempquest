@@ -33,6 +33,8 @@ namespace VsQuest
             var harmony = new HarmonyLib.Harmony("vsquest");
             harmony.PatchAll();
 
+            VsQuest.Harmony.EntityInteractPatch.TryPatch(harmony);
+
             api.RegisterEntityBehaviorClass("questgiver", typeof(EntityBehaviorQuestGiver));
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));
 

@@ -48,6 +48,8 @@ Objectives are defined in the `actionObjectives` array within a quest JSON. They
 
 ## All Available Objectives
 
+Objectives are registered in `QuestObjectiveRegistry`.
+
 ### `walkdistance`
 
 Requires the player to walk a certain distance in meters.
@@ -64,7 +66,9 @@ Requires the player to walk a certain distance in meters.
 
 ### `randomkill`
 
-Requires the player to kill randomly generated targets. Used with the `randomkill` action which sets up the kill objectives.
+Completes when all random-kill slots rolled for the quest are finished.
+
+This objective relies on the `rollkillobjectives` action to set up targets and store progress.
 
 **Arguments:**
 - `<questId>` — Quest ID for tracking (required)
@@ -121,19 +125,120 @@ Counts interactions at multiple coordinates. Similar to `interactat` but shows p
 
 ---
 
-### `nearbyflowers`
+### `plantflowers`
 
-Requires a minimum number of flowers near the player.
+Completes when the player has at least N flower blocks nearby.
 
 **Arguments:**
 - `<count>` — Minimum flowers required within 15 blocks (required)
 
 ---
 
-### `playerhasattribute`
+### `hasattribute`
 
 Checks if the player has a specific attribute with a specific value.
 
 **Arguments:**
 - `<key>` — Attribute key (required)
-- `<value>` — Expected value (required)
+- `<value>` — Expected string value (required)
+
+---
+
+### `reachwaypoint`
+
+Completes when the player is within range of a coordinate.
+
+**Arguments:**
+- `<x,y,z>` — Target coordinate (required)
+- `[radius]` — Radius in blocks, default `2` (optional)
+
+---
+
+### `hasitem`
+
+Completes when the player has at least N items matching the given code across their inventories.
+
+**Arguments:**
+- `<itemCode>` — Full code, supports `*` suffix wildcard (required)
+- `<need>` — Required amount (required)
+
+---
+
+### `wearing`
+
+Completes when the player is wearing an item matching the given code in the character inventory.
+
+**Arguments:**
+- `<itemCode>` — Full code, supports `*` suffix wildcard (required)
+- `[slotIndex]` — Character inventory slot index to check (optional). If omitted, checks all slots.
+
+---
+
+### `interactwithentity`
+
+Counts interactions with a specific entity.
+
+**Arguments:**
+- `<questId>` — Quest ID used for tracking (required)
+- `<entityId>` — Entity id as integer/long (required)
+- `<need>` — Required interaction count (required)
+
+---
+
+### `inland`
+
+Completes when the player is currently inside a land claim with the given name.
+
+**Arguments:**
+- `<claimName>` — Land claim name to match (required)
+
+---
+
+### `landgate`
+
+Progress gate: allows quest progress only while the player is inside a land claim with the given name.
+
+This is meant to be used as a *gate* (similar to `timeofday`) and can be applied to the whole quest or a specific objective.
+
+**Arguments:**
+- `<claimName>` — Land claim name required for progress (required)
+- `[objectiveId]` — If set, gate only applies when progressing the specified `actionObjective.objectiveId` (optional). If omitted, applies to all quest progress.
+- `[prefix]` — Optional text prefix to display before progress lines (optional)
+- `[hidePrefix]` — `true`/`1` to disable showing `prefix` (optional)
+
+---
+
+### `killnear`
+
+Counts kills near a coordinate, optionally filtered by mob code.
+
+**Arguments:**
+- `<questId>` — Quest ID used for tracking (required)
+- `<objectiveId>` — Must match `actionObjective.objectiveId` (required)
+- `<x,y,z>` — Center coordinate (required)
+- `<radius>` — Radius (required)
+- `[mobCode]` — Entity code filter, default `*` (optional)
+- `<need>` — Required kill count (required)
+
+---
+
+### `sequence`
+
+Completes a list of other action objectives in a required order.
+
+**Arguments:**
+- `<questId>` — Quest ID (required)
+- `<sequenceId>` — Sequence storage id (required)
+- `<objectiveId1>` — Objective id to complete first (required)
+- `<objectiveId2...>` — Next objective ids in order (required)
+
+---
+
+### `temporalstorm`
+
+Counts temporal storms survived. A storm is counted when it transitions from active to inactive.
+
+**Arguments:**
+- `<questId>` — Quest ID used for tracking (required)
+- `<objectiveId>` — Must match `actionObjective.objectiveId` (required)
+- `<needStorms>` — Required storms survived (required)

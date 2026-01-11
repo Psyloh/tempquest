@@ -42,13 +42,22 @@
   "actionObjectives": [
     {
       "id": "randomkill",
+      "objectiveId": "kill0",
       "args": [
         "albase:innkeeper-nightrunhunt",
         "0"
       ]
     },
     {
+      "id": "timeofday",
+      "args": [
+        "night",
+        "kill0"
+      ]
+    },
+    {
       "id": "walkdistance",
+      "objectiveId": "walk",
       "args": [
         "albase:innkeeper-nightrunhunt",
         "1400"
@@ -57,7 +66,8 @@
     {
       "id": "timeofday",
       "args": [
-        "night"
+        "night",
+        "walk"
       ]
     }
   ],

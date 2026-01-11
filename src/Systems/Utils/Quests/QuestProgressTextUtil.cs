@@ -37,6 +37,7 @@ namespace VsQuest
             try
             {
                 string timeOfDayPrefix = null;
+                string landPrefix = null;
                 if (questDef.actionObjectives != null)
                 {
                     foreach (var ao in questDef.actionObjectives)
@@ -49,12 +50,30 @@ namespace VsQuest
                         }
                         break;
                     }
+
+                    foreach (var ao in questDef.actionObjectives)
+                    {
+                        if (ao?.id != "landgate") continue;
+
+                        if (LandGateObjective.TryParseArgs(ao.args, out _, out _, out string prefix, out bool hidePrefix) && !hidePrefix)
+                        {
+                            landPrefix = prefix;
+                        }
+                        break;
+                    }
                 }
 
-                string ApplyPrefix(string text)
+                string ApplyPrefixes(string text)
                 {
-                    if (string.IsNullOrWhiteSpace(timeOfDayPrefix)) return text;
-                    return $"{timeOfDayPrefix}: {text}";
+                    // Order matters: landgate wraps timeofday so that final text becomes "land: time: ..."
+                    string[] prefixes = new[] { timeOfDayPrefix, landPrefix };
+                    foreach (var p in prefixes)
+                    {
+                        if (string.IsNullOrWhiteSpace(p)) continue;
+                        text = $"{p}: {text}";
+                    }
+
+                    return text;
                 }
 
                 // randomkill objectives
@@ -66,7 +85,7 @@ namespace VsQuest
                         string code = wa.GetString(RandomKillQuestUtils.SlotCodeKey(activeQuest.questId, slot), "?");
                         int have = wa.GetInt(RandomKillQuestUtils.SlotHaveKey(activeQuest.questId, slot), 0);
                         int need = wa.GetInt(RandomKillQuestUtils.SlotNeedKey(activeQuest.questId, slot), 0);
-                        lines.Add($"- {ApplyPrefix($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
+                        lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
                     }
                 }
 
@@ -82,7 +101,7 @@ namespace VsQuest
                     var custom = LocalizationUtils.GetSafe(customKey, progress.Cast<object>().ToArray());
                     if (!string.IsNullOrWhiteSpace(custom) && !string.Equals(custom, customKey, StringComparison.OrdinalIgnoreCase))
                     {
-                        lines.Add($"- {ApplyPrefix(custom)}");
+                        lines.Add($"- {ApplyPrefixes(custom)}");
                         return string.Join("\n", lines);
                     }
                 }
@@ -113,7 +132,7 @@ namespace VsQuest
                                             template = $"{have}/{need}";
                                         }
 
-                                        lines.Add($"- {ApplyPrefix(template)}");
+                                        lines.Add($"- {ApplyPrefixes(template)}");
                                         return string.Join("\n", lines);
                                     }
                                 }
@@ -136,7 +155,7 @@ namespace VsQuest
                             int have = progress[progressIndex++];
                             int need = objective.demand;
                             string code = objective.validCodes.FirstOrDefault() ?? "?";
-                            lines.Add($"- {ApplyPrefix($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
+                            lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}")}");
                         }
                     }
                 }
@@ -172,7 +191,7 @@ namespace VsQuest
 
                                 var walkLabel = LocalizationUtils.GetSafe("alegacyvsquest:objective-walkdistance");
                                 var meterUnit = LocalizationUtils.GetSafe("alegacyvsquest:unit-meter-short");
-                                lines.Add($"- {ApplyPrefix($"{walkLabel}: {have}/{need} {meterUnit}")}");
+                                lines.Add($"- {ApplyPrefixes($"{walkLabel}: {have}/{need} {meterUnit}")}");
                             }
                             continue;
                         }

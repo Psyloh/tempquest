@@ -38,6 +38,7 @@ namespace VsQuest
     public class ActionWithArgs
     {
         public string id { get; set; }
+        public string objectiveId { get; set; }
         public string[] args { get; set; } = new string[0];
     }
 

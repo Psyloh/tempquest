@@ -28,7 +28,7 @@ namespace VsQuest
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
 
-            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "kill")) return;
 
             checkEventTrackers(killTrackers, entityCode, null, quest.killObjectives);
         }
@@ -38,7 +38,7 @@ namespace VsQuest
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
 
-            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "blockplace")) return;
 
             checkEventTrackers(blockPlaceTrackers, blockCode, position, quest.blockPlaceObjectives);
         }
@@ -48,7 +48,7 @@ namespace VsQuest
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
 
-            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "blockbreak")) return;
 
             checkEventTrackers(blockBreakTrackers, blockCode, position, quest.blockBreakObjectives);
         }
@@ -58,7 +58,7 @@ namespace VsQuest
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
 
-            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry)) return;
+            if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "interact")) return;
 
             var serverPlayer = byPlayer as IServerPlayer;
             if (serverPlayer != null)

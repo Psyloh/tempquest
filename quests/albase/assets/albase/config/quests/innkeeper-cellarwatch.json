@@ -38,11 +38,13 @@
     {
       "id": "timeofday",
       "args": [
-        "night"
+        "night",
+        "kill0"
       ]
     },
     {
       "id": "randomkill",
+      "objectiveId": "kill0",
       "args": [
         "albase:innkeeper-cellarwatch",
         "0"
@@ -50,6 +52,7 @@
     },
     {
       "id": "randomkill",
+      "objectiveId": "kill1",
       "args": [
         "albase:innkeeper-cellarwatch",
         "1"
@@ -57,6 +60,7 @@
     },
     {
       "id": "randomkill",
+      "objectiveId": "kill2",
       "args": [
         "albase:innkeeper-cellarwatch",
         "2"

@@ -30,6 +30,7 @@
   "actionObjectives": [
     {
       "id": "walkdistance",
+      "objectiveId": "walk",
       "args": [
         "albase:innkeeper-nightjog",
         "10000"
@@ -38,7 +39,8 @@
     {
       "id": "timeofday",
       "args": [
-        "night"
+        "night",
+        "walk"
       ]
     }
   ],

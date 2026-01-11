@@ -19,15 +19,22 @@ namespace VsQuest
                     }
                     var quest = questRegistry[activeQuest.questId];
 
-                    if (!QuestTimeGateUtil.AllowsProgress(serverPlayer, quest, actionObjectiveRegistry)) continue;
-
                     for (int i = 0; i < quest.actionObjectives.Count; i++)
                     {
                         var objective = quest.actionObjectives[i];
                         if (objective.id == "walkdistance")
                         {
+                            if (!QuestTimeGateUtil.AllowsProgress(serverPlayer, quest, actionObjectiveRegistry, "tick", objective.objectiveId)) continue;
+
                             var objectiveImplementation = actionObjectiveRegistry[objective.id] as WalkDistanceObjective;
                             objectiveImplementation?.OnTick(serverPlayer, activeQuest, i, objective.args, sapi, dt);
+                        }
+                        else if (objective.id == "temporalstorm")
+                        {
+                            if (!QuestTimeGateUtil.AllowsProgress(serverPlayer, quest, actionObjectiveRegistry, "tick", objective.objectiveId)) continue;
+
+                            var objectiveImplementation = actionObjectiveRegistry[objective.id] as TemporalStormObjective;
+                            objectiveImplementation?.OnTick(serverPlayer, activeQuest, objective, sapi);
                         }
                     }
                 }

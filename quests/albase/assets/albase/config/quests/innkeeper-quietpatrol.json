@@ -45,6 +45,7 @@
   "actionObjectives": [
     {
       "id": "randomkill",
+      "objectiveId": "kill0",
       "args": [
         "albase:innkeeper-quietpatrol",
         "0"
@@ -52,6 +53,7 @@
     },
     {
       "id": "randomkill",
+      "objectiveId": "kill1",
       "args": [
         "albase:innkeeper-quietpatrol",
         "1"
@@ -60,11 +62,20 @@
     {
       "id": "timeofday",
       "args": [
-        "night"
+        "night",
+        "kill0"
+      ]
+    },
+    {
+      "id": "timeofday",
+      "args": [
+        "night",
+        "walk"
       ]
     },
     {
       "id": "walkdistance",
+      "objectiveId": "walk",
       "args": [
         "albase:innkeeper-quietpatrol",
         "1200"
