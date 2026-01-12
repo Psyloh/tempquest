@@ -8,9 +8,6 @@
     "no-quest-available-desc": "Мне сейчас не нужна твоя помощь.",
     "no-quest-active-desc": "Не припоминаю, чтобы мы о чем-то договаривались...",
     "access-quests": "Говорить",
-    "quest-freeghost-title": "Хотелось бы упокоиться в местечке получше",
-    "quest-freeghost-desc": "Тут довольно уныло, может, посадишь несколько цветов?",
-    "quest-freeghost-obj": "Посажено цветов: {0}/8",
     "attr-attackpower": "Сила атаки",
     "attr-warmth": "Тепло",
     "attr-protection": "Защита",
@@ -43,6 +40,7 @@
     "game:tabname-vsquest-actionitems": "Предметы квестов",
     "tabname-vsquest-actionitems": "Предметы квестов",
     "alegacyvsquest:item-debugtool": "Отладочный инструмент",
+    "alegacyvsquest:item-entityspawner": "Спавнер сущностей",
     "alegacyvsquest:journal-updated": "Журнал обновлён",
     "alegacyvsquest:quest-could-not-complete": "Что-то пошло не так, квест не может быть завершён",
     "alegacyvsquest:progress-title": "Прогресс"

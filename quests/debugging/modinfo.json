@@ -1,0 +1,16 @@
+{
+    "type": "content",
+    "modid": "vsquestdebugging",
+    "name": "Alegacy VS Quest Debugging Pack",
+    "side": "universal",
+    "authors": [
+        "Flajakay",
+        "DreadMob"
+    ],
+    "description": "Debugging quest pack for Alegacy VS Quest.",
+    "version": "1.0.0",
+    "dependencies": {
+        "game": "1.21.6",
+        "alegacyvsquest": "*"
+    }
+}

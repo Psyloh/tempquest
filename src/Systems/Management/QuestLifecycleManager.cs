@@ -62,6 +62,8 @@ namespace VsQuest
                 return;
             }
 
+            QuestActionObjectiveCompletionUtil.ResetCompletionFlags(quest, fromPlayer);
+
             var killTrackers = CreateTrackers(quest.killObjectives);
             var blockPlaceTrackers = CreateTrackers(quest.blockPlaceObjectives);
             var blockBreakTrackers = CreateTrackers(quest.blockBreakObjectives);

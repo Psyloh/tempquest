@@ -52,6 +52,7 @@ namespace VsQuest
             actionRegistry.Add("servercommand", new ServerCommandAction());
             actionRegistry.Add("playercommand", new PlayerCommandAction());
             actionRegistry.Add("questitem", new GiveActionItemAction());
+            actionRegistry.Add("giveactionitem", new GiveActionItemAction());
 
             actionRegistry.Add("allowcharselonce", new AllowCharSelOnceAction());
 
@@ -60,6 +61,8 @@ namespace VsQuest
             actionRegistry.Add("resetwalkdistance", new ResetWalkDistanceQuestAction());
             actionRegistry.Add("checkobjective", new CheckObjectiveAction());
             actionRegistry.Add("markinteraction", new MarkInteractionAction());
+
+            actionRegistry.Add("cooldownblock", new CooldownBlockAction());
 
             actionRegistry.Add("setquestgiverattribute", new SetQuestGiverAttributeQuestAction());
             actionRegistry.Add("notify", new NotifyQuestAction());

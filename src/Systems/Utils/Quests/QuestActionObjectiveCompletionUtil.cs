@@ -7,6 +7,38 @@ namespace VsQuest
     {
         private static string CompletedKey(string questId, string objectiveKey) => $"vsquest:ao:completed:{questId}:{objectiveKey}";
 
+        public static void ResetCompletionFlags(Quest quest, IServerPlayer player)
+        {
+            if (quest == null || player?.Entity?.WatchedAttributes == null) return;
+            if (quest.actionObjectives == null || quest.actionObjectives.Count == 0) return;
+
+            var wa = player.Entity.WatchedAttributes;
+
+            foreach (var ao in quest.actionObjectives)
+            {
+                if (ao == null || string.IsNullOrWhiteSpace(ao.id)) continue;
+
+                string objectiveKey;
+
+                if (!string.IsNullOrWhiteSpace(ao.objectiveId))
+                {
+                    objectiveKey = ao.objectiveId;
+                }
+                else if (ao.id == "interactat" && ao.args != null && ao.args.Length >= 1 && QuestInteractAtUtil.TryParsePos(ao.args[0], out int x, out int y, out int z))
+                {
+                    objectiveKey = QuestInteractAtUtil.InteractionKey(x, y, z);
+                }
+                else
+                {
+                    objectiveKey = ao.id;
+                }
+
+                string key = CompletedKey(quest.id, objectiveKey);
+                wa.RemoveAttribute(key);
+                wa.MarkPathDirty(key);
+            }
+        }
+
         public static void TryFireOnComplete(ICoreServerAPI sapi, IServerPlayer player, ActiveQuest activeQuest, ActionWithArgs objectiveDef, string objectiveKey, bool isNowCompletable)
         {
             if (sapi == null || player == null || activeQuest == null || objectiveDef == null) return;

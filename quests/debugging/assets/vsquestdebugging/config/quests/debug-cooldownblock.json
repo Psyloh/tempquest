@@ -1,0 +1,25 @@
+{
+  "id": "vsquestdebugging:debug-cooldownblock",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "notify",
+      "args": [
+        "Debug: right-click the block at 512000,3,512000 (it will go on cooldown for 1 in-game hour)."
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "interactat",
+      "objectiveId": "trigger",
+      "onCompleteActions": "notify 'CooldownBlock: applying 1 in-game hour cooldown to block (512000,3,512000)'; cooldownblock 1 512000,3,512000; notify 'Done. Completing quest.'; completequest",
+      "args": [
+        "512000,3,512000"
+      ]
+    }
+  ],
+  "itemRewards": [],
+  "actionRewards": []
+}

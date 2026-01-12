@@ -1,0 +1,27 @@
+{
+  "actionItems": [
+    {
+      "id": "teleport-gear",
+      "itemCode": "game:gear-rusty",
+      "name": "Gear that never lies",
+      "description": "A strange gear that hums with power.",
+      "actions": [
+        {
+          "id": "addjournalentry",
+          "args": [
+            "vsquestdebugging:hehe",
+            "When time is hehe",
+            "There will be a big HEHE",
+            "HEHE?????"
+          ]
+        },
+        {
+          "id": "playsound",
+          "args": [
+            "game:sounds/voice/saxophone"
+          ]
+        }
+      ]
+    }
+  ]
+}

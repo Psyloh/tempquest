@@ -454,6 +454,24 @@ Opens the quest completion dialog with custom title, text, and optional buttons.
 
 ## World Category
 
+### `cooldownblock`
+
+Replaces a target block with an invisible placeholder block for a duration (in **in-game hours**), then restores the original block (including its block entity data, if any).
+
+**Arguments:**
+- `<delayHours>` — Duration in in-game hours (float, invariant culture, required)
+- `[x,y,z]` — Optional coordinate string. If omitted, uses the last interacted block coordinates stored in player watched attributes (`vsquest:lastinteract:x|y|z|dim`).
+
+**Notes:**
+- Requires the placeholder block asset `alegacyvsquest:cooldownplaceholder` to exist on server/client.
+- If the target block is already the placeholder, the action does nothing.
+
+**Example (action string):**
+```
+cooldownblock 1 512000,3,512000
+```
+---
+
 ### `setquestgiverattribute`
 
 Sets a typed attribute on the current quest giver entity's watched attributes.

@@ -1,0 +1,42 @@
+{
+  "item-creature-questgiver": "Questgiver",
+  "item-creature-debugger": "Отладчик",
+
+  "vsquestdebugging:test-title": "Test",
+  "vsquestdebugging:test-desc": "Сборный тест",
+
+  "vsquestdebugging:test-inventory-title": "Test: Inventory",
+  "vsquestdebugging:test-inventory-desc": "Сборный тест: plantflowers + hasitem + wearing + hasattribute + checkvariable + inland.",
+  "vsquestdebugging:test-inventory-obj-flowers": "Поставить цветок рядом: {0}/{1}",
+  "vsquestdebugging:test-inventory-obj-inland": "Зайти в регион TestClaim: {0}",
+
+  "vsquestdebugging:test-interactions-title": "Test: Interactions",
+  "vsquestdebugging:test-interactions-desc": "Сборный тест: interactat + interactcount + interactwithentity.",
+  "vsquestdebugging:test-interactions-obj-interactat2": "Взаимодействовать с блоком (512000,4,512000): {0}",
+
+  "vsquestdebugging:test-movement-gates-title": "Test: Movement & Gates",
+  "vsquestdebugging:test-movement-gates-desc": "Сборный тест: reachwaypoint + walkdistance + timeofday (гейт на walkdistance) + sequence.",
+  "vsquestdebugging:test-movement-gates-obj-seq": "Последовательность (палка + пробежка): {0}/{1}",
+  "vsquestdebugging:test-movement-gates-obj-walk": "Пробежать днём: {0}/{1} м",
+
+  "vsquestdebugging:test-walkdistance-title": "Test: WalkDistance",
+  "vsquestdebugging:test-walkdistance-desc": "Проверка цели walkdistance.\n\nСделай все шаги (разные слоты): 10м, 25м, 50м.",
+  "vsquestdebugging:test-walkdistance-obj-walk10": "Пройти 10м: {0}/{1} м",
+  "vsquestdebugging:test-walkdistance-obj-walk25": "Пройти 25м: {0}/{1} м",
+  "vsquestdebugging:test-walkdistance-obj-walk50": "Пройти 50м: {0}/{1} м",
+
+  "vsquestdebugging:test-combat-events-title": "Test: Combat & Events",
+  "vsquestdebugging:test-combat-events-desc": "Сборный тест: landgate + killnear (2 варианта) + randomkill (2 слота) + temporalstorm.",
+  "vsquestdebugging:test-combat-events-obj-killnear": "Убить рядом (радиус 15): {0}/{1}",
+  "vsquestdebugging:test-combat-events-obj-killnear2": "Убить дрифтера рядом (радиус 8): {0}/{1}",
+
+  "vsquestdebugging:debug-actions-title": "Debug: Actions",
+  "vsquestdebugging:debug-actions-desc": "Отладка actions: notify/playsound/giveitem/addplayerattribute/addplayerint/addjournalentry/showquestfinaldialog.\n\nПрими квест и затем ПКМ по Debugger 1 раз.",
+
+  "vsquestdebugging:debug-cooldownblock-title": "Debug: CooldownBlock (1 игровой час)",
+  "vsquestdebugging:debug-cooldownblock-desc": "Отладочный квест.\n\nШаги:\n1) Прими квест у Debugger.\n2) ПКМ по блоку на 512000,3,512000.\n\nОжидаемо: блок заменится на placeholder и восстановится через 1 игровой час.",
+
+  "vsquestdebugging:quest-freeghost-title": "Квест: Посадить цветы",
+  "vsquestdebugging:quest-freeghost-desc": "Тут довольно уныло, может, посадишь несколько цветов?",
+  "vsquestdebugging:quest-freeghost-obj": "Посажено цветов: {0}/8"
+}

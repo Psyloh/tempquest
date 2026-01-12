@@ -1,0 +1,32 @@
+{
+  "id": "vsquestdebugging:test-combat-events",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "randomkill",
+      "args": [
+        "2",
+        "1",
+        "1",
+        "alegacyvsquest:kill-notify",
+        "notify 'randomkill progress'",
+        "notify 'randomkill done'",
+        "drifter-normal",
+        "drifter-deep"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    { "id": "landgate", "objectiveId": "gate", "args": ["TestClaim", "killnear", "TestClaim", "false"] },
+    { "id": "killnear", "objectiveId": "killnear", "args": ["vsquestdebugging:test-combat-events", "killnear", "512000,3,512000", "15", "*", "1"] },
+    { "id": "killnear", "objectiveId": "killnear2", "args": ["vsquestdebugging:test-combat-events", "killnear2", "512000,3,512000", "8", "drifter-*", "1"] },
+    { "id": "randomkill", "objectiveId": "rk", "args": ["vsquestdebugging:test-combat-events"] },
+    { "id": "temporalstorm", "objectiveId": "storm", "args": ["vsquestdebugging:test-combat-events", "storm", "1"] }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    { "id": "notify", "args": ["OK: combat + event tests completed"] }
+  ]
+}

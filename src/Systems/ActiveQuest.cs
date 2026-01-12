@@ -58,6 +58,18 @@ namespace VsQuest
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
             var quest = questSystem.QuestRegistry[questId];
 
+            if (byPlayer?.Entity?.WatchedAttributes != null && position != null && position.Length == 3)
+            {
+                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:x", position[0]);
+                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:y", position[1]);
+                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:z", position[2]);
+                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:dim", byPlayer.Entity?.Pos?.Dimension ?? 0);
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:x");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:y");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:z");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:dim");
+            }
+
             if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "interact")) return;
 
             var serverPlayer = byPlayer as IServerPlayer;

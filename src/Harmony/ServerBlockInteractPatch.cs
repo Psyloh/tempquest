@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
@@ -19,7 +20,11 @@ namespace VsQuest.Harmony
             if (questSystem == null) return;
 
             int[] position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
-            questSystem.GetPlayerQuests(player.PlayerUID).ForEach(quest => quest.OnBlockUsed(__instance.Code.ToString(), position, player, sapi));
+            var playerQuests = questSystem.GetPlayerQuests(player.PlayerUID);
+            foreach (var quest in playerQuests.ToArray())
+            {
+                quest.OnBlockUsed(__instance.Code.ToString(), position, player, sapi);
+            }
         }
     }
 }

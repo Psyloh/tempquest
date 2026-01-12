@@ -1,0 +1,15 @@
+{
+  "code": "cooldownplaceholder",
+  "class": "BlockCooldownPlaceholder",
+  "entityClass": "CooldownPlaceholder",
+  "shape": { "base": "game:block/basic/invisible" },
+  "drawtype": "json",
+  "replaceable": 9000,
+  "resistance": 9999,
+  "lightAbsorption": 0,
+  "textures": { "all": { "base": "game:block/stone/granite" } },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false },
+  "collisionbox": null,
+  "selectionbox": null
+}

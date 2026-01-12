@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Vintagestory.API.Server;
 
 namespace VsQuest
@@ -10,7 +11,9 @@ namespace VsQuest
             foreach (var serverPlayer in players)
             {
                 var activeQuests = getPlayerQuests(serverPlayer.PlayerUID);
-                foreach (var activeQuest in activeQuests)
+                if (activeQuests == null || activeQuests.Count == 0) continue;
+
+                foreach (var activeQuest in activeQuests.ToArray())
                 {
                     if (!questRegistry.ContainsKey(activeQuest.questId))
                     {

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -50,7 +51,7 @@ namespace VsQuest.Harmony
             long targetEntityId = entity.EntityId;
             string targetEntityCode = entity?.Code?.ToString()?.Trim()?.ToLowerInvariant();
 
-            foreach (var activeQuest in activeQuests)
+            foreach (var activeQuest in activeQuests.ToArray())
             {
                 if (activeQuest == null || string.IsNullOrWhiteSpace(activeQuest.questId)) continue;
                 if (!questSystem.QuestRegistry.TryGetValue(activeQuest.questId, out var questDef) || questDef?.actionObjectives == null) continue;

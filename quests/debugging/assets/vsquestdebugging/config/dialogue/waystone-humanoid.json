@@ -1,0 +1,104 @@
+{
+	"components": [
+		{
+			"code": "testhasmet",
+			"owner": "npc",
+			"type": "condition",
+			"variable": "entity.hasmet",
+			"isNotValue": "true",
+			"thenJumpTo": "firstmeet",
+			"elseJumpTo": "welcomeback"
+		},
+		{
+			"code": "testhasname",
+			"owner": "npc",
+			"type": "condition",
+			"variable": "entity.hasname",
+			"isNotValue": "true",
+			"thenJumpTo": "introduction",
+			"elseJumpTo": "welcomeback"
+		},
+		{
+			"code": "firstmeet",
+			"owner": "npc",
+			"type": "talk",
+			"setVariables": { "entity.hasmet": "true", "entity.hasname": "false" },
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-firstmeet" }
+			],
+			"jumpTo": "main"
+		},
+		{
+			"code": "welcomeback",
+			"owner": "npc",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-welcomeback" }
+			],
+			"jumpTo": "main"
+		},
+		{
+			"code": "main",
+			"owner": "player",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-who", "jumpTo": "whoexplained" },
+				{ "value": "dialogue-waystone-humanoid-wave", "jumpTo": "waveexplained", "conditions": [{ "variable": "entity.hasname", "isValue": "false" }] },
+				{ "value": "dialogue-waystone-humanoid-examine", "jumpTo": "examineexplained" },
+				{ "value": "dialogue-waystone-humanoid-changeclass", "jumpTo": "closedialogue" }
+			]
+		},
+		{
+			"code": "whoexplained",
+			"owner": "npc",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-whoexplained" }
+			],
+			"jumpTo": "whoexplained2"
+		},
+		{
+			"code": "whoexplained2",
+			"owner": "player",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-who2", "jumpTo": "whoexplained3" }
+			]
+		},
+		{
+			"code": "whoexplained3",
+			"owner": "npc",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-welcomeback" }
+			],
+			"jumpTo": "welcomeback"
+		},
+		{
+			"code": "examineexplained",
+			"owner": "npc",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-examineexplained" }
+			],
+			"jumpTo": "main"
+		},
+		{
+			"code": "waveexplained",
+			"owner": "npc",
+			"type": "talk",
+			"text": [
+				{ "value": "dialogue-waystone-humanoid-waveexplained", "jumpTo": "welcomeback" }
+			]
+		},
+		{
+			"code": "closedialogue",
+			"owner": "npc",
+			"type": "talk",
+			"trigger": "addjournalentry vsquestdebugging:bigtest1 'New Big Test' 'When time is right....';playercommand '/time set day';servercommand 'a know nothing about ya'",
+			"text": [
+				{ "value": "..." }
+			]
+		}
+	]
+}

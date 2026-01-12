@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -38,6 +39,9 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("questgiver", typeof(EntityBehaviorQuestGiver));
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));
             api.RegisterItemClass("ItemEntitySpawner", typeof(ItemEntitySpawner));
+
+            api.RegisterBlockClass("BlockCooldownPlaceholder", typeof(BlockCooldownPlaceholder));
+            api.RegisterBlockEntityClass("CooldownPlaceholder", typeof(BlockEntityCooldownPlaceholder));
 
             // Register objectives
             objectiveRegistry = new QuestObjectiveRegistry(ActionObjectiveRegistry, api);
@@ -215,8 +219,22 @@ namespace VsQuest
 
         internal void OnVanillaBlockInteract(IServerPlayer player, VanillaBlockInteractMessage message, ICoreServerAPI sapi)
         {
+            if (player == null || message == null)
+            {
+                return;
+            }
+
+            if (message?.BlockCode == "alegacyvsquest:cooldownplaceholder")
+            {
+                return;
+            }
+
             int[] position = new int[] { message.Position.X, message.Position.Y, message.Position.Z };
-            GetPlayerQuests(player?.PlayerUID).ForEach(quest => quest.OnBlockUsed(message.BlockCode, position, player, sapi));
+            var playerQuests = GetPlayerQuests(player.PlayerUID);
+            foreach (var quest in playerQuests.ToArray())
+            {
+                quest.OnBlockUsed(message.BlockCode, position, player, sapi);
+            }
         }
 
         internal void OnShowQuestDialogMessage(ShowQuestDialogMessage message, ICoreClientAPI capi)

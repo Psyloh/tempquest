@@ -1,0 +1,16 @@
+{
+  "id": "vsquestdebugging:test-interactions",
+  "cooldown": 0,
+  "perPlayer": true,
+  "actionObjectives": [
+    { "id": "interactat", "objectiveId": "interactat", "args": ["512000,3,512000"] },
+    { "id": "interactat", "objectiveId": "interactat2", "args": ["512000,4,512000"] },
+    { "id": "interactcount", "objectiveId": "interactcount", "args": ["512000,3,512000", "512000,4,512000", "512000,5,512000"] },
+    { "id": "interactwithentity", "objectiveId": "interactentity", "args": ["vsquestdebugging:test-interactions", "vsquestdebugging:debugger", "2"] }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    { "id": "notify", "args": ["OK: interaction tests completed"] }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "vsquestdebugging:debug-actions",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    { "id": "notify", "args": ["Debug actions: onAcceptedActions fired"] },
+    { "id": "playsound", "args": ["game:sounds/effect/writing", "0.5"] },
+    { "id": "giveitem", "args": ["game:stick", "1"] },
+    { "id": "addplayerattribute", "args": ["vsquestdebugging:debug-actions:attr", "1"] },
+    { "id": "addplayerint", "args": ["vsquestdebugging:debug-actions:int", "1", "10", "vsquestdebugging:debug-actions:int-once"] },
+    { "id": "addjournalentry", "args": ["vsquestdebugging:debug-actions", "Debug Actions", "This is a debug journal entry created by an action."] }
+  ],
+  "actionObjectives": [
+    {
+      "id": "interactwithentity",
+      "objectiveId": "confirm",
+      "onCompleteActions": "notify 'OK: actions confirmed'; showquestfinaldialog 'vsquestdebugging:debug-actions-title' 'vsquestdebugging:debug-actions-desc' 'OK'",
+      "args": [
+        "vsquestdebugging:debug-actions",
+        "vsquestdebugging:debugger",
+        "1"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": []
+}

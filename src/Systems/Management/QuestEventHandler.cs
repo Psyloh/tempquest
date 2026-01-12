@@ -51,18 +51,34 @@ namespace VsQuest
 
         private void OnBlockBroken(IServerPlayer byPlayer, int blockId, BlockSelection blockSel)
         {
+            if (byPlayer == null || blockSel == null)
+            {
+                return;
+            }
+
             var blockCode = sapi.World.GetBlock(blockId)?.Code.ToString();
             var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
-            persistenceManager.GetPlayerQuests(byPlayer?.PlayerUID)
-                .ForEach(quest => quest.OnBlockBroken(blockCode, position, byPlayer));
+            var playerQuests = persistenceManager.GetPlayerQuests(byPlayer.PlayerUID);
+            foreach (var quest in playerQuests.ToArray())
+            {
+                quest.OnBlockBroken(blockCode, position, byPlayer);
+            }
         }
 
         private void OnBlockPlaced(IServerPlayer byPlayer, int oldBlockId, BlockSelection blockSel, ItemStack itemstack)
         {
+            if (byPlayer == null || blockSel == null)
+            {
+                return;
+            }
+
             var blockCode = sapi.World.BlockAccessor.GetBlock(blockSel.Position)?.Code.ToString();
             var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
-            persistenceManager.GetPlayerQuests(byPlayer?.PlayerUID)
-                .ForEach(quest => quest.OnBlockPlaced(blockCode, position, byPlayer));
+            var playerQuests = persistenceManager.GetPlayerQuests(byPlayer.PlayerUID);
+            foreach (var quest in playerQuests.ToArray())
+            {
+                quest.OnBlockPlaced(blockCode, position, byPlayer);
+            }
         }
 
         private void OnQuestTick(float dt)

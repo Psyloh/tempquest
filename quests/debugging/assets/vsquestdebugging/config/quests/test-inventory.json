@@ -1,0 +1,23 @@
+{
+  "id": "vsquestdebugging:test-inventory",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    { "id": "giveitem", "args": ["game:stick", "1"] },
+    { "id": "addplayerattribute", "args": ["vsquestdebugging:test-attr", "1"] },
+    { "id": "addplayerint", "args": ["vsquestdebugging:test-var", "5", "5", "vsquestdebugging:test-inventory:seeded"] }
+  ],
+  "actionObjectives": [
+    { "id": "plantflowers", "objectiveId": "flowers", "args": ["1"] },
+    { "id": "hasitem", "objectiveId": "hasitem", "args": ["game:stick", "1"] },
+    { "id": "wearing", "objectiveId": "wearing", "args": ["game:shirt*"] },
+    { "id": "hasattribute", "objectiveId": "attr", "args": ["vsquestdebugging:test-attr", "1"] },
+    { "id": "checkvariable", "objectiveId": "var", "args": ["vsquestdebugging:test-var", ">=", "5", "notify 'checkvariable fired'"] },
+    { "id": "inland", "objectiveId": "inland", "args": ["TestClaim"] }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    { "id": "notify", "args": ["OK: inventory tests completed"] }
+  ]
+}

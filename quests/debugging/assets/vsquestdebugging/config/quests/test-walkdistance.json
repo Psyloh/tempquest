@@ -1,0 +1,49 @@
+{
+  "id": "vsquestdebugging:test-walkdistance",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "resetwalkdistance",
+      "args": [
+        "vsquestdebugging:test-walkdistance",
+        "3"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "walkdistance",
+      "objectiveId": "walk10",
+      "onCompleteActions": "notify 'OK: walkdistance slot0 (10m) completed'",
+      "args": [
+        "vsquestdebugging:test-walkdistance",
+        "0",
+        "10"
+      ]
+    },
+    {
+      "id": "walkdistance",
+      "objectiveId": "walk25",
+      "onCompleteActions": "notify 'OK: walkdistance slot1 (25m) completed'",
+      "args": [
+        "vsquestdebugging:test-walkdistance",
+        "1",
+        "25"
+      ]
+    },
+    {
+      "id": "walkdistance",
+      "objectiveId": "walk50",
+      "onCompleteActions": "notify 'OK: walkdistance slot2 (50m) completed'",
+      "args": [
+        "vsquestdebugging:test-walkdistance",
+        "2",
+        "50"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": []
+}

@@ -131,6 +131,75 @@ namespace VsQuest
             }
         }
 
+        private static void ClearActionObjectiveCompletionFlagsForQuest(QuestSystem questSystem, IServerPlayer player, string questId)
+        {
+            if (questSystem == null || player?.Entity?.WatchedAttributes == null) return;
+            if (string.IsNullOrWhiteSpace(questId)) return;
+
+            var wa = player.Entity.WatchedAttributes;
+
+            static string CompletedKey(string qid, string objectiveKey) => $"vsquest:ao:completed:{qid}:{objectiveKey}";
+
+            // Clear any per-objective completion markers so onCompleteActions can fire again.
+            // Stored as flat keys on the player's WatchedAttributes.
+            if (questSystem.QuestRegistry != null && questSystem.QuestRegistry.TryGetValue(questId, out var quest) && quest?.actionObjectives != null)
+            {
+                foreach (var ao in quest.actionObjectives)
+                {
+                    if (ao == null || string.IsNullOrWhiteSpace(ao.id)) continue;
+
+                    string objectiveKey;
+
+                    if (!string.IsNullOrWhiteSpace(ao.objectiveId))
+                    {
+                        objectiveKey = ao.objectiveId;
+                    }
+                    else if (ao.id == "interactat" && ao.args != null && ao.args.Length >= 1 && QuestInteractAtUtil.TryParsePos(ao.args[0], out int x, out int y, out int z))
+                    {
+                        // When interactat has no objectiveId, completion util falls back to coordinate key.
+                        objectiveKey = QuestInteractAtUtil.InteractionKey(x, y, z);
+                    }
+                    else
+                    {
+                        objectiveKey = ao.id;
+                    }
+
+                    string key = CompletedKey(questId, objectiveKey);
+                    wa.RemoveAttribute(key);
+                    wa.MarkPathDirty(key);
+                }
+            }
+
+            // Also clear interact-at tracking for interactat objectives in this quest
+            if (questSystem.QuestRegistry != null && questSystem.QuestRegistry.TryGetValue(questId, out var quest2) && quest2?.actionObjectives != null)
+            {
+                string completedInteractions = wa.GetString("completedInteractions", "");
+                if (!string.IsNullOrWhiteSpace(completedInteractions))
+                {
+                    var list = completedInteractions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    bool changed = false;
+
+                    foreach (var ao in quest2.actionObjectives)
+                    {
+                        if (ao?.id != "interactat" || ao.args == null || ao.args.Length < 1) continue;
+
+                        var coordString = ao.args[0];
+                        if (string.IsNullOrWhiteSpace(coordString)) continue;
+                        if (!QuestInteractAtUtil.TryParsePos(coordString, out int x, out int y, out int z)) continue;
+
+                        string interactionKey = QuestInteractAtUtil.InteractionKey(x, y, z);
+                        if (list.Remove(interactionKey)) changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        wa.SetString("completedInteractions", string.Join(",", list));
+                        wa.MarkPathDirty("completedInteractions");
+                    }
+                }
+            }
+        }
+
         private static void RemoveQuestFromCompletedList(IServerPlayer player, string questId)
         {
             if (player?.Entity?.WatchedAttributes == null) return;
@@ -205,6 +274,7 @@ namespace VsQuest
                 RemoveQuestJournalEntries(sapi, questSystem, player, questId);
             }
             ClearPerQuestPlayerState(player, questId);
+            ClearActionObjectiveCompletionFlagsForQuest(questSystem, player, questId);
             RemoveQuestFromCompletedList(player, questId);
 
             questSystem.SavePlayerQuests(player.PlayerUID, quests);
@@ -239,6 +309,7 @@ namespace VsQuest
                 foreach (var questId in questSystem.QuestRegistry.Keys.ToList())
                 {
                     ClearPerQuestPlayerState(player, questId);
+                    ClearActionObjectiveCompletionFlagsForQuest(questSystem, player, questId);
                 }
 
                 player.Entity.WatchedAttributes.MarkAllDirty();

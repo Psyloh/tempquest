@@ -186,6 +186,7 @@
   "game:tradingwindow-innkeeper": "Innkeeper",
   "albase:tradingwindow-innkeeper": "Innkeeper",
   "item-creature-innkeeper": "Innkeeper",
+  "game:nametag-hub": "Hub",
   "game:nametag-трактирщик": "Innkeeper",
   "game:nametag-священник": "Priest",
 
@@ -207,5 +208,8 @@
   "albase:test-obj-interactentity": "Interact with Innkeeper: {0}/{1}",
   "albase:test-obj-var": "Variable check: {0}/{1}",
   "albase:test-obj-attr": "Player attribute: {0}/{1}",
-  "albase:test-obj-sequence": "Sequence (stick + run): {0}/{1}"
+  "albase:test-obj-sequence": "Sequence (stick + run): {0}/{1}",
+
+  "albase:debug-cooldownblock-title": "Debug: CooldownBlock (1 in-game hour)",
+  "albase:debug-cooldownblock-desc": "Debug quest.\n\nSteps:\n1) Go to Hub (512000 3 512000).\n2) Accept the quest.\n3) Right-click the block at 512000 3 512000.\n\nExpected: the block is replaced with a placeholder and restored after 1 in-game hour."
 }

@@ -17,6 +17,8 @@ namespace VsQuest
         private string[] quests;
         private string[] alwaysQuests;
         private string[] rotationPool;
+        private string[] excludeQuests;
+        private string[] excludeQuestPrefixes;
         private bool selectRandom;
         private int selectRandomCount;
         private int rotationDays;
@@ -43,6 +45,8 @@ namespace VsQuest
             quests = attributes["quests"].AsArray<string>() ?? Array.Empty<string>();
             alwaysQuests = attributes["alwaysquests"].AsArray<string>() ?? Array.Empty<string>();
             rotationPool = attributes["rotationpool"].AsArray<string>();
+            excludeQuests = attributes["excludequests"].AsArray<string>() ?? Array.Empty<string>();
+            excludeQuestPrefixes = attributes["excludequestprefixes"].AsArray<string>() ?? Array.Empty<string>();
             noAvailableQuestDescLangKey = attributes["noAvailableQuestDescLangKey"].AsString(null);
             noAvailableQuestCooldownDescLangKey = attributes["noAvailableQuestCooldownDescLangKey"].AsString(null);
 
@@ -61,20 +65,47 @@ namespace VsQuest
             }
         }
 
+        private bool IsExcluded(string questId)
+        {
+            if (string.IsNullOrWhiteSpace(questId)) return true;
+
+            if (excludeQuests != null)
+            {
+                for (int i = 0; i < excludeQuests.Length; i++)
+                {
+                    var q = excludeQuests[i];
+                    if (string.IsNullOrWhiteSpace(q)) continue;
+                    if (string.Equals(q, questId, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            if (excludeQuestPrefixes != null)
+            {
+                for (int i = 0; i < excludeQuestPrefixes.Length; i++)
+                {
+                    var p = excludeQuestPrefixes[i];
+                    if (string.IsNullOrWhiteSpace(p)) continue;
+                    if (questId.StartsWith(p, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            return false;
+        }
+
         private HashSet<string> BuildAllQuestIds()
         {
             var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (quests != null)
             {
-                foreach (var q in quests) if (!string.IsNullOrWhiteSpace(q)) set.Add(q);
+                foreach (var q in quests) if (!IsExcluded(q)) set.Add(q);
             }
             if (alwaysQuests != null)
             {
-                foreach (var q in alwaysQuests) if (!string.IsNullOrWhiteSpace(q)) set.Add(q);
+                foreach (var q in alwaysQuests) if (!IsExcluded(q)) set.Add(q);
             }
             if (rotationPool != null)
             {
-                foreach (var q in rotationPool) if (!string.IsNullOrWhiteSpace(q)) set.Add(q);
+                foreach (var q in rotationPool) if (!IsExcluded(q)) set.Add(q);
             }
             return set;
         }
@@ -87,7 +118,7 @@ namespace VsQuest
             {
                 foreach (var q in alwaysQuests)
                 {
-                    if (!string.IsNullOrWhiteSpace(q)) result.Add(q);
+                    if (!IsExcluded(q)) result.Add(q);
                 }
             }
 
@@ -99,7 +130,10 @@ namespace VsQuest
 
             if (rotationDays <= 0 || sapi == null)
             {
-                result.AddRange(pool);
+                foreach (var q in pool)
+                {
+                    if (!IsExcluded(q)) result.Add(q);
+                }
                 return result;
             }
 
@@ -115,7 +149,7 @@ namespace VsQuest
             {
                 int idx = (offset + period + i) % pool.Length;
                 string questId = pool[idx];
-                if (!string.IsNullOrWhiteSpace(questId) && !result.Contains(questId))
+                if (!IsExcluded(questId) && !result.Contains(questId))
                 {
                     result.Add(questId);
                 }
@@ -180,7 +214,7 @@ namespace VsQuest
             var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
             var allActiveQuests = questSystem.GetPlayerQuests(player.PlayerUID);
             var allQuestIds = allQuests
-                ? new HashSet<string>(questSystem.QuestRegistry.Keys, StringComparer.OrdinalIgnoreCase)
+                ? new HashSet<string>(questSystem.QuestRegistry.Keys.Where(qid => !IsExcluded(qid)), StringComparer.OrdinalIgnoreCase)
                 : BuildAllQuestIds();
 
             var completedQuests = new HashSet<string>(
@@ -204,7 +238,9 @@ namespace VsQuest
             var availableQuestIds = new List<string>();
             int? minCooldownDaysLeft = null;
 
-            var selection = allQuests ? questSystem.QuestRegistry.Keys.ToList() : GetCurrentQuestSelection(sapi);
+            var selection = allQuests
+                ? questSystem.QuestRegistry.Keys.Where(qid => !IsExcluded(qid)).ToList()
+                : GetCurrentQuestSelection(sapi);
             foreach (var questId in selection)
             {
                 var quest = questSystem.QuestRegistry[questId];
