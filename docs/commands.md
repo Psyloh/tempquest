@@ -1,6 +1,6 @@
 # VSQuest Chat Commands
 
-> **Documentation Version:** v1.1.0
+> **Documentation Version:** v1.1.1
 
 All commands require **`give` privilege** and are accessed via the `/quest` command.
 
@@ -35,7 +35,7 @@ All commands require **`give` privilege** and are accessed via the `/quest` comm
 | `/quest complete` | `<questId> <playerName>` | Force-completes a specific active quest for a player |
 | `/quest completeactive` | `<playerName>` | Force-completes the player's currently active quest |
 | `/quest forgive` | `<questId> <playerName>` | Resets a quest for a player: removes from active quests, clears cooldown and completed flags |
-| `/quest forgiveall` | `<playerName>` | Resets ALL quests for a player: clears active quests, completed flags, and cooldowns |
+| `/quest forgiveall` | `[playerName]` | Resets ALL quests for a player: clears active quests, completed flags, and cooldowns |
 
 ---
 

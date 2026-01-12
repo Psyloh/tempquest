@@ -1,6 +1,6 @@
-{
+﻿{
   "id": "albase:innkeeper-nightmantle",
-  "cooldown": 1000000,
+  "cooldown": -1,
   "perPlayer": true,
   "predecessors": [
     "albase:innkeeper-firstimpression",
@@ -87,7 +87,7 @@
     {
       "id": "playsound",
       "args": [
-        "game:sounds/player/coin1",
+        "game:sounds/effect/cashregister",
         "0.35"
       ]
     },
@@ -109,3 +109,4 @@
     }
   ]
 }
+

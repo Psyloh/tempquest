@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "albase:innkeeper-foxthief",
   "cooldown": 30,
   "predecessor": "albase:innkeeper-firstimpression",
@@ -107,7 +107,7 @@
     {
       "id": "playsound",
       "args": [
-        "game:sounds/player/coin1",
+        "game:sounds/effect/cashregister",
         "0.35"
       ]
     },
@@ -129,3 +129,4 @@
     }
   ]
 }
+

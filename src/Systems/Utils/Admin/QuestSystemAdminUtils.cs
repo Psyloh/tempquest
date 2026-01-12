@@ -112,7 +112,11 @@ namespace VsQuest
             if (player?.Entity?.WatchedAttributes == null) return;
 
             string cooldownKey = string.Format("alegacyvsquest:lastaccepted-{0}", questId);
-            player.Entity.WatchedAttributes.RemoveAttribute(cooldownKey);
+            // Do NOT remove cooldownKey here.
+            // If it is missing (NaN), EntityBehaviorQuestGiver will migrate legacy cooldown data
+            // from the questgiver entity back onto the player the next time quests are opened.
+            // Setting it to a very old value avoids that migration and makes cooldown expire.
+            player.Entity.WatchedAttributes.SetDouble(cooldownKey, -9999999);
             player.Entity.WatchedAttributes.MarkPathDirty(cooldownKey);
 
             // Clear randkill state

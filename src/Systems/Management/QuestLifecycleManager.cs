@@ -79,17 +79,6 @@ namespace VsQuest
                 interactTrackers = interactTrackers
             };
             playerQuests.Add(activeQuest);
-            var questgiver = sapi.World.GetEntityById(message.questGiverId);
-            var key = String.Format("alegacyvsquest:lastaccepted-{0}", quest.id);
-            fromPlayer.Entity.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
-            fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
-
-            if (questgiver != null)
-            {
-                var legacyKey = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", quest.id, fromPlayer.PlayerUID) : String.Format("lastaccepted-{0}", quest.id);
-                questgiver.WatchedAttributes.SetDouble(legacyKey, sapi.World.Calendar.TotalDays);
-                questgiver.WatchedAttributes.MarkPathDirty(legacyKey);
-            }
             foreach (var action in quest.onAcceptedActions)
             {
                 try
@@ -124,6 +113,28 @@ namespace VsQuest
                 var questgiver = sapi.World.GetEntityById(message.questGiverId);
                 RewardPlayer(fromPlayer, message, sapi, questgiver);
                 MarkQuestCompleted(fromPlayer, message, questgiver);
+
+                // Questgiver chain cooldown timestamp (enforced by EntityBehaviorQuestGiver when configured)
+                if (fromPlayer?.Entity?.WatchedAttributes != null)
+                {
+                    string chainKey = EntityBehaviorQuestGiver.ChainCooldownLastCompletedKey(message.questGiverId);
+                    fromPlayer.Entity.WatchedAttributes.SetDouble(chainKey, sapi.World.Calendar.TotalDays);
+                    fromPlayer.Entity.WatchedAttributes.MarkPathDirty(chainKey);
+                }
+
+                if (questRegistry.TryGetValue(message.questId, out var quest))
+                {
+                    var key = String.Format("alegacyvsquest:lastaccepted-{0}", quest.id);
+                    fromPlayer.Entity.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
+                    fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
+
+                    if (questgiver != null)
+                    {
+                        var legacyKey = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", quest.id, fromPlayer.PlayerUID) : String.Format("lastaccepted-{0}", quest.id);
+                        questgiver.WatchedAttributes.SetDouble(legacyKey, sapi.World.Calendar.TotalDays);
+                        questgiver.WatchedAttributes.MarkPathDirty(legacyKey);
+                    }
+                }
             }
             else
             {
@@ -146,6 +157,28 @@ namespace VsQuest
             var questgiver = sapi.World.GetEntityById(message.questGiverId);
             RewardPlayer(fromPlayer, message, sapi, questgiver);
             MarkQuestCompleted(fromPlayer, message, questgiver);
+
+            // Questgiver chain cooldown timestamp (enforced by EntityBehaviorQuestGiver when configured)
+            if (fromPlayer?.Entity?.WatchedAttributes != null)
+            {
+                string chainKey = EntityBehaviorQuestGiver.ChainCooldownLastCompletedKey(message.questGiverId);
+                fromPlayer.Entity.WatchedAttributes.SetDouble(chainKey, sapi.World.Calendar.TotalDays);
+                fromPlayer.Entity.WatchedAttributes.MarkPathDirty(chainKey);
+            }
+
+            if (questRegistry.TryGetValue(message.questId, out var quest))
+            {
+                var key = String.Format("alegacyvsquest:lastaccepted-{0}", quest.id);
+                fromPlayer.Entity.WatchedAttributes.SetDouble(key, sapi.World.Calendar.TotalDays);
+                fromPlayer.Entity.WatchedAttributes.MarkPathDirty(key);
+
+                if (questgiver != null)
+                {
+                    var legacyKey = quest.perPlayer ? String.Format("lastaccepted-{0}-{1}", quest.id, fromPlayer.PlayerUID) : String.Format("lastaccepted-{0}", quest.id);
+                    questgiver.WatchedAttributes.SetDouble(legacyKey, sapi.World.Calendar.TotalDays);
+                    questgiver.WatchedAttributes.MarkPathDirty(legacyKey);
+                }
+            }
             return true;
         }
 

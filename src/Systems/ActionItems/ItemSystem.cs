@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using Vintagestory.API.Config;
 
 namespace VsQuest
 {
@@ -60,6 +61,7 @@ namespace VsQuest
             var entitySpawner = api.World.GetItem(new AssetLocation("alegacyvsquest:entityspawner"));
 
             var stacks = new List<JsonItemStack>();
+
             if (ActionItemRegistry != null && ActionItemRegistry.Count > 0)
             {
                 foreach (var kvp in ActionItemRegistry)
@@ -189,6 +191,8 @@ namespace VsQuest
             if (slot?.Itemstack == null) return;
 
             var attributes = slot.Itemstack.Attributes;
+            if (attributes == null) return;
+
             var actions = attributes.GetString("alegacyvsquest:actions");
 
             if (actions != null)

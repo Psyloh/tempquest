@@ -25,8 +25,14 @@ namespace VsQuest
         private int rotationCount;
         private bool ignorePredecessors;
         private bool allQuests;
+        private bool singleQuestAtATime;
+        private int chainCooldownDays;
+        private int maxAvailableQuests;
+        private string[] priorityQuests;
         private string noAvailableQuestDescLangKey;
         private string noAvailableQuestCooldownDescLangKey;
+
+        public static string ChainCooldownLastCompletedKey(long questGiverEntityId) => $"vsquest:questgiver:lastcompleted-{questGiverEntityId}";
 
         public EntityBehaviorQuestGiver(Entity entity) : base(entity)
         {
@@ -41,6 +47,10 @@ namespace VsQuest
             rotationCount = attributes["rotationcount"].AsInt(1);
             ignorePredecessors = attributes["ignorepredecessors"].AsBool(false);
             allQuests = attributes["allquests"].AsBool(false);
+            singleQuestAtATime = attributes["singlequestatatime"].AsBool(false);
+            chainCooldownDays = attributes["chaincooldowndays"].AsInt(0);
+            maxAvailableQuests = attributes["maxavailablequests"].AsInt(0);
+            priorityQuests = attributes["priorityquests"].AsArray<string>() ?? Array.Empty<string>();
 
             quests = attributes["quests"].AsArray<string>() ?? Array.Empty<string>();
             alwaysQuests = attributes["alwaysquests"].AsArray<string>() ?? Array.Empty<string>();
@@ -137,15 +147,14 @@ namespace VsQuest
                 return result;
             }
 
-            int count = rotationCount;
-            if (count < 1) count = 1;
-            if (count > pool.Length) count = pool.Length;
-
             int period = (int)Math.Floor(sapi.World.Calendar.TotalDays / rotationDays);
             int offset = Math.Abs(unchecked((int)entity.EntityId));
             offset = pool.Length == 0 ? 0 : offset % pool.Length;
 
-            for (int i = 0; i < count; i++)
+            // Important: we want a stable rotation order, but we must not end up with "no quests"
+            // if the first rotated quest is currently ineligible (predecessor not completed, on cooldown, etc.).
+            // So we include the entire pool in the rotated order, and later limit how many can be offered.
+            for (int i = 0; i < pool.Length; i++)
             {
                 int idx = (offset + period + i) % pool.Length;
                 string questId = pool[idx];
@@ -238,9 +247,93 @@ namespace VsQuest
             var availableQuestIds = new List<string>();
             int? minCooldownDaysLeft = null;
 
+            // Optional chain cooldown: after completing any quest for this questgiver,
+            // block offering any new quests for N days (independent of per-quest cooldown).
+            if (chainCooldownDays > 0 && player?.WatchedAttributes != null)
+            {
+                double nowDays = sapi.World.Calendar.TotalDays;
+                string chainKey = ChainCooldownLastCompletedKey(entity.EntityId);
+                double lastCompleted = player.WatchedAttributes.GetDouble(chainKey, double.NaN);
+                if (!double.IsNaN(lastCompleted) && !double.IsInfinity(lastCompleted))
+                {
+                    if (nowDays + 0.0001 < lastCompleted)
+                    {
+                        // Time rewind safety: treat as expired
+                        lastCompleted = nowDays - chainCooldownDays - 0.0001;
+                        player.WatchedAttributes.SetDouble(chainKey, lastCompleted);
+                        player.WatchedAttributes.MarkPathDirty(chainKey);
+                    }
+
+                    double leftDays = (lastCompleted + chainCooldownDays) - nowDays;
+                    if (!double.IsNaN(leftDays) && !double.IsInfinity(leftDays) && leftDays > 0)
+                    {
+                        int left = (int)Math.Ceiling(leftDays);
+                        if (left < 0) left = 0;
+                        if (left > chainCooldownDays) left = chainCooldownDays;
+
+                        var msgChainCd = new QuestInfoMessage()
+                        {
+                            questGiverId = entity.EntityId,
+                            availableQestIds = availableQuestIds,
+                            activeQuests = activeQuests,
+                            noAvailableQuestDescLangKey = noAvailableQuestDescLangKey,
+                            noAvailableQuestCooldownDescLangKey = noAvailableQuestCooldownDescLangKey,
+                            noAvailableQuestCooldownDaysLeft = left
+                        };
+
+                        sapi.Network.GetChannel("vsquest").SendPacket<QuestInfoMessage>(msgChainCd, player.Player as IServerPlayer);
+                        return;
+                    }
+                }
+            }
+
+            // If the player already has any active quest from this questgiver's quest set,
+            // do not offer additional quests until the active one is completed.
+            // (Innkeeper design: at most one quest in progress at a time.)
+            if (singleQuestAtATime && activeQuests != null && activeQuests.Count > 0)
+            {
+                int cooldownDaysLeftActive = 0;
+                var msgActive = new QuestInfoMessage()
+                {
+                    questGiverId = entity.EntityId,
+                    availableQestIds = availableQuestIds,
+                    activeQuests = activeQuests,
+                    noAvailableQuestDescLangKey = noAvailableQuestDescLangKey,
+                    noAvailableQuestCooldownDescLangKey = noAvailableQuestCooldownDescLangKey,
+                    noAvailableQuestCooldownDaysLeft = cooldownDaysLeftActive
+                };
+
+                sapi.Network.GetChannel("vsquest").SendPacket<QuestInfoMessage>(msgActive, player.Player as IServerPlayer);
+                return;
+            }
+
             var selection = allQuests
                 ? questSystem.QuestRegistry.Keys.Where(qid => !IsExcluded(qid)).ToList()
                 : GetCurrentQuestSelection(sapi);
+
+            // Ensure priority quests are evaluated first (e.g. final quests).
+            if (priorityQuests != null && priorityQuests.Length > 0)
+            {
+                var ordered = new List<string>(selection.Count + priorityQuests.Length);
+                for (int i = 0; i < priorityQuests.Length; i++)
+                {
+                    var q = priorityQuests[i];
+                    if (string.IsNullOrWhiteSpace(q)) continue;
+                    if (IsExcluded(q)) continue;
+                    if (!ordered.Contains(q)) ordered.Add(q);
+                }
+
+                for (int i = 0; i < selection.Count; i++)
+                {
+                    var q = selection[i];
+                    if (string.IsNullOrWhiteSpace(q)) continue;
+                    if (!ordered.Contains(q)) ordered.Add(q);
+                }
+
+                selection = ordered;
+            }
+
+            bool priorityLocked = false;
             foreach (var questId in selection)
             {
                 var quest = questSystem.QuestRegistry[questId];
@@ -273,12 +366,12 @@ namespace VsQuest
 
                 double nowDays = sapi.World.Calendar.TotalDays;
 
-                // If time was rewound (e.g. during testing via time fast-forward/rewind),
-                // the stored lastAccepted can become "in the future" relative to now,
-                // producing absurd cooldown values. Normalize to now.
+                // If time was rewound (e.g. during testing), the stored lastAccepted can become
+                // "in the future" relative to now, producing absurd cooldown values.
+                // In that case, treat cooldown as expired by shifting lastAccepted into the past.
                 if (!double.IsNaN(lastAccepted) && !double.IsInfinity(lastAccepted) && nowDays + 0.0001 < lastAccepted)
                 {
-                    lastAccepted = nowDays;
+                    lastAccepted = nowDays - Math.Max(0, quest.cooldown) - 0.0001;
                     player.WatchedAttributes.SetDouble(key, lastAccepted);
                     player.WatchedAttributes.MarkPathDirty(key);
                 }
@@ -294,9 +387,23 @@ namespace VsQuest
                     && !oneTimeBlocked
                     && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID));
 
+                int offerLimit = maxAvailableQuests > 0 ? maxAvailableQuests : (rotationDays > 0 ? Math.Max(1, rotationCount) : int.MaxValue);
+
                 if (eligible && !onCooldown)
                 {
-                    availableQuestIds.Add(questId);
+                    // If a priority quest becomes available, it should be the only offered quest.
+                    if (!priorityLocked && priorityQuests != null && priorityQuests.Length > 0 && priorityQuests.Contains(questId))
+                    {
+                        availableQuestIds.Clear();
+                        availableQuestIds.Add(questId);
+                        priorityLocked = true;
+                        break;
+                    }
+
+                    if (availableQuestIds.Count < offerLimit)
+                    {
+                        availableQuestIds.Add(questId);
+                    }
                 }
                 else if (eligible && onCooldown)
                 {
@@ -306,8 +413,8 @@ namespace VsQuest
                     int left = (int)Math.Ceiling(daysLeft);
                     if (left < 0) left = 0;
 
-                    // Safety clamp to avoid absurd UI values from broken timestamps.
-                    if (left > 36500) left = 36500;
+                    // Safety clamp: cooldown time remaining cannot exceed configured cooldown.
+                    if (quest.cooldown >= 0 && left > quest.cooldown) left = quest.cooldown;
 
                     if (!minCooldownDaysLeft.HasValue || left < minCooldownDaysLeft.Value)
                     {

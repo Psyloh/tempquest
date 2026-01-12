@@ -65,6 +65,12 @@
         "alwaysquests": [
           "albase:innkeeper-firstimpression"
         ],
+        "singlequestatatime": true,
+        "chaincooldowndays": 30,
+        "maxavailablequests": 1,
+        "priorityquests": [
+          "albase:innkeeper-nightmantle"
+        ],
         "rotationpool": [
           "albase:innkeeper-quietpatrol",
           "albase:innkeeper-badcustomers",
