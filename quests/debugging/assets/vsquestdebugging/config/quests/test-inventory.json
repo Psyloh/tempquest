@@ -12,7 +12,7 @@
     { "id": "hasitem", "objectiveId": "hasitem", "args": ["game:stick", "1"] },
     { "id": "wearing", "objectiveId": "wearing", "args": ["game:shirt*"] },
     { "id": "hasattribute", "objectiveId": "attr", "args": ["vsquestdebugging:test-attr", "1"] },
-    { "id": "checkvariable", "objectiveId": "var", "args": ["vsquestdebugging:test-var", ">=", "5", "notify 'checkvariable fired'"] },
+    { "id": "checkvariable", "objectiveId": "var", "onCompleteActions": "notify 'checkvariable fired'", "args": ["vsquestdebugging:test-var", ">=", "5"] },
     { "id": "inland", "objectiveId": "inland", "args": ["TestClaim"] }
   ],
   "killObjectives": [],

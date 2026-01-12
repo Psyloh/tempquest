@@ -56,22 +56,6 @@ namespace VsQuest
             if (wa.GetBool(key, false)) return;
 
             string actionString = objectiveDef.onCompleteActions;
-            if (string.IsNullOrWhiteSpace(actionString)
-                && objectiveDef.id == "interactat"
-                && objectiveDef.args != null
-                && objectiveDef.args.Length >= 2
-                && !string.IsNullOrWhiteSpace(objectiveDef.args[1]))
-            {
-                actionString = objectiveDef.args[1];
-            }
-            if (string.IsNullOrWhiteSpace(actionString)
-                && objectiveDef.id == "checkvariable"
-                && objectiveDef.args != null
-                && objectiveDef.args.Length >= 4
-                && !string.IsNullOrWhiteSpace(objectiveDef.args[3]))
-            {
-                actionString = objectiveDef.args[3];
-            }
 
             wa.SetBool(key, true);
             wa.MarkPathDirty(key);

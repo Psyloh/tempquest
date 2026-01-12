@@ -22,58 +22,58 @@
   "actionObjectives": [
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-1'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512000",
-        "notify 'newyear2026:gift-found-1'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512000"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-2'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512001",
-        "notify 'newyear2026:gift-found-2'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512001"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-3'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512002",
-        "notify 'newyear2026:gift-found-3'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512002"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-4'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512003",
-        "notify 'newyear2026:gift-found-4'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512003"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-5'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512004",
-        "notify 'newyear2026:gift-found-5'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512004"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-6'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512005",
-        "notify 'newyear2026:gift-found-6'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512005"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-7'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512006",
-        "notify 'newyear2026:gift-found-7'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512006"
       ]
     },
     {
       "id": "interactat",
+      "onCompleteActions": "notify 'newyear2026:gift-found-8'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512007",
-        "notify 'newyear2026:gift-found-8'; playsound 'newyear2026:sounds/giftfound' 0.25"
+        "512000,3,512007"
       ]
     },
     {

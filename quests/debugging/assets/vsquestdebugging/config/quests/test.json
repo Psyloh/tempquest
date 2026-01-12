@@ -77,8 +77,7 @@
       "args": [
         "vsquest:test-var",
         ">=",
-        "0",
-        "notify 'checkvariable fired'"
+        "0"
       ]
     },
     {
