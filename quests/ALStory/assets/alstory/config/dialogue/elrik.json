@@ -16,9 +16,20 @@
       "text": [
         { "value": "alstory:dialogue-elrik-who", "jumpTo": "who" },
         { "value": "alstory:dialogue-elrik-what", "jumpTo": "what" },
+        { "value": "alstory:dialogue-elrik-return", "jumpTo": "return", "conditions": [ { "variable": "player.alstory_fm_stage", "isValue": "loran" } ] },
         { "value": "alstory:dialogue-elrik-quests", "jumpTo": "openquests" },
         { "value": "alstory:dialogue-elrik-closechoice", "jumpTo": "close" }
       ]
+    },
+    {
+      "code": "return",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "markentityinteraction alstory:fallen-magister alstory:elrik elrikreturn alstory:armorparts 4",
+      "text": [
+        { "value": "alstory:dialogue-elrik-return-answer" }
+      ],
+      "jumpTo": "main"
     },
     {
       "code": "who",

@@ -19,13 +19,7 @@ namespace VsQuest
                 throw new QuestException($"Action item with ID '{args[0]}' not found for 'questitem' action in quest {message.questId}.");
             }
 
-            CollectibleObject collectible = sapi.World.GetItem(new AssetLocation(actionItem.itemCode));
-            if (collectible == null)
-            {
-                collectible = sapi.World.GetBlock(new AssetLocation(actionItem.itemCode));
-            }
-
-            if (collectible == null)
+            if (!ItemAttributeUtils.TryResolveCollectible(sapi, actionItem.itemCode, out var collectible))
             {
                 throw new QuestException($"Base item/block with code '{actionItem.itemCode}' not found for action item '{args[0]}' in quest {message.questId}.");
             }

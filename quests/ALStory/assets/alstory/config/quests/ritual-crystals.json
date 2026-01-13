@@ -13,9 +13,17 @@
       ]
     },
     {
+      "id": "addplayerattribute",
+      "args": [
+        "alstory_rc_stage",
+        "start"
+      ]
+    },
+    {
       "id": "playsound",
       "args": [
-        "game:sounds/effect/writing"
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
       ]
     }
   ],
@@ -35,17 +43,18 @@
     {
       "id": "interactwithentity",
       "objectiveId": "heinrich",
-      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step0",
+      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step0; addplayerattribute alstory_rc_stage talkedheinrich",
       "args": [
         "alstory:ritual-crystals",
         "alstory:heinrich",
-        "1"
+        "1",
+        "dialog"
       ]
     },
     {
       "id": "inland",
       "objectiveId": "village",
-      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step1",
+      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step1; addplayerattribute alstory_rc_stage village",
       "args": [
         "derevnia"
       ]
@@ -53,44 +62,46 @@
     {
       "id": "interactat",
       "objectiveId": "crystal1",
-      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3",
+      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3; cooldownblock 240 '51200,3,51200'",
       "args": [
-        "100000,200,100000"
+        "51200,3,51200"
       ]
     },
     {
       "id": "interactat",
       "objectiveId": "crystal2",
-      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3",
+      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3; cooldownblock 240 '51200,4,51200'",
       "args": [
-        "100005,200,100000"
+        "51200,4,51200"
       ]
     },
     {
       "id": "interactat",
       "objectiveId": "crystal3",
-      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3",
+      "onCompleteActions": "addplayerint alstory:ritualcrystals 1 3; cooldownblock 240 '51200,5,51200'",
       "args": [
-        "100010,200,100000"
+        "51200,5,51200"
       ]
     },
     {
       "id": "interactcount",
       "objectiveId": "crystals",
-      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step2",
+      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step2; addplayerattribute alstory_rc_stage crystals",
       "args": [
-        "100000,200,100000",
-        "100005,200,100000",
-        "100010,200,100000"
+        "51200,3,51200",
+        "51200,4,51200",
+        "51200,5,51200"
       ]
     },
     {
       "id": "interactwithentity",
       "objectiveId": "illa",
+      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step3; addplayerattribute alstory_rc_stage illa",
       "args": [
         "alstory:ritual-crystals",
         "alstory:illa",
-        "1"
+        "1",
+        "dialog"
       ]
     }
   ],

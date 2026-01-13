@@ -56,9 +56,15 @@ Action Items are defined in `config/itemconfig.json`:
 | `name` | string | Custom display name, supports rich text formatting |
 | `description` | string | Custom description, supports rich text and `\n` |
 | `actions` | array | List of actions to execute on right-click |
+| `sourceQuestId` | string | Optional quest id used as action execution context. If omitted, defaults to `item-action`. |
+| `triggerOnInventoryAdd` | bool | If true, actions auto-trigger once when the item enters the player inventory. Manual right-click triggering is disabled. |
+| `blockEquip` | bool | If true, prevents putting the item into character equipment slots (uses a Harmony patch on `ItemSlotCharacter`). |
 | `attributes` | object | Custom float attributes (e.g., stats) |
 | `showAttributes` | array | Which custom attributes to show in tooltip |
 | `hideVanillaTooltips` | array | Which vanilla tooltip sections to hide |
+
+> [!NOTE]
+> `triggerOnInventoryAdd` auto-trigger is executed **once per action item id** and is tracked on the player. If `sourceQuestId` is set to a real quest id, the auto-trigger will only fire while that quest is active.
 
 ---
 

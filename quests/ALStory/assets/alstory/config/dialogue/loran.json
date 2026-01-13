@@ -15,7 +15,7 @@
       "type": "talk",
       "text": [
         { "value": "alstory:dialogue-loran-illa", "jumpTo": "illa" },
-        { "value": "alstory:dialogue-loran-judgement", "jumpTo": "judgement" },
+        { "value": "alstory:dialogue-loran-judgement", "jumpTo": "judgement", "conditions": [ { "variable": "player.alstory_fm_stage", "isValue": "final" } ] },
         { "value": "alstory:dialogue-loran-closechoice", "jumpTo": "close" }
       ]
     },
@@ -32,7 +32,7 @@
       "code": "judgement",
       "owner": "npc",
       "type": "talk",
-      "trigger": "addplayerint alstory:loranmet 1 1 alstory:loranmetonce",
+      "trigger": "markentityinteraction alstory:fallen-magister alstory:loran loran; questitem alstory-armor-boots; addplayerint alstory:loranmet 1 1 alstory:loranmetonce",
       "text": [
         { "value": "alstory:dialogue-loran-judgement-answer" }
       ],

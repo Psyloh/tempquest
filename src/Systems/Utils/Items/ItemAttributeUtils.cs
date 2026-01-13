@@ -8,6 +8,19 @@ namespace VsQuest
     public static class ItemAttributeUtils
     {
         public const string AttrPrefix = "alegacyvsquest:attr:";
+
+        public const string ActionItemActionsKey = "alegacyvsquest:actions";
+        public const string ActionItemIdKey = "alegacyvsquest:actionitemid";
+        public const string ActionItemSourceQuestKey = "alegacyvsquest:sourcequest";
+        public const string ActionItemDefaultSourceQuestId = "item-action";
+        public const string ActionItemTriggerOnInvAddKey = "alegacyvsquest:triggerOnInvAdd";
+        public const string ActionItemBlockEquipKey = "alegacyvsquest:blockEquip";
+        public const string ActionItemShowAttrsKey = "alegacyvsquest:showAttrs";
+        public const string ActionItemHideVanillaKey = "alegacyvsquest:hideVanilla";
+
+        public const string ItemizerNameKey = "itemizerName";
+        public const string ItemizerDescKey = "itemizerDesc";
+
         public const string AttrAttackPower = "attackpower";
         public const string AttrWarmth = "warmth";
         public const string AttrProtection = "protection";
@@ -77,13 +90,71 @@ namespace VsQuest
             return $"{displayName}: {prefix}{value:0.##}";
         }
 
+        public static bool IsActionItem(ItemStack stack)
+        {
+            if (stack?.Attributes == null) return false;
+            var actions = stack.Attributes.GetString(ActionItemActionsKey);
+            return !string.IsNullOrWhiteSpace(actions);
+        }
+
+        public static bool IsActionItemBlockedEquip(ItemStack stack)
+        {
+            if (stack?.Attributes == null) return false;
+            if (!stack.Attributes.GetBool(ActionItemBlockEquipKey, false)) return false;
+            return IsActionItem(stack);
+        }
+
+        public static bool TryResolveCollectible(ICoreAPI api, string itemCode, out CollectibleObject collectible)
+        {
+            collectible = null;
+            if (api?.World == null) return false;
+            if (string.IsNullOrWhiteSpace(itemCode)) return false;
+
+            collectible = api.World.GetItem(new AssetLocation(itemCode));
+            if (collectible == null)
+            {
+                collectible = api.World.GetBlock(new AssetLocation(itemCode));
+            }
+
+            return collectible != null && !collectible.IsMissing;
+        }
+
         public static void ApplyActionItemAttributes(ItemStack stack, ActionItem actionItem)
         {
             if (stack == null || actionItem == null) return;
 
-            stack.Attributes.SetString("itemizerName", actionItem.name);
-            stack.Attributes.SetString("itemizerDesc", actionItem.description);
-            stack.Attributes.SetString("alegacyvsquest:actions", JsonConvert.SerializeObject(actionItem.actions));
+            if (stack.Attributes == null) return;
+
+            if (!string.IsNullOrWhiteSpace(actionItem.name))
+            {
+                stack.Attributes.SetString(ItemizerNameKey, actionItem.name);
+            }
+            if (!string.IsNullOrWhiteSpace(actionItem.description))
+            {
+                stack.Attributes.SetString(ItemizerDescKey, actionItem.description);
+            }
+
+            stack.Attributes.SetString(ActionItemActionsKey, JsonConvert.SerializeObject(actionItem.actions));
+
+            if (!string.IsNullOrWhiteSpace(actionItem.id))
+            {
+                stack.Attributes.SetString(ActionItemIdKey, actionItem.id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(actionItem.sourceQuestId))
+            {
+                stack.Attributes.SetString(ActionItemSourceQuestKey, actionItem.sourceQuestId);
+            }
+
+            if (actionItem.triggerOnInventoryAdd)
+            {
+                stack.Attributes.SetBool(ActionItemTriggerOnInvAddKey, true);
+            }
+
+            if (actionItem.blockEquip)
+            {
+                stack.Attributes.SetBool(ActionItemBlockEquipKey, true);
+            }
 
             if (actionItem.attributes != null)
             {
@@ -95,12 +166,12 @@ namespace VsQuest
 
             if (actionItem.showAttributes != null && actionItem.showAttributes.Count > 0)
             {
-                stack.Attributes.SetString("alegacyvsquest:showAttrs", JsonConvert.SerializeObject(actionItem.showAttributes));
+                stack.Attributes.SetString(ActionItemShowAttrsKey, JsonConvert.SerializeObject(actionItem.showAttributes));
             }
 
             if (actionItem.hideVanillaTooltips != null && actionItem.hideVanillaTooltips.Count > 0)
             {
-                stack.Attributes.SetString("alegacyvsquest:hideVanilla", JsonConvert.SerializeObject(actionItem.hideVanillaTooltips));
+                stack.Attributes.SetString(ActionItemHideVanillaKey, JsonConvert.SerializeObject(actionItem.hideVanillaTooltips));
             }
         }
     }

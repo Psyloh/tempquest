@@ -28,7 +28,15 @@ namespace VsQuest
             string expected = args[0];
             if (string.IsNullOrWhiteSpace(expected)) return false;
 
-            return string.Equals(expected.Trim(), claimName.Trim(), StringComparison.OrdinalIgnoreCase);
+            string exp = expected.Trim();
+            string actual = claimName.Trim();
+
+            if (args.Length >= 2 && string.Equals(args[1]?.Trim(), "contains", StringComparison.OrdinalIgnoreCase))
+            {
+                return actual.IndexOf(exp, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+
+            return string.Equals(exp, actual, StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool TryGetClaimName(IPlayer byPlayer, out string claimName)

@@ -28,13 +28,7 @@ namespace VsQuest
                 return TextCommandResult.Error($"Action item with ID '{itemId}' not found in itemconfig.json.");
             }
 
-            CollectibleObject collectible = api.World.GetItem(new AssetLocation(actionItem.itemCode));
-            if (collectible == null)
-            {
-                collectible = api.World.GetBlock(new AssetLocation(actionItem.itemCode));
-            }
-
-            if (collectible == null)
+            if (!ItemAttributeUtils.TryResolveCollectible(api, actionItem.itemCode, out var collectible))
             {
                 return TextCommandResult.Error($"Could not find base item/block with code '{actionItem.itemCode}'.");
             }

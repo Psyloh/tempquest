@@ -61,6 +61,7 @@ namespace VsQuest
             actionRegistry.Add("resetwalkdistance", new ResetWalkDistanceQuestAction());
             actionRegistry.Add("checkobjective", new CheckObjectiveAction());
             actionRegistry.Add("markinteraction", new MarkInteractionAction());
+            actionRegistry.Add("markentityinteraction", new MarkEntityInteractionAction());
 
             actionRegistry.Add("cooldownblock", new CooldownBlockAction());
 

@@ -62,6 +62,12 @@ namespace VsQuest.Harmony
                     if (ao.id != "interactwithentity") continue;
                     if (ao.args == null || ao.args.Length < 3) continue;
 
+                    // Dialog-driven interactwithentity: only count when explicitly triggered from dialogue.
+                    if (ao.args.Length >= 4 && string.Equals(ao.args[3], "dialog", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     string questIdArg = ao.args[0];
                     if (!string.Equals(questIdArg, activeQuest.questId, System.StringComparison.OrdinalIgnoreCase)) continue;
 

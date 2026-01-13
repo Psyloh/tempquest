@@ -14,7 +14,7 @@
       "owner": "player",
       "type": "talk",
       "text": [
-        { "value": "alstory:dialogue-illa-stopmusic", "jumpTo": "stopmusic" },
+        { "value": "alstory:dialogue-illa-stopmusic", "jumpTo": "stopmusic", "conditions": [ { "variable": "player.alstory_rc_stage", "isValue": "crystals" } ] },
         { "value": "alstory:dialogue-illa-whereloran", "jumpTo": "whereloran" },
         { "value": "alstory:dialogue-illa-closechoice", "jumpTo": "close" }
       ]
@@ -23,7 +23,7 @@
       "code": "stopmusic",
       "owner": "npc",
       "type": "talk",
-      "trigger": "addplayerint alstory:illareward 1 1 alstory:illarewardonce; questitem alstory-armor-legs",
+      "trigger": "markentityinteraction alstory:ritual-crystals alstory:illa illa; addplayerint alstory:illareward 1 1 alstory:illarewardonce; questitem alstory-armor-legs",
       "text": [
         { "value": "alstory:dialogue-illa-stopmusic-answer" }
       ],

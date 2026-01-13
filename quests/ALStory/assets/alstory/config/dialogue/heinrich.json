@@ -14,8 +14,8 @@
       "owner": "player",
       "type": "talk",
       "text": [
-        { "value": "alstory:dialogue-heinrich-askilla", "jumpTo": "askilla" },
-        { "value": "alstory:dialogue-heinrich-whathappened", "jumpTo": "whathappened" },
+        { "value": "alstory:dialogue-heinrich-askilla", "jumpTo": "askilla", "conditions": [ { "variable": "player.alstory_rc_stage", "isValue": "start" } ] },
+        { "value": "alstory:dialogue-heinrich-whathappened", "jumpTo": "whathappened", "conditions": [ { "variable": "player.alstory_rc_stage", "isValue": "start" } ] },
         { "value": "alstory:dialogue-heinrich-closechoice", "jumpTo": "close" }
       ]
     },
@@ -23,6 +23,7 @@
       "code": "askilla",
       "owner": "npc",
       "type": "talk",
+      "trigger": "markentityinteraction alstory:ritual-crystals alstory:heinrich heinrich",
       "text": [
         { "value": "alstory:dialogue-heinrich-askilla-answer" }
       ],
@@ -32,6 +33,7 @@
       "code": "whathappened",
       "owner": "npc",
       "type": "talk",
+      "trigger": "markentityinteraction alstory:ritual-crystals alstory:heinrich heinrich",
       "text": [
         { "value": "alstory:dialogue-heinrich-whathappened-answer" }
       ],

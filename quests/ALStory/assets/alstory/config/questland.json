@@ -1,0 +1,13 @@
+{
+  "allowedQuestPrefixes": ["alstory:"],
+  "enterAction": "notify '{message}'; playsound alegacyvsquest:sounds/queacc 0.175",
+  "exitAction": "notify '{message}'; playsound alegacyvsquest:sounds/queacc 0.175",
+  "defaultExitMessage": "Мирные земли",
+  "enterMessages": {
+    "Проклятый Холм": "Вход в Проклятый Холм",
+    "Лагерь Кровавой Длани": "Лагерь Кровавой Длани",
+    "Башня Ордена": "Башня Ордена",
+    "Обречённая деревня": "Деревня у Погибшего Камня",
+    "Некрополь Королей": "Некрополь Королей"
+  }
+}

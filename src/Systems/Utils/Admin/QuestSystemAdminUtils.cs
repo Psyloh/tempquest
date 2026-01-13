@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -58,8 +59,39 @@ namespace VsQuest
                     }
                 }
 
+                void AddFromActionString(string actionString)
+                {
+                    if (string.IsNullOrWhiteSpace(actionString)) return;
+
+                    // Match ActionStringExecutor tokenization: allow single-quoted strings for multi-word args.
+                    var actionStrings = actionString.Split(';').Select(s => s.Trim());
+                    foreach (var singleAction in actionStrings)
+                    {
+                        if (string.IsNullOrWhiteSpace(singleAction)) continue;
+
+                        var matches = Regex.Matches(singleAction, "(?:'([^']*)')|([^\\s]+)");
+                        if (matches.Count < 2) continue;
+
+                        var actionId = matches[0].Value;
+                        if (!string.Equals(actionId, "addjournalentry", StringComparison.OrdinalIgnoreCase)) continue;
+
+                        // args[0] for addjournalentry is loreCode
+                        string loreCode = matches[1].Groups[1].Success ? matches[1].Groups[1].Value : matches[1].Groups[2].Value;
+                        if (!string.IsNullOrWhiteSpace(loreCode)) fromQuest.Add(loreCode);
+                    }
+                }
+
                 AddFromActions(quest.onAcceptedActions);
                 AddFromActions(quest.actionRewards);
+
+                if (quest.actionObjectives != null)
+                {
+                    foreach (var ao in quest.actionObjectives)
+                    {
+                        if (ao == null) continue;
+                        AddFromActionString(ao.onCompleteActions);
+                    }
+                }
 
                 loreCodes = fromQuest.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
             }

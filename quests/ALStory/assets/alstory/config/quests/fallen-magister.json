@@ -11,6 +11,20 @@
         "alstory:fallen-magister-journal-title",
         "alstory:fallen-magister-journal-step0"
       ]
+    },
+    {
+      "id": "addplayerattribute",
+      "args": [
+        "alstory_fm_stage",
+        "start"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
     }
   ],
   "actionObjectives": [
@@ -28,7 +42,7 @@
     {
       "id": "inland",
       "objectiveId": "final",
-      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step1",
+      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step1; addplayerattribute alstory_fm_stage final",
       "args": [
         "nekropol kvest"
       ]
@@ -36,20 +50,23 @@
     {
       "id": "interactwithentity",
       "objectiveId": "loran",
-      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step2",
+      "onCompleteActions": "addjournalentry alstory:fallen-magister alstory:fallen-magister-journal-title alstory:fallen-magister-journal-step2; addplayerattribute alstory_fm_stage loran",
       "args": [
         "alstory:fallen-magister",
         "alstory:loran",
-        "1"
+        "1",
+        "dialog"
       ]
     },
     {
       "id": "interactwithentity",
       "objectiveId": "elrikreturn",
+      "onCompleteActions": "addplayerattribute alstory_fm_stage elrikreturn",
       "args": [
         "alstory:fallen-magister",
         "alstory:elrik",
-        "1"
+        "1",
+        "dialog"
       ]
     }
   ],

@@ -44,6 +44,35 @@ namespace VsQuest
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
+            if (args == null || args.Length < 3 || byPlayer?.Entity?.WatchedAttributes == null)
+            {
+                return new List<int>(new int[] { IsCompletable(byPlayer, args) ? 1 : 0 });
+            }
+
+            string varName = args[0];
+            string op = args[1];
+            string valueStr = args[2];
+
+            if (string.IsNullOrWhiteSpace(varName) || string.IsNullOrWhiteSpace(op) || string.IsNullOrWhiteSpace(valueStr))
+            {
+                return new List<int>(new int[] { IsCompletable(byPlayer, args) ? 1 : 0 });
+            }
+
+            int have = byPlayer.Entity.WatchedAttributes.GetInt(varName, 0);
+            if (!int.TryParse(valueStr, out int need))
+            {
+                return new List<int>(new int[] { IsCompletable(byPlayer, args) ? 1 : 0 });
+            }
+
+            // For numeric comparisons, expose have/need so UI can show proper progress (e.g. 3/4).
+            // For non-monotonic comparisons (e.g. !=), fall back to boolean progress.
+            if (op == ">" || op == ">=" || op == "<" || op == "<=" || op == "==" || op == "=")
+            {
+                if (need < 0) need = 0;
+                if (have < 0) have = 0;
+                return new List<int>(new int[] { have, need });
+            }
+
             return new List<int>(new int[] { IsCompletable(byPlayer, args) ? 1 : 0 });
         }
 

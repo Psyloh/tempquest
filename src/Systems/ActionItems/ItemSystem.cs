@@ -6,6 +6,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Config;
+using System;
 
 namespace VsQuest
 {
@@ -17,6 +18,8 @@ namespace VsQuest
         private QuestSystem questSystem;
         private IClientNetworkChannel clientChannel;
         private IServerNetworkChannel serverChannel;
+
+        private long inventoryScanListenerId = 0;
 
         private const string ActionItemsCreativeTabCode = "vsquest-actionitems";
 
@@ -69,12 +72,7 @@ namespace VsQuest
                     var actionItem = kvp.Value;
                     if (actionItem == null || string.IsNullOrWhiteSpace(actionItem.itemCode)) continue;
 
-                    CollectibleObject collectible = api.World.GetItem(new AssetLocation(actionItem.itemCode));
-                    if (collectible == null)
-                    {
-                        collectible = api.World.GetBlock(new AssetLocation(actionItem.itemCode));
-                    }
-                    if (collectible == null || collectible.IsMissing) continue;
+                    if (!ItemAttributeUtils.TryResolveCollectible(api, actionItem.itemCode, out var collectible)) continue;
 
                     var stack = new ItemStack(collectible);
                     ItemAttributeUtils.ApplyActionItemAttributes(stack, actionItem);
@@ -167,6 +165,10 @@ namespace VsQuest
             serverChannel = api.Network.RegisterChannel("vsquest-itemaction")
                 .RegisterMessageType<ExecuteActionItemPacket>()
                 .SetMessageHandler<ExecuteActionItemPacket>(OnActionPacket);
+
+            // Periodically scan inventories for action items that should trigger when added.
+            // This avoids relying on right click and allows one-time processing.
+            inventoryScanListenerId = api.Event.RegisterGameTickListener(OnInventoryScanTick, 1000);
         }
 
         public override void StartClientSide(ICoreClientAPI api)
@@ -183,6 +185,34 @@ namespace VsQuest
             };
         }
 
+        private bool TryGetActionItemActionsFromAttributes(ITreeAttribute attributes, out List<ItemAction> actions, out string sourceQuestId)
+        {
+            actions = null;
+            sourceQuestId = null;
+
+            if (attributes == null) return false;
+
+            var actionsJson = attributes.GetString(ItemAttributeUtils.ActionItemActionsKey);
+            if (string.IsNullOrWhiteSpace(actionsJson)) return false;
+
+            try
+            {
+                actions = JsonConvert.DeserializeObject<List<ItemAction>>(actionsJson);
+            }
+            catch
+            {
+                actions = null;
+                return false;
+            }
+
+            if (actions == null || actions.Count == 0) return false;
+
+            sourceQuestId = attributes.GetString(ItemAttributeUtils.ActionItemSourceQuestKey);
+            if (string.IsNullOrWhiteSpace(sourceQuestId)) sourceQuestId = ItemAttributeUtils.ActionItemDefaultSourceQuestId;
+
+            return true;
+        }
+
         private void OnMouseDown(MouseEvent args)
         {
             if (args.Button != EnumMouseButton.Right) return;
@@ -193,13 +223,19 @@ namespace VsQuest
             var attributes = slot.Itemstack.Attributes;
             if (attributes == null) return;
 
-            var actions = attributes.GetString("alegacyvsquest:actions");
-
-            if (actions != null)
+            // If item is configured to trigger on inventory add, do not allow manual right-click triggering.
+            if (attributes.GetBool(ItemAttributeUtils.ActionItemTriggerOnInvAddKey, false))
             {
-                args.Handled = true;
-                clientChannel.SendPacket(new ExecuteActionItemPacket());
+                return;
             }
+
+            if (!TryGetActionItemActionsFromAttributes(attributes, out var actions, out string sourceQuestId))
+            {
+                return;
+            }
+
+            args.Handled = true;
+            clientChannel.SendPacket(new ExecuteActionItemPacket());
         }
 
         private void OnActionPacket(IServerPlayer fromPlayer, ExecuteActionItemPacket packet)
@@ -208,17 +244,82 @@ namespace VsQuest
             if (slot?.Itemstack == null) return;
 
             var attributes = slot.Itemstack.Attributes;
-            var actionsJson = attributes.GetString("alegacyvsquest:actions");
-            if (actionsJson == null) return;
-
-            var actions = JsonConvert.DeserializeObject<List<ItemAction>>(actionsJson);
+            if (!TryGetActionItemActionsFromAttributes(attributes, out var actions, out string sourceQuestId)) return;
 
             foreach (var action in actions)
             {
                 if (questSystem.ActionRegistry.TryGetValue(action.id, out var registeredAction))
                 {
-                    var message = new QuestAcceptedMessage { questGiverId = fromPlayer.Entity.EntityId, questId = "item-action" };
+                    var message = new QuestAcceptedMessage { questGiverId = fromPlayer.Entity.EntityId, questId = sourceQuestId };
                     registeredAction.Execute(sapi, message, fromPlayer, action.args);
+                }
+            }
+        }
+
+        private void OnInventoryScanTick(float dt)
+        {
+            if (sapi == null || questSystem == null) return;
+
+            var players = sapi.World.AllOnlinePlayers;
+            if (players == null || players.Length == 0) return;
+
+            foreach (var p in players)
+            {
+                if (!(p is IServerPlayer sp)) continue;
+                var inv = sp?.InventoryManager;
+                var wa = sp?.Entity?.WatchedAttributes;
+                if (inv == null || wa == null) continue;
+
+                // Walk all inventories/slots; trigger only for stacks that request auto-processing.
+                foreach (var iinv in inv.Inventories)
+                {
+                    var inventory = iinv.Value;
+                    if (inventory == null) continue;
+
+                    for (int slotIndex = 0; slotIndex < inventory.Count; slotIndex++)
+                    {
+                        var slot = inventory[slotIndex];
+                        var stack = slot?.Itemstack;
+                        if (stack?.Attributes == null) continue;
+
+                        if (!stack.Attributes.GetBool(ItemAttributeUtils.ActionItemTriggerOnInvAddKey, false)) continue;
+
+                        string actionItemId = stack.Attributes.GetString(ItemAttributeUtils.ActionItemIdKey);
+                        if (string.IsNullOrWhiteSpace(actionItemId)) continue;
+
+                        string onceKey = $"vsquest:itemaction:invadd:{actionItemId}";
+                        if (wa.GetBool(onceKey, false)) continue;
+
+                        if (!TryGetActionItemActionsFromAttributes(stack.Attributes, out var actions, out string sourceQuestId))
+                        {
+                            continue;
+                        }
+
+                        // If this action item is tied to a quest, only auto-trigger it while that quest is active.
+                        // This prevents pre-collecting quest items and consuming their one-time trigger too early.
+                        if (!string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var active = questSystem.GetPlayerQuests(sp.PlayerUID);
+                            bool isActive = active != null && active.Exists(q => q != null && string.Equals(q.questId, sourceQuestId, StringComparison.OrdinalIgnoreCase));
+                            if (!isActive)
+                            {
+                                continue;
+                            }
+                        }
+
+                        foreach (var action in actions)
+                        {
+                            if (action == null) continue;
+                            if (questSystem.ActionRegistry.TryGetValue(action.id, out var registeredAction))
+                            {
+                                var message = new QuestAcceptedMessage { questGiverId = sp.Entity.EntityId, questId = sourceQuestId };
+                                registeredAction.Execute(sapi, message, sp, action.args);
+                            }
+                        }
+
+                        wa.SetBool(onceKey, true);
+                        wa.MarkPathDirty(onceKey);
+                    }
                 }
             }
         }

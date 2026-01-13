@@ -14,7 +14,8 @@
     {
       "id": "playsound",
       "args": [
-        "game:sounds/effect/writing"
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
       ]
     }
   ],
@@ -41,6 +42,15 @@
       "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step3",
       "args": [
         "derevnia"
+      ]
+    },
+    {
+      "id": "checkvariable",
+      "objectiveId": "armorparts",
+      "args": [
+        "alstory:armorparts",
+        ">=",
+        "4"
       ]
     }
   ],
