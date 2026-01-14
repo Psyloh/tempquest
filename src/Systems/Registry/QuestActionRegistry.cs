@@ -53,6 +53,7 @@ namespace VsQuest
             actionRegistry.Add("playercommand", new PlayerCommandAction());
             actionRegistry.Add("questitem", new GiveActionItemAction());
             actionRegistry.Add("giveactionitem", new GiveActionItemAction());
+            actionRegistry.Add("consumeactionitem", new ConsumeActionItemAction());
 
             actionRegistry.Add("allowcharselonce", new AllowCharSelOnceAction());
 

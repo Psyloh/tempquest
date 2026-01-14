@@ -180,6 +180,16 @@ Gives an action item defined in `itemconfig.json` to the player.
 
 ---
 
+### `consumeactionitem`
+
+Consumes (removes) one or more action items from the player's inventories by matching `actionItemId` stored on the item attributes.
+
+**Arguments:**
+- `<actionItemId>` — The ID of the action item from `itemconfig.json` (required)
+- `[amount]` — How many items to consume, default 1 (optional)
+
+---
+
 ## Journal Category
 
 ### `addjournalentry`

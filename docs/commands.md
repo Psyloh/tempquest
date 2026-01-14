@@ -36,6 +36,7 @@ All commands require **`give` privilege** and are accessed via the `/quest` comm
 | `/quest completeactive` | `<playerName>` | Force-completes the player's currently active quest |
 | `/quest forgive` | `<questId> <playerName>` | Resets a quest for a player: removes from active quests, clears cooldown and completed flags |
 | `/quest forgiveall` | `[playerName]` | Resets ALL quests for a player: clears active quests, completed flags, and cooldowns |
+| `/quest exec` | `[playerName] <actionString>` | Executes an action string on a player. If no player is given, uses the caller |
 
 ---
 
@@ -48,6 +49,16 @@ Player attributes are persistent flags used for quest progress tracking.
 | `/quest attr list` | `<playerName>` | Lists all watched quest attributes for an online player |
 | `/quest attr set` | `<playerName> <key> <value>` | Sets a string attribute on an online player |
 | `/quest attr remove` | `<playerName> <key>` | Removes an attribute from an online player |
+
+### WatchedAttributes
+
+| Command | Arguments | Description |
+|---------|-----------|-------------|
+| `/quest wattr setint` | `[playerName] <key> <value>` | Sets an int WatchedAttribute |
+| `/quest wattr addint` | `[playerName] <key> <delta>` | Adds delta to an int WatchedAttribute |
+| `/quest wattr setbool` | `[playerName] <key> <value>` | Sets a bool WatchedAttribute |
+| `/quest wattr setstring` | `[playerName] <key> <value...>` | Sets a string WatchedAttribute |
+| `/quest wattr remove` | `[playerName] <key>` | Removes a WatchedAttribute key |
 
 ---
 

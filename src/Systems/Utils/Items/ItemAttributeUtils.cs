@@ -18,6 +18,7 @@ namespace VsQuest
         public const string ActionItemBlockEquipKey = "alegacyvsquest:blockEquip";   // restrict equipping (character slots)
         public const string ActionItemBlockDropKey = "alegacyvsquest:blockDrop";     // restrict manual drop
         public const string ActionItemBlockDeathKey = "alegacyvsquest:blockDeath";   // restrict drop on death
+        public const string ActionItemBlockGroundStorageKey = "alegacyvsquest:blockGroundStorage"; // restrict Shift+RightClick ground storage placement
         public const string ActionItemShowAttrsKey = "alegacyvsquest:showAttrs";
         public const string ActionItemHideVanillaKey = "alegacyvsquest:hideVanilla";
 
@@ -124,6 +125,12 @@ namespace VsQuest
             return stack.Attributes.GetBool(ActionItemBlockDeathKey, false) && IsActionItem(stack);
         }
 
+        public static bool IsActionItemBlockedGroundStorage(ItemStack stack)
+        {
+            if (stack?.Attributes == null) return false;
+            return stack.Attributes.GetBool(ActionItemBlockGroundStorageKey, false) && IsActionItem(stack);
+        }
+
         public static bool TryResolveCollectible(ICoreAPI api, string itemCode, out CollectibleObject collectible)
         {
             collectible = null;
@@ -189,6 +196,11 @@ namespace VsQuest
             if (actionItem.blockDeath)
             {
                 stack.Attributes.SetBool(ActionItemBlockDeathKey, true);
+            }
+
+            if (actionItem.blockGroundStorage)
+            {
+                stack.Attributes.SetBool(ActionItemBlockGroundStorageKey, true);
             }
 
             if (actionItem.attributes != null)

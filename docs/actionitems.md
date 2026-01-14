@@ -58,7 +58,11 @@ Action Items are defined in `config/itemconfig.json`:
 | `actions` | array | List of actions to execute on right-click |
 | `sourceQuestId` | string | Optional quest id used as action execution context. If omitted, defaults to `item-action`. |
 | `triggerOnInventoryAdd` | bool | If true, actions auto-trigger once when the item enters the player inventory. Manual right-click triggering is disabled. |
+| `blockMove` | bool | If true, prevents moving the item outside the hotbar (hotbar + mouse cursor only). This blocks moving into backpacks, chests, etc. |
 | `blockEquip` | bool | If true, prevents putting the item into character equipment slots (uses a Harmony patch on `ItemSlotCharacter`). |
+| `blockDrop` | bool | If true, prevents manual dropping (DropItem). |
+| `blockDeath` | bool | If true, prevents dropping on player death. |
+| `blockGroundStorage` | bool | If true, prevents placing the item into ground storage via `Shift` + Right Click. |
 | `attributes` | object | Custom float attributes (e.g., stats) |
 | `showAttributes` | array | Which custom attributes to show in tooltip |
 | `hideVanillaTooltips` | array | Which vanilla tooltip sections to hide |

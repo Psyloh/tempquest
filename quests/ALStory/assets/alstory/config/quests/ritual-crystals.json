@@ -13,6 +13,19 @@
       ]
     },
     {
+      "id": "consumeactionitem",
+      "args": [
+        "alstory-ritual-crystalbreaker",
+        "99"
+      ]
+    },
+    {
+      "id": "questitem",
+      "args": [
+        "alstory-ritual-crystalbreaker"
+      ]
+    },
+    {
       "id": "addplayerattribute",
       "args": [
         "alstory_rc_stage",
@@ -86,7 +99,7 @@
     {
       "id": "interactcount",
       "objectiveId": "crystals",
-      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step2; addplayerattribute alstory_rc_stage crystals",
+      "onCompleteActions": "addjournalentry alstory:ritual-crystals alstory:ritual-crystals-journal-title alstory:ritual-crystals-journal-step2; addplayerattribute alstory_rc_stage crystals; consumeactionitem alstory-ritual-crystalbreaker 1",
       "args": [
         "51200,3,51200",
         "51200,4,51200",

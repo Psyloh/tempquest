@@ -23,6 +23,7 @@ namespace VsQuest
         public bool blockEquip { get; set; } = false;
         public bool blockDrop { get; set; } = false;
         public bool blockDeath { get; set; } = false;
+        public bool blockGroundStorage { get; set; } = false;
         public Dictionary<string, float> attributes { get; set; } = new Dictionary<string, float>();
 
         /// List of custom attribute keys to show in tooltip (e.g., ["attackpower", "warmth"])
