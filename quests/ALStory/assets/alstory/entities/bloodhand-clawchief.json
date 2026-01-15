@@ -11,7 +11,8 @@
   "eyeHeight": 2.6,
   "attributes": {
     "killedByInfoText": "deadcreature-vile",
-    "reckless": true
+    "reckless": true,
+    "vsquestSoundPitchMul": 0.55
   },
   "drops": [],
   "client": {
