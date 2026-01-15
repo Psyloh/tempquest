@@ -8,7 +8,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Game Version](https://img.shields.io/badge/Vintage%20Story-1.21.6+-green.svg)](https://www.vintagestory.at/)
-[![Version](https://img.shields.io/badge/Mod%20Version-1.1.0-orange.svg)](resources/modinfo.json)
+[![Version](https://img.shields.io/badge/Mod%20Version-1.2.0-orange.svg)](resources/modinfo.json)
 
 </div>
 

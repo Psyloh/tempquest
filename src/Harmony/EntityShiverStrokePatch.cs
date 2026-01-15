@@ -8,6 +8,8 @@ namespace VsQuest.Harmony
 {
     public static class EntityShiverStrokePatch
     {
+        private const double TestStrokeChancePerTick = 0.05;
+
         [HarmonyPatch(typeof(EntityShiver), "OnGameTick")]
         public static class EntityShiver_OnGameTick_StrokeFreqPatch
         {
@@ -39,8 +41,7 @@ namespace VsQuest.Harmony
                     bool strokeActive = (bool)strokeActiveField.GetValue(__instance);
                     if (strokeActive) return true;
 
-                    // More frequent than vanilla (vanilla: 0.0008)
-                    if (!(__instance.Api.World.Rand.NextDouble() < 0.0016))
+                    if (!(__instance.Api.World.Rand.NextDouble() < TestStrokeChancePerTick))
                     {
                         return true;
                     }

@@ -23,4 +23,4 @@
 
 From `modinfo.json`:
 - **Game**: Vintage Story 1.21.6+
-- **Mod**: `itemizer` 1.1.1
+

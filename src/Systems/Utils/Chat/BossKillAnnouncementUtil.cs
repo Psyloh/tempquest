@@ -1,4 +1,5 @@
 using System;
+using Vintagestory.API.Config;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
 
@@ -6,18 +7,18 @@ namespace VsQuest
 {
     public static class BossKillAnnouncementUtil
     {
-        private static readonly string[] Templates = new[]
+        private static readonly string[] TemplateLangKeys = new[]
         {
-            "{victim} пал в бою с {boss}",
-            "{boss} отправил {victim} отдыхать у костра",
-            "{victim} не выдержал натиска: {boss}",
-            "{boss} раздавил {victim} без жалости",
-            "{victim} был повержен: {boss}",
-            "{victim} встретил свою судьбу. Виновник: {boss}",
-            "{boss} показал {victim}, кто здесь главный",
-            "{victim} проиграл дуэль против {boss}",
-            "{boss} оставил от {victim} только воспоминания",
-            "{victim} не успел увернуться от {boss}"
+            "alegacyvsquest:bosskill-template-1",
+            "alegacyvsquest:bosskill-template-2",
+            "alegacyvsquest:bosskill-template-3",
+            "alegacyvsquest:bosskill-template-4",
+            "alegacyvsquest:bosskill-template-5",
+            "alegacyvsquest:bosskill-template-6",
+            "alegacyvsquest:bosskill-template-7",
+            "alegacyvsquest:bosskill-template-8",
+            "alegacyvsquest:bosskill-template-9",
+            "alegacyvsquest:bosskill-template-10"
         };
 
         public static void AnnouncePlayerKilledByBoss(ICoreServerAPI sapi, IServerPlayer victim, Entity killerBossEntity)
@@ -30,9 +31,22 @@ namespace VsQuest
             string victimName = ChatFormatUtil.Font(victim.PlayerName, "#ffd75e");
             string bossNameColored = ChatFormatUtil.Font(bossName, "#ff77ff");
 
-            string template = Templates.Length == 0
-                ? "{victim} погиб от {boss}"
-                : Templates[sapi.World.Rand.Next(0, Templates.Length)];
+            string template = "{victim} погиб от {boss}";
+            if (TemplateLangKeys.Length > 0)
+            {
+                string langKey = TemplateLangKeys[sapi.World.Rand.Next(0, TemplateLangKeys.Length)];
+                try
+                {
+                    string localized = Lang.Get(langKey);
+                    if (!string.IsNullOrWhiteSpace(localized) && !string.Equals(localized, langKey, StringComparison.OrdinalIgnoreCase))
+                    {
+                        template = localized;
+                    }
+                }
+                catch
+                {
+                }
+            }
 
             string message = template
                 .Replace("{victim}", victimName)
