@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Common.Entities;
 
 namespace VsQuest
 {
@@ -52,6 +53,19 @@ namespace VsQuest
         {
             if (string.IsNullOrWhiteSpace(code)) return code;
 
+            string domain = null;
+            try
+            {
+                int colonIndex = code.IndexOf(':');
+                if (colonIndex > 0 && colonIndex < code.Length - 1)
+                {
+                    domain = code.Substring(0, colonIndex);
+                }
+            }
+            catch
+            {
+            }
+
             string normalized = NormalizeMobCode(code);
 
             // 1) mobdisplaynames.json overrides (exact only)
@@ -64,9 +78,9 @@ namespace VsQuest
             foreach (string candidate in GetFallbackCandidates(normalized))
             {
                 string t;
-                t = TryLangGet($"item-creature-{candidate}");
+                t = TryLangGet(domain, $"item-creature-{candidate}");
                 if (!string.IsNullOrWhiteSpace(t)) return t;
-                t = TryLangGet($"game:item-creature-{candidate}");
+                t = TryLangGet(null, $"game:item-creature-{candidate}");
                 if (!string.IsNullOrWhiteSpace(t)) return t;
             }
 
@@ -86,14 +100,66 @@ namespace VsQuest
             foreach (string candidate in GetFallbackCandidates(normalized))
             {
                 string t;
-                t = TryLangGet($"item-creature-{candidate}-*");
+                t = TryLangGet(domain, $"item-creature-{candidate}-*");
                 if (!string.IsNullOrWhiteSpace(t)) return t;
-                t = TryLangGet($"game:item-creature-{candidate}-*");
+                t = TryLangGet(null, $"game:item-creature-{candidate}-*");
                 if (!string.IsNullOrWhiteSpace(t)) return t;
             }
 
             string fallback = MapCode(normalized);
             return fallback;
+        }
+
+        public static string GetMobDisplayName(Entity entity)
+        {
+            if (entity == null) return null;
+
+            try
+            {
+                string domain = entity.Code?.Domain;
+                string codePath = entity.Code?.Path;
+                if (string.IsNullOrWhiteSpace(codePath)) return entity.Code?.ToShortString();
+
+                string variantSuffix = "";
+                try
+                {
+                    if (entity.Properties?.Variant != null && entity.Properties.Variant.Count > 0)
+                    {
+                        foreach (var val in entity.Properties.Variant.Values)
+                        {
+                            if (!string.IsNullOrWhiteSpace(val)) variantSuffix += "-" + val;
+                        }
+                    }
+                }
+                catch
+                {
+                }
+
+                if (!string.IsNullOrWhiteSpace(variantSuffix))
+                {
+                    string withVariant = codePath + variantSuffix;
+
+                    if (displayNameMap != null && displayNameMap.TryGetValue(withVariant, out var exactOverride) && !string.IsNullOrWhiteSpace(exactOverride))
+                    {
+                        return exactOverride;
+                    }
+
+                    foreach (string candidate in GetFallbackCandidates(withVariant))
+                    {
+                        string t;
+                        t = TryLangGet(domain, $"item-creature-{candidate}");
+                        if (!string.IsNullOrWhiteSpace(t)) return t;
+                        t = TryLangGet(null, $"game:item-creature-{candidate}");
+                        if (!string.IsNullOrWhiteSpace(t)) return t;
+                    }
+                }
+
+                return GetMobDisplayName(entity.Code?.ToShortString());
+            }
+            catch
+            {
+                return entity.Code?.ToShortString();
+            }
         }
 
         private static IEnumerable<string> GetFallbackCandidates(string code)
@@ -110,12 +176,22 @@ namespace VsQuest
             }
         }
 
-        private static string TryLangGet(string key)
+        private static string TryLangGet(string domain, string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return null;
             try
             {
-                string t = Lang.Get(key);
+                string t;
+                if (!string.IsNullOrWhiteSpace(domain) && key.IndexOf(':') < 0)
+                {
+                    t = Lang.Get(domain + ":" + key);
+                    if (!string.IsNullOrWhiteSpace(t) && !string.Equals(t, domain + ":" + key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return t;
+                    }
+                }
+
+                t = Lang.Get(key);
                 if (!string.IsNullOrWhiteSpace(t) && !string.Equals(t, key, StringComparison.OrdinalIgnoreCase))
                 {
                     return t;

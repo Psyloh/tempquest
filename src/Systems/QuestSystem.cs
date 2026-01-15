@@ -34,6 +34,8 @@ namespace VsQuest
             this.api = api;
             base.Start(api);
 
+            MobLocalizationUtils.LoadFromAssets(api);
+
             var harmony = new HarmonyLib.Harmony("vsquest");
             harmony.PatchAll();
 

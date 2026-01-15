@@ -25,7 +25,7 @@ namespace VsQuest
         {
             if (sapi == null || victim == null || killerBossEntity == null) return;
 
-            string bossName = MobLocalizationUtils.GetMobDisplayName(killerBossEntity.Code?.ToShortString());
+            string bossName = MobLocalizationUtils.GetMobDisplayName(killerBossEntity);
             if (string.IsNullOrWhiteSpace(bossName)) bossName = killerBossEntity.Code?.ToShortString() ?? "?";
 
             string victimName = ChatFormatUtil.Font(victim.PlayerName, "#ffd75e");

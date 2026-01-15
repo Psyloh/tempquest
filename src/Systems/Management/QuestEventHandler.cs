@@ -4,6 +4,7 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 
 namespace VsQuest
 {
@@ -51,8 +52,8 @@ namespace VsQuest
             var victimPlayer = entity as EntityPlayer;
             if (victimPlayer != null)
             {
-                var killer = damageSource?.SourceEntity;
-                if (killer != null && killer.GetBehavior<EntityBehaviorQuestBoss>() != null)
+                var killer = damageSource?.SourceEntity ?? damageSource?.CauseEntity;
+                if (killer != null && (killer.GetBehavior<EntityBehaviorQuestBoss>() != null || killer.GetBehavior<EntityBehaviorQuestTarget>() != null || killer.GetBehavior<EntityBehaviorBoss>() != null))
                 {
                     var serverVictim = victimPlayer.Player as IServerPlayer;
                     if (serverVictim != null)

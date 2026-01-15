@@ -114,6 +114,8 @@ namespace VsQuest
 
         private bool OnButtonSave()
         {
+            if (updating) return true;
+
             var data = new QuestSpawnerConfigData();
 
             data.maxAlive = (int)SingleComposer.GetNumberInput(KeyMaxAlive).GetValue();
@@ -129,12 +131,16 @@ namespace VsQuest
 
         private bool OnButtonKill()
         {
+            if (updating) return true;
+
             capi.Network.SendBlockEntityPacket(bePos, 1002, new byte[0]);
             return true;
         }
 
         private bool OnButtonToggle()
         {
+            if (updating) return true;
+
             capi.Network.SendBlockEntityPacket(bePos, 1003, new byte[0]);
             return true;
         }
