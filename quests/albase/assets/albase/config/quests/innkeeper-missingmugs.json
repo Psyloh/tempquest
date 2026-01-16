@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-missingmugs-journal-title",
+        "albase:innkeeper-missingmugs",
+        "albase:innkeeper-missingmugs-title",
         "albase:innkeeper-missingmugs-journal-text"
       ]
     },
@@ -137,7 +138,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-missingmugs-reward-journal-title",
+        "albase:innkeeper-missingmugs",
+        "albase:innkeeper-missingmugs-title",
+        "overwrite",
         "albase:innkeeper-missingmugs-reward-journal-text"
       ]
     }

@@ -36,12 +36,16 @@ namespace VsQuest
         public override void OnGameTick(float dt)
         {
             base.OnGameTick(dt);
-            if (sapi == null || entity == null || !entity.Alive) return;
+            if (sapi == null || entity == null) return;
+            if (!entity.Alive)
+            {
+                StopDespairEffects();
+                return;
+            }
             if (entity.AnimManager == null) return;
 
             if (despairActive)
             {
-                StopAiAndFreeze();
                 ApplyRotationLock();
                 return;
             }
@@ -111,15 +115,6 @@ namespace VsQuest
                 healListenerId = 0;
             }
 
-            soundCallbackId = sapi.Event.RegisterCallback(_ =>
-            {
-                try
-                {
-                    sapi.World.PlaySoundAt(new AssetLocation("sounds/creature/shiver/aggro"), entity, null, randomizePitch: true, 16f);
-                }
-                catch { }
-            }, 1000);
-
             soundLoopListenerId = sapi.Event.RegisterGameTickListener(_ =>
             {
                 try
@@ -136,7 +131,7 @@ namespace VsQuest
                     HealDuringDespair();
                 }
                 catch { }
-            }, 250);
+            }, 500);
 
             int baseSeconds = (int)(sapi.World.Rand.NextDouble() * 3.0 + 3.0);
             int durationMs = (int)(baseSeconds * 1000 * durationMultiplier);
@@ -153,18 +148,7 @@ namespace VsQuest
                 {
                     try
                     {
-                        despairActive = false;
-                        yawLocked = false;
-                        if (soundLoopListenerId != 0)
-                        {
-                            sapi.Event.UnregisterGameTickListener(soundLoopListenerId);
-                            soundLoopListenerId = 0;
-                        }
-                        if (healListenerId != 0)
-                        {
-                            sapi.Event.UnregisterGameTickListener(healListenerId);
-                            healListenerId = 0;
-                        }
+                        StopDespairEffects();
                         Unfreeze();
                     }
                     catch { }
@@ -223,9 +207,39 @@ namespace VsQuest
             float curHealth = healthTree.GetFloat("currenthealth", 0f);
             if (maxHealth <= 0f || curHealth <= 0f) return;
 
-            float newHealth = Math.Min(maxHealth, curHealth + 6.0f);
+            float newHealth = Math.Min(maxHealth, curHealth + 5.0f);
             healthTree.SetFloat("currenthealth", newHealth);
             wa.MarkPathDirty("health");
+        }
+
+        public override void OnEntityDeath(DamageSource damageSourceForDeath)
+        {
+            base.OnEntityDeath(damageSourceForDeath);
+            StopDespairEffects();
+        }
+
+        private void StopDespairEffects()
+        {
+            despairActive = false;
+            yawLocked = false;
+
+            if (soundCallbackId != 0)
+            {
+                sapi.Event.UnregisterCallback(soundCallbackId);
+                soundCallbackId = 0;
+            }
+
+            if (soundLoopListenerId != 0)
+            {
+                sapi.Event.UnregisterGameTickListener(soundLoopListenerId);
+                soundLoopListenerId = 0;
+            }
+
+            if (healListenerId != 0)
+            {
+                sapi.Event.UnregisterGameTickListener(healListenerId);
+                healListenerId = 0;
+            }
         }
     }
 }

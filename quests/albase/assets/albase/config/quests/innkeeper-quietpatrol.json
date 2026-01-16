@@ -22,7 +22,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-quietpatrol-journal-title",
+        "albase:innkeeper-quietpatrol",
+        "albase:innkeeper-quietpatrol-title",
         "albase:innkeeper-quietpatrol-journal-text"
       ]
     },
@@ -172,7 +173,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-quietpatrol-reward-journal-title",
+        "albase:innkeeper-quietpatrol",
+        "albase:innkeeper-quietpatrol-title",
+        "overwrite",
         "albase:innkeeper-quietpatrol-reward-journal-text"
       ]
     }

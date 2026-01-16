@@ -1,6 +1,6 @@
 {
   "id": "alstory:ritual-crystals",
-  "cooldown": 0,
+  "cooldown": -1,
   "perPlayer": true,
   "predecessor": "alstory:echo-proklyatiya",
   "onAcceptedActions": [

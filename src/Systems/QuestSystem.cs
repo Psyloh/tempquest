@@ -28,6 +28,8 @@ namespace VsQuest
         private ICoreAPI api;
 
         private VsQuestDiscoveryHud discoveryHud;
+        private QuestJournalGui questJournalGui;
+        private const string JournalHotkeyCode = "alegacyvsquest-journal";
 
         public override void Start(ICoreAPI api)
         {
@@ -93,6 +95,14 @@ namespace VsQuest
 
             networkChannelRegistry.RegisterClient(capi);
 
+            capi.Input.RegisterHotKey(JournalHotkeyCode, Lang.Get("alegacyvsquest:hotkey-journal"), GlKeys.N, HotkeyType.GUIOrOtherControls);
+
+            capi.Input.SetHotKeyHandler(JournalHotkeyCode, _ =>
+            {
+                ToggleQuestJournalGui(capi);
+                return true;
+            });
+
             try
             {
                 discoveryHud = new VsQuestDiscoveryHud(capi);
@@ -101,6 +111,32 @@ namespace VsQuest
             {
                 discoveryHud = null;
             }
+        }
+
+        private void ToggleQuestJournalGui(ICoreClientAPI capi)
+        {
+            if (questJournalGui == null)
+            {
+                questJournalGui = new QuestJournalGui(capi);
+                questJournalGui.OnClosed += () =>
+                {
+                    if (questJournalGui != null && !questJournalGui.IsOpened())
+                    {
+                        questJournalGui = null;
+                    }
+                };
+                questJournalGui.TryOpen();
+                return;
+            }
+
+            if (questJournalGui.IsOpened())
+            {
+                questJournalGui.TryClose();
+                return;
+            }
+
+            questJournalGui.Refresh();
+            questJournalGui.TryOpen();
         }
 
         internal void OnShowNotificationMessage(ShowNotificationMessage message, ICoreClientAPI capi)

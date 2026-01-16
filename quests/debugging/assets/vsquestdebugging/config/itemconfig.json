@@ -17,6 +17,20 @@
         "healingeffectiveness"
       ],
       "hideVanillaTooltips": []
+    },
+    {
+      "id": "vsquestdebugging:damage50",
+      "itemCode": "alegacyvsquest:debugtool",
+      "name": "<font color=\"#EF4444\">Debug: Damage 50</font>",
+      "description": "<font color=\"#60A5FA\">ПКМ по хотбару: наносит 50 урона выбранной энтити.</font>",
+      "actions": [
+        {
+          "id": "damageentity",
+          "args": [
+            "50"
+          ]
+        }
+      ]
     }
   ]
 }

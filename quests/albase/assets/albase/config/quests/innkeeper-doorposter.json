@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-doorposter-journal-title",
+        "albase:innkeeper-doorposter",
+        "albase:innkeeper-doorposter-title",
         "albase:innkeeper-doorposter-journal-text"
       ]
     },
@@ -137,7 +138,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-doorposter-reward-journal-title",
+        "albase:innkeeper-doorposter",
+        "albase:innkeeper-doorposter-title",
+        "overwrite",
         "albase:innkeeper-doorposter-reward-journal-text"
       ]
     }

@@ -42,6 +42,7 @@ namespace VsQuest
 
             string loreCodesKey = $"alegacyvsquest:journal:{questId}:lorecodes";
             string[] loreCodes = player.Entity.WatchedAttributes.GetStringArray(loreCodesKey, null);
+            var groupIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Backfill from quest definition if no per-player tracking is present (e.g. journal entries created before tracking existed)
             if ((loreCodes == null || loreCodes.Length == 0) && questSystem?.QuestRegistry != null && questSystem.QuestRegistry.TryGetValue(questId, out var quest) && quest != null)
@@ -55,7 +56,18 @@ namespace VsQuest
                         if (a == null) continue;
                         if (!string.Equals(a.id, "addjournalentry", StringComparison.OrdinalIgnoreCase)) continue;
                         if (a.args == null || a.args.Length < 1) continue;
-                        if (!string.IsNullOrWhiteSpace(a.args[0])) fromQuest.Add(a.args[0]);
+
+                        // New format: [groupId, loreCode, title, ...]
+                        // Legacy format: [loreCode, title, ...]
+                        if (a.args.Length >= 2)
+                        {
+                            if (!string.IsNullOrWhiteSpace(a.args[0])) groupIds.Add(a.args[0]);
+                            if (!string.IsNullOrWhiteSpace(a.args[1])) fromQuest.Add(a.args[1]);
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(a.args[0])) fromQuest.Add(a.args[0]);
+                        }
                     }
                 }
 
@@ -75,9 +87,26 @@ namespace VsQuest
                         var actionId = matches[0].Value;
                         if (!string.Equals(actionId, "addjournalentry", StringComparison.OrdinalIgnoreCase)) continue;
 
-                        // args[0] for addjournalentry is loreCode
-                        string loreCode = matches[1].Groups[1].Success ? matches[1].Groups[1].Value : matches[1].Groups[2].Value;
-                        if (!string.IsNullOrWhiteSpace(loreCode)) fromQuest.Add(loreCode);
+                        // Legacy format in action strings:
+                        // addjournalentry <loreCode> <title> <chapter...>
+                        // New format:
+                        // addjournalentry <groupId> <loreCode> <title> <chapter...>
+                        string arg1 = matches[1].Groups[1].Success ? matches[1].Groups[1].Value : matches[1].Groups[2].Value;
+                        string arg2 = matches.Count >= 3
+                            ? (matches[2].Groups[1].Success ? matches[2].Groups[1].Value : matches[2].Groups[2].Value)
+                            : null;
+
+                        if (!string.IsNullOrWhiteSpace(arg2))
+                        {
+                            // new format
+                            groupIds.Add(arg1);
+                            fromQuest.Add(arg2);
+                        }
+                        else
+                        {
+                            // legacy format
+                            if (!string.IsNullOrWhiteSpace(arg1)) fromQuest.Add(arg1);
+                        }
                     }
                 }
 
@@ -94,6 +123,12 @@ namespace VsQuest
                 }
 
                 loreCodes = fromQuest.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            }
+
+            // Always consider the questId itself as a potential groupId (for older entries)
+            if (!string.IsNullOrWhiteSpace(questId))
+            {
+                groupIds.Add(questId);
             }
 
             if (loreCodes == null || loreCodes.Length == 0)
@@ -126,7 +161,18 @@ namespace VsQuest
                                 if (act == null) continue;
                                 if (!string.Equals(act.id, "addjournalentry", StringComparison.OrdinalIgnoreCase)) continue;
                                 if (act.args == null || act.args.Length < 1) continue;
-                                if (!string.IsNullOrWhiteSpace(act.args[0])) fromItems.Add(act.args[0]);
+
+                                // New format: [groupId, loreCode, title, ...]
+                                // Legacy format: [loreCode, title, ...]
+                                if (act.args.Length >= 2)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(act.args[0])) groupIds.Add(act.args[0]);
+                                    if (!string.IsNullOrWhiteSpace(act.args[1])) fromItems.Add(act.args[1]);
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrWhiteSpace(act.args[0])) fromItems.Add(act.args[0]);
+                                }
                             }
                         }
 
@@ -142,21 +188,49 @@ namespace VsQuest
             {
                 player.Entity.WatchedAttributes.RemoveAttribute(loreCodesKey);
                 player.Entity.WatchedAttributes.MarkPathDirty(loreCodesKey);
-                return;
+                loreCodes = Array.Empty<string>();
             }
 
-            ModJournal modJournal = null;
+            // Also remove group-specific lore code lists for new-format groupIds
+            foreach (var gid in groupIds)
+            {
+                if (string.IsNullOrWhiteSpace(gid)) continue;
+                string gkey = $"alegacyvsquest:journal:{gid}:lorecodes";
+                player.Entity.WatchedAttributes.RemoveAttribute(gkey);
+                player.Entity.WatchedAttributes.MarkPathDirty(gkey);
+            }
+
+            bool removedCustom = false;
             try
             {
-                modJournal = sapi.ModLoader.GetModSystem<ModJournal>();
+                var wa = player.Entity.WatchedAttributes;
+                var entries = QuestJournalEntry.Load(wa);
+                if (entries.Count > 0)
+                {
+                    var loreSet = new HashSet<string>(loreCodes.Where(c => !string.IsNullOrWhiteSpace(c)), StringComparer.OrdinalIgnoreCase);
+                    int before = entries.Count;
+                    entries.RemoveAll(e => e != null &&
+                        (!string.IsNullOrWhiteSpace(e.QuestId) && (string.Equals(e.QuestId, questId, StringComparison.OrdinalIgnoreCase) || groupIds.Contains(e.QuestId))
+                        || (!string.IsNullOrWhiteSpace(e.LoreCode) && loreSet.Count > 0 && loreSet.Contains(e.LoreCode))));
+
+                    if (entries.Count != before)
+                    {
+                        QuestJournalEntry.Save(wa, entries);
+                        wa.MarkPathDirty(QuestJournalEntry.JournalEntriesKey);
+                        removedCustom = true;
+                    }
+                }
             }
-            catch
+            catch (Exception e)
             {
+                sapi?.Logger.Warning($"[vsquest] Failed to remove custom journal entries for player {player.PlayerUID}: {e.Message}");
             }
-            if (modJournal == null) return;
 
             try
             {
+                var modJournal = sapi.ModLoader.GetModSystem<ModJournal>();
+                if (modJournal == null) return;
+
                 var t = modJournal.GetType();
                 var journalsField = t.GetField("journalsByPlayerUid", BindingFlags.Instance | BindingFlags.NonPublic);
                 var channelField = t.GetField("serverChannel", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -183,14 +257,13 @@ namespace VsQuest
 
                 if (!journals.TryGetValue(player.PlayerUID, out var journal) || journal?.Entries == null) return;
 
-                var loreSet = new HashSet<string>(loreCodes.Where(c => !string.IsNullOrWhiteSpace(c)), StringComparer.OrdinalIgnoreCase);
-                if (loreSet.Count == 0) return;
+                var loreSetLegacy = new HashSet<string>(loreCodes.Where(c => !string.IsNullOrWhiteSpace(c)), StringComparer.OrdinalIgnoreCase);
+                if (loreSetLegacy.Count == 0) return;
 
-                int before = journal.Entries.Count;
-                journal.Entries.RemoveAll(e => e != null && !string.IsNullOrWhiteSpace(e.LoreCode) && loreSet.Contains(e.LoreCode));
-                if (journal.Entries.Count != before)
+                int beforeLegacy = journal.Entries.Count;
+                journal.Entries.RemoveAll(e => e != null && !string.IsNullOrWhiteSpace(e.LoreCode) && loreSetLegacy.Contains(e.LoreCode));
+                if (journal.Entries.Count != beforeLegacy)
                 {
-                    // Reindex entries and fix chapter EntryId references
                     for (int i = 0; i < journal.Entries.Count; i++)
                     {
                         var entry = journal.Entries[i];
@@ -205,17 +278,18 @@ namespace VsQuest
                         }
                     }
 
-                    // Resync full journal to the client
                     serverChannel.SendPacket(journal, player);
                 }
             }
             catch (Exception e)
             {
-                sapi?.Logger.Warning($"[vsquest] Failed to remove journal entries for player {player.PlayerUID}: {e.Message}");
+                if (!removedCustom)
+                {
+                    sapi?.Logger.Warning($"[vsquest] Failed to remove journal entries for player {player.PlayerUID}: {e.Message}");
+                }
             }
             finally
             {
-                // Always clear tracking so future forgive doesn't keep trying
                 player.Entity.WatchedAttributes.RemoveAttribute(loreCodesKey);
                 player.Entity.WatchedAttributes.MarkPathDirty(loreCodesKey);
 

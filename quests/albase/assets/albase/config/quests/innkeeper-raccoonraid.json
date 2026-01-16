@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-raccoonraid-journal-title",
+        "albase:innkeeper-raccoonraid",
+        "albase:innkeeper-raccoonraid-title",
         "albase:innkeeper-raccoonraid-journal-text"
       ]
     },
@@ -110,7 +111,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-raccoonraid-reward-journal-title",
+        "albase:innkeeper-raccoonraid",
+        "albase:innkeeper-raccoonraid-title",
+        "overwrite",
         "albase:innkeeper-raccoonraid-reward-journal-text"
       ]
     }

@@ -22,7 +22,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-silentdeliveries-journal-title",
+        "albase:innkeeper-silentdeliveries",
+        "albase:innkeeper-silentdeliveries-title",
         "albase:innkeeper-silentdeliveries-journal-text"
       ]
     },
@@ -148,7 +149,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-silentdeliveries-reward-journal-title",
+        "albase:innkeeper-silentdeliveries",
+        "albase:innkeeper-silentdeliveries-title",
+        "overwrite",
         "albase:innkeeper-silentdeliveries-reward-journal-text"
       ]
     }

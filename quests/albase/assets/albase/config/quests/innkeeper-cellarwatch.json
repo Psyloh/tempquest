@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-cellarwatch-journal-title",
+        "albase:innkeeper-cellarwatch",
+        "albase:innkeeper-cellarwatch-title",
         "albase:innkeeper-cellarwatch-journal-text"
       ]
     },
@@ -164,7 +165,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-cellarwatch-reward-journal-title",
+        "albase:innkeeper-cellarwatch",
+        "albase:innkeeper-cellarwatch-title",
+        "overwrite",
         "albase:innkeeper-cellarwatch-reward-journal-text"
       ]
     }

@@ -22,7 +22,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightjog-journal-title",
+        "albase:innkeeper-nightjog",
+        "albase:innkeeper-nightjog-title",
         "albase:innkeeper-nightjog-journal-text"
       ]
     }
@@ -83,7 +84,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightjog-reward-journal-title",
+        "albase:innkeeper-nightjog",
+        "albase:innkeeper-nightjog-title",
+        "overwrite",
         "albase:innkeeper-nightjog-reward-journal-text"
       ]
     }

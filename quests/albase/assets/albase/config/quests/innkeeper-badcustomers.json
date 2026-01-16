@@ -15,8 +15,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-badcustomers-journal-title",
-        "albase:innkeeper-badcustomers-journal-text"
+        "albase:innkeeper-badcustomers",
+        "albase:innkeeper-badcustomers-title",
+        "albase:innkeeper-badcustomers-journal"
       ]
     },
     {
@@ -136,7 +137,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-badcustomers-reward-journal-title",
+        "albase:innkeeper-badcustomers",
+        "albase:innkeeper-badcustomers-title",
+        "overwrite",
         "albase:innkeeper-badcustomers-reward-journal-text"
       ]
     }

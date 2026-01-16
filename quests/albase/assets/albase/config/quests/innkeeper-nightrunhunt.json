@@ -22,7 +22,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightrunhunt-journal-title",
+        "albase:innkeeper-nightrunhunt",
+        "albase:innkeeper-nightrunhunt-title",
         "albase:innkeeper-nightrunhunt-journal-text"
       ]
     },
@@ -140,7 +141,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightrunhunt-reward-journal-title",
+        "albase:innkeeper-nightrunhunt",
+        "albase:innkeeper-nightrunhunt-title",
+        "overwrite",
         "albase:innkeeper-nightrunhunt-reward-journal-text"
       ]
     }

@@ -24,7 +24,8 @@
       },
       { "code": "controlledphysics", "stepHeight": 1.01 },
       { "code": "health", "currenthealth": 1000000, "maxhealth": 1000000 },
-      { "code": "conversable", "dialogue": "config/dialogue/illa" }
+      { "code": "conversable", "dialogue": "config/dialogue/illa" },
+      { "code": "questgiver" }
     ]
   },
   "sounds": {}

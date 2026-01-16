@@ -33,10 +33,10 @@ namespace VsQuest
                 var wa = player.Entity?.WatchedAttributes;
                 if (wa == null) return;
 
-                int x = wa.GetInt("vsquest:lastinteract:x", int.MinValue);
-                int y = wa.GetInt("vsquest:lastinteract:y", int.MinValue);
-                int z = wa.GetInt("vsquest:lastinteract:z", int.MinValue);
-                int dim = wa.GetInt("vsquest:lastinteract:dim", 0);
+                int x = wa.GetInt("alegacyvsquest:lastinteract:x", int.MinValue);
+                int y = wa.GetInt("alegacyvsquest:lastinteract:y", int.MinValue);
+                int z = wa.GetInt("alegacyvsquest:lastinteract:z", int.MinValue);
+                int dim = wa.GetInt("alegacyvsquest:lastinteract:dim", 0);
 
                 if (x == int.MinValue || y == int.MinValue || z == int.MinValue) return;
 

@@ -13,23 +13,53 @@ namespace VsQuest
     {
         public void Execute(ICoreServerAPI sapi, QuestMessage message, IServerPlayer player, string[] args)
         {
-            if (args.Length < 3)
+            if (args.Length < 2)
             {
-                throw new QuestException("The 'addjournalentry' action requires at least 3 arguments: loreCode, title, and at least one chapter.");
+                throw new QuestException("The 'addjournalentry' action requires at least 2 arguments.");
             }
 
-            var modJournal = sapi.ModLoader.GetModSystem<ModJournal>();
-            if (modJournal == null)
-            {
-                throw new QuestException("ModJournal system not found.");
-            }
+            // Supported formats:
+            // - Legacy: addjournalentry <loreCode> <chapter...>
+            // - Legacy: addjournalentry <loreCode> <title> <chapter...>
+            // - New:    addjournalentry <groupId> <loreCode> <title> <chapter...>
+            string groupId = null;
+            string loreCode;
+            string title;
+            bool overwriteMode = false;
+            int chapterStartIndex;
 
-            var loreCode = args[0];
-            var title = LocalizationUtils.GetSafe(args[1]);
+            if (args.Length >= 4)
+            {
+                groupId = args[0];
+                loreCode = args[1];
+                title = LocalizationUtils.GetSafe(args[2]);
+
+                if (args.Length >= 5 && string.Equals(args[3], "overwrite", StringComparison.OrdinalIgnoreCase))
+                {
+                    overwriteMode = true;
+                    chapterStartIndex = 4;
+                }
+                else
+                {
+                    chapterStartIndex = 3;
+                }
+            }
+            else if (args.Length >= 3)
+            {
+                loreCode = args[0];
+                title = LocalizationUtils.GetSafe(args[1]);
+                chapterStartIndex = 2;
+            }
+            else
+            {
+                loreCode = args[0];
+                title = loreCode;
+                chapterStartIndex = 1;
+            }
 
             // Build incoming chapters (dedupe empty)
             var incomingChapters = new List<JournalChapter>();
-            for (int i = 2; i < args.Length; i++)
+            for (int i = chapterStartIndex; i < args.Length; i++)
             {
                 var txt = LocalizationUtils.GetSafe(args[i]);
                 if (!string.IsNullOrWhiteSpace(txt))
@@ -43,128 +73,115 @@ namespace VsQuest
                 return;
             }
 
-            int entryId = 0;
-            if (player?.Entity?.WatchedAttributes != null && !string.IsNullOrWhiteSpace(loreCode))
+            if (player?.Entity?.WatchedAttributes == null) return;
+
+            var wa = player.Entity.WatchedAttributes;
+            var entries = QuestJournalEntry.Load(wa);
+
+            QuestJournalEntry entry = null;
+            foreach (var existing in entries)
             {
-                string idKey = $"alegacyvsquest:journal:entryid:{loreCode}";
-                int storedId = player.Entity.WatchedAttributes.GetInt(idKey, -1);
-                if (storedId >= 0)
+                if (existing == null) continue;
+                if (string.Equals(existing.LoreCode, loreCode, StringComparison.OrdinalIgnoreCase))
                 {
-                    entryId = storedId;
-                }
-                else
-                {
-                    string nextKey = "alegacyvsquest:journal:nextentryid";
-                    int nextId = player.Entity.WatchedAttributes.GetInt(nextKey, 0);
-                    if (nextId < 0) nextId = 0;
-
-                    entryId = nextId;
-                    player.Entity.WatchedAttributes.SetInt(nextKey, nextId + 1);
-                    player.Entity.WatchedAttributes.MarkPathDirty(nextKey);
-
-                    player.Entity.WatchedAttributes.SetInt(idKey, entryId);
-                    player.Entity.WatchedAttributes.MarkPathDirty(idKey);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(message?.questId) && player?.Entity?.WatchedAttributes != null && !string.IsNullOrWhiteSpace(loreCode))
-            {
-                string key = $"alegacyvsquest:journal:{message.questId}:lorecodes";
-                var loreCodes = player.Entity.WatchedAttributes.GetStringArray(key, new string[0]).ToList();
-                if (!loreCodes.Contains(loreCode, StringComparer.OrdinalIgnoreCase))
-                {
-                    loreCodes.Add(loreCode);
-                    player.Entity.WatchedAttributes.SetStringArray(key, loreCodes.ToArray());
-                    player.Entity.WatchedAttributes.MarkPathDirty(key);
+                    entry = existing;
+                    break;
                 }
             }
 
             bool changed = false;
-            bool foundExisting = false;
+            string resolvedQuestId = !string.IsNullOrWhiteSpace(groupId)
+                ? groupId
+                : message?.questId;
 
-            // Try to append to existing entry if present
-            try
+            if (string.IsNullOrWhiteSpace(resolvedQuestId)
+                || string.Equals(resolvedQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase))
             {
-                var t = modJournal.GetType();
-                var journalsField = t.GetField("journalsByPlayerUid", BindingFlags.Instance | BindingFlags.NonPublic);
-                var channelField = t.GetField("serverChannel", BindingFlags.Instance | BindingFlags.NonPublic);
+                resolvedQuestId = loreCode;
+            }
 
-                var journals = journalsField?.GetValue(modJournal) as Dictionary<string, Journal>;
-                var serverChannel = channelField?.GetValue(modJournal) as IServerNetworkChannel;
-
-                if (journals != null && serverChannel != null
-                    && journals.TryGetValue(player.PlayerUID, out var journal)
-                    && journal?.Entries != null)
+            if (!string.IsNullOrWhiteSpace(resolvedQuestId) && !string.IsNullOrWhiteSpace(loreCode))
+            {
+                string key = $"alegacyvsquest:journal:{resolvedQuestId}:lorecodes";
+                var loreCodes = wa.GetStringArray(key, new string[0]).ToList();
+                if (!loreCodes.Contains(loreCode, StringComparer.OrdinalIgnoreCase))
                 {
-                    var existing = journal.Entries.FirstOrDefault(e => e != null && string.Equals(e.LoreCode, loreCode, StringComparison.OrdinalIgnoreCase));
-
-                    if (existing != null)
-                    {
-                        foundExisting = true;
-
-                        if (!string.IsNullOrWhiteSpace(title) && !string.Equals(existing.Title, title, StringComparison.Ordinal))
-                        {
-                            existing.Title = title;
-                            changed = true;
-                        }
-
-                        if (existing.Chapters == null)
-                        {
-                            existing.Chapters = new List<JournalChapter>();
-                            changed = true;
-                        }
-
-                        var existingTexts = new HashSet<string>(
-                            existing.Chapters.Where(c => c != null && !string.IsNullOrWhiteSpace(c.Text)).Select(c => c.Text),
-                            StringComparer.Ordinal
-                        );
-
-                        foreach (var ch in incomingChapters)
-                        {
-                            if (ch == null || string.IsNullOrWhiteSpace(ch.Text)) continue;
-                            if (existingTexts.Contains(ch.Text)) continue;
-
-                            ch.EntryId = existing.EntryId;
-                            existing.Chapters.Add(ch);
-                            existingTexts.Add(ch.Text);
-                            changed = true;
-                        }
-
-                        if (changed)
-                        {
-                            // Resync full journal to the client
-                            serverChannel.SendPacket(journal, player);
-                        }
-                    }
+                    loreCodes.Add(loreCode);
+                    wa.SetStringArray(key, loreCodes.ToArray());
+                    wa.MarkPathDirty(key);
                 }
             }
-            catch
-            {
-                // Fall back to old behavior below
-            }
 
-            // If the entry already exists and nothing new was added, do nothing (no spam)
-            if (foundExisting && !changed)
+            if (entry == null)
             {
-                return;
-            }
-
-            if (!changed)
-            {
-                // Fallback: create/update entry via ModJournal (may overwrite chapters)
-                var journalEntry = new JournalEntry()
+                entry = new QuestJournalEntry
                 {
-                    Title = title,
+                    QuestId = resolvedQuestId,
                     LoreCode = loreCode,
-                    Chapters = incomingChapters,
-                    EntryId = entryId
+                    Title = title,
+                    Chapters = new List<string>()
                 };
+                entries.Add(entry);
+                changed = true;
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(entry.QuestId) && !string.IsNullOrWhiteSpace(resolvedQuestId))
+                {
+                    entry.QuestId = resolvedQuestId;
+                    changed = true;
+                }
+            }
 
-                modJournal.AddOrUpdateJournalEntry(player, journalEntry);
+            if (!string.IsNullOrWhiteSpace(title) && !string.Equals(entry.Title, title, StringComparison.Ordinal))
+            {
+                entry.Title = title;
                 changed = true;
             }
 
-            if (!changed) return;
+            if (entry.Chapters == null)
+            {
+                entry.Chapters = new List<string>();
+                changed = true;
+            }
+
+            if (overwriteMode && entry.Chapters.Count == 1 && incomingChapters.Count == 1)
+            {
+                string newText = incomingChapters[0]?.Text;
+                if (!string.IsNullOrWhiteSpace(newText) && !string.Equals(entry.Chapters[0], newText, StringComparison.Ordinal))
+                {
+                    entry.Chapters[0] = newText;
+                    changed = true;
+                }
+            }
+            else
+            {
+
+                var existingTexts = new HashSet<string>(entry.Chapters.Where(c => !string.IsNullOrWhiteSpace(c)), StringComparer.Ordinal);
+                foreach (var ch in incomingChapters)
+                {
+                    if (ch == null || string.IsNullOrWhiteSpace(ch.Text)) continue;
+                    if (existingTexts.Contains(ch.Text)) continue;
+
+                    entry.Chapters.Add(ch.Text);
+                    existingTexts.Add(ch.Text);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                // Treat updated entries as "newest" for UI ordering by moving them to the end.
+                // This way the journal can auto-select the most recently updated entry.
+                if (entry != null)
+                {
+                    entries.Remove(entry);
+                    entries.Add(entry);
+                }
+
+                QuestJournalEntry.Save(wa, entries);
+                wa.MarkPathDirty(QuestJournalEntry.JournalEntriesKey);
+            }
 
             sapi.SendMessage(player, GlobalConstants.GeneralChatGroup, LocalizationUtils.GetSafe("alegacyvsquest:journal-updated"), EnumChatType.Notification);
 
@@ -174,7 +191,7 @@ namespace VsQuest
             }
             catch (Exception e)
             {
-                sapi.Logger.Warning($"[vsquest] Could not play sound 'sounds/effect/writing' for journal update in quest '{message?.questId}': {e.Message}");
+                sapi.Logger.Warning($"[alegacyvsquest] Could not play sound 'sounds/effect/writing' for journal update in quest '{message?.questId}': {e.Message}");
             }
         }
     }

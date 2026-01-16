@@ -60,6 +60,16 @@ namespace VsQuest
 
             if (byPlayer?.Entity?.WatchedAttributes != null && position != null && position.Length == 3)
             {
+                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:x", position[0]);
+                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:y", position[1]);
+                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:z", position[2]);
+                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:dim", byPlayer.Entity?.Pos?.Dimension ?? 0);
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:x");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:y");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:z");
+                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:dim");
+
+                // Backfill legacy keys for compatibility with older code paths.
                 byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:x", position[0]);
                 byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:y", position[1]);
                 byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:z", position[2]);

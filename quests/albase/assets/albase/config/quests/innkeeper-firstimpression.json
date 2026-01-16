@@ -21,7 +21,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-firstimpression-journal-title",
+        "albase:innkeeper-firstimpression",
+        "albase:innkeeper-firstimpression-title",
         "albase:innkeeper-firstimpression-journal-text"
       ]
     },
@@ -142,7 +143,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-firstimpression-reward-journal-title",
+        "albase:innkeeper-firstimpression",
+        "albase:innkeeper-firstimpression-title",
+        "overwrite",
         "albase:innkeeper-firstimpression-reward-journal-text"
       ]
     }

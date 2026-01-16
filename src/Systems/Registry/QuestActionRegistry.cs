@@ -65,6 +65,7 @@ namespace VsQuest
             actionRegistry.Add("markentityinteraction", new MarkEntityInteractionAction());
 
             actionRegistry.Add("cycleentityanimation", new CycleEntityAnimationAction());
+            actionRegistry.Add("damageentity", new DamageSelectedEntityAction());
 
             actionRegistry.Add("cooldownblock", new CooldownBlockAction());
 

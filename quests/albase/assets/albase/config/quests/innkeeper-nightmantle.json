@@ -61,7 +61,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightmantle-journal-title",
+        "albase:innkeeper-nightmantle",
+        "albase:innkeeper-nightmantle-title",
         "albase:innkeeper-nightmantle-journal-text"
       ]
     }
@@ -103,7 +104,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-nightmantle-reward-journal-title",
+        "albase:innkeeper-nightmantle",
+        "albase:innkeeper-nightmantle-title",
+        "overwrite",
         "albase:innkeeper-nightmantle-reward-journal-text"
       ]
     }

@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-talkingbarrel-journal-title",
+        "albase:innkeeper-talkingbarrel",
+        "albase:innkeeper-talkingbarrel-title",
         "albase:innkeeper-talkingbarrel-journal-text"
       ]
     },
@@ -137,7 +138,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-talkingbarrel-reward-journal-title",
+        "albase:innkeeper-talkingbarrel",
+        "albase:innkeeper-talkingbarrel-title",
+        "overwrite",
         "albase:innkeeper-talkingbarrel-reward-journal-text"
       ]
     }

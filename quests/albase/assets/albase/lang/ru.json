@@ -40,6 +40,8 @@
   "albase:tradingwindow-priest": "Священник",
   "item-creature-priest": "Священник",
 
+  "albase:innkeeper-title": "Трактирщик",
+
   "albase:innkeeper-firstimpression-title": "Трактирщик: Проверка на вшивость",
   "albase:innkeeper-firstimpression-desc": "Трактирщик не верит словам. Ему плевать на твои былые подвиги. Хочешь доказать, что ты не пустозвон — делай, что велят. Без лишних вопросов и без шума.",
   "albase:innkeeper-firstimpression-obj": "",

@@ -1,6 +1,6 @@
 {
   "id": "alstory:fallen-magister",
-  "cooldown": 0,
+  "cooldown": -1,
   "perPlayer": true,
   "predecessor": "alstory:ritual-crystals",
   "onAcceptedActions": [

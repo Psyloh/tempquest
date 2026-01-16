@@ -1,6 +1,6 @@
 {
   "id": "alstory:echo-proklyatiya",
-  "cooldown": 0,
+  "cooldown": -1,
   "perPlayer": true,
   "onAcceptedActions": [
     {

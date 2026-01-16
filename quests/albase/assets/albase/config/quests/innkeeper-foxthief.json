@@ -15,7 +15,8 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-foxthief-journal-title",
+        "albase:innkeeper-foxthief",
+        "albase:innkeeper-foxthief-title",
         "albase:innkeeper-foxthief-journal-text"
       ]
     },
@@ -123,7 +124,9 @@
       "id": "addjournalentry",
       "args": [
         "albase:innkeeper",
-        "albase:innkeeper-foxthief-reward-journal-title",
+        "albase:innkeeper-foxthief",
+        "albase:innkeeper-foxthief-title",
+        "overwrite",
         "albase:innkeeper-foxthief-reward-journal-text"
       ]
     }
