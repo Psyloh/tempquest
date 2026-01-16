@@ -66,6 +66,21 @@ namespace VsQuest
             {
                 var quests = persistenceManager.GetPlayerQuests(player.PlayerUID);
                 QuestDeathUtil.HandleEntityDeath(sapi, quests, player, entity);
+
+                try
+                {
+                    if (IsBossEntity(entity) && IsFinalBossStage(entity))
+                    {
+                        var serverPlayer = player.Player as IServerPlayer;
+                        if (serverPlayer != null)
+                        {
+                            BossKillAnnouncementUtil.AnnounceBossDefeated(sapi, serverPlayer, entity);
+                        }
+                    }
+                }
+                catch
+                {
+                }
             }
 
             var victimPlayer = entity as EntityPlayer;
@@ -85,6 +100,24 @@ namespace VsQuest
                     }
                 }
             }
+        }
+
+        private static bool IsBossEntity(Entity entity)
+        {
+            if (entity == null) return false;
+
+            return entity.GetBehavior<EntityBehaviorBossHuntCombatMarker>() != null
+                || entity.GetBehavior<EntityBehaviorBossRespawn>() != null
+                || entity.GetBehavior<EntityBehaviorBossDespair>() != null
+                || entity.GetBehavior<EntityBehaviorQuestBoss>() != null;
+        }
+
+        private static bool IsFinalBossStage(Entity entity)
+        {
+            if (entity == null) return false;
+
+            var rebirth = entity.GetBehavior<EntityBehaviorBossRebirth>();
+            return rebirth == null || rebirth.IsFinalStage;
         }
 
         private void OnBlockBroken(IServerPlayer byPlayer, int blockId, BlockSelection blockSel)

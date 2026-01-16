@@ -1,0 +1,17 @@
+{
+  "bossKey": "albase:bosshunt:bonecolossus",
+  "bossEntityCode": "albase:bonecolossus",
+  "bossTargetId": "albase:bosshunt:bonecolossus",
+  "questId": "albase:bosshunt-bonecolossus",
+  "points": [
+    "0,0,0,0",
+    "0,0,0,0",
+    "0,0,0,0"
+  ],
+  "relocateIntervalHours": 6,
+  "respawnInGameHours": 24,
+  "noRelocateAfterDamageMinutes": 10,
+  "rotationDays": 360,
+  "activationRange": 160,
+  "playerLockRange": 40
+}

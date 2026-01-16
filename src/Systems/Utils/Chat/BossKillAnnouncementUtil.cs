@@ -54,5 +54,19 @@ namespace VsQuest
 
             GlobalChatBroadcastUtil.BroadcastGeneralChat(sapi, ChatFormatUtil.PrefixAlert(message), Vintagestory.API.Common.EnumChatType.Notification);
         }
+
+        public static void AnnounceBossDefeated(ICoreServerAPI sapi, IServerPlayer killer, Entity bossEntity)
+        {
+            if (sapi == null || killer == null || bossEntity == null) return;
+
+            string bossName = MobLocalizationUtils.GetMobDisplayName(bossEntity);
+            if (string.IsNullOrWhiteSpace(bossName)) bossName = bossEntity.Code?.ToShortString() ?? "?";
+
+            string playerName = ChatFormatUtil.Font(killer.PlayerName, "#ffd75e");
+            string bossNameColored = ChatFormatUtil.Font(bossName, "#ff77ff");
+            string text = ChatFormatUtil.PrefixAlert($"{playerName} победил босса {bossNameColored}");
+
+            GlobalChatBroadcastUtil.BroadcastGeneralChat(sapi, text, Vintagestory.API.Common.EnumChatType.Notification);
+        }
     }
 }

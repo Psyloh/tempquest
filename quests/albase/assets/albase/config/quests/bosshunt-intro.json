@@ -1,0 +1,80 @@
+{
+  "id": "albase:bosshunt-intro",
+  "cooldown": -1,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "randomkill",
+      "args": [
+        "1",
+        "1",
+        "2",
+        "albase:bosshunt-intro-randomkill-notify",
+        "playsound 'albase:sounds/priest_target' 0.25",
+        "playsound 'sounds/tutorialstepsuccess' 0.7",
+        "drifter-normal",
+        "drifter-deep",
+        "bowtorn",
+        "shiver"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:bosshunt",
+        "albase:bosshunt-intro",
+        "albase:bosshunt-intro-title",
+        "albase:bosshunt-intro-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "randomkill",
+      "args": [
+        "albase:bosshunt-intro"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-tracker"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-bosshunter-intro-final-title",
+        "albase:dialogue-bosshunter-intro-final-text",
+        "albase:dialogue-bosshunter-intro-final-option"
+      ]
+    },
+    {
+      "id": "notify",
+      "args": [
+        "albase:bosshunt-tracker-received"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:bosshunt",
+        "albase:bosshunt-intro",
+        "albase:bosshunt-intro-title",
+        "overwrite",
+        "albase:bosshunt-intro-complete-journal"
+      ]
+    }
+  ]
+}

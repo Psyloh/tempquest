@@ -69,10 +69,14 @@ namespace VsQuest
 
             actionRegistry.Add("cooldownblock", new CooldownBlockAction());
 
+            actionRegistry.Add("trackboss", new TrackBossAction());
+
             actionRegistry.Add("setquestgiverattribute", new SetQuestGiverAttributeQuestAction());
             actionRegistry.Add("notify", new NotifyQuestAction());
             actionRegistry.Add("discover", new DiscoverQuestAction());
             actionRegistry.Add("showquestfinaldialog", new ShowQuestFinalDialogQuestAction());
+            actionRegistry.Add("closedialogue", new CloseDialogueAction());
+            actionRegistry.Add("revealname", new RevealNameAction());
         }
     }
 }

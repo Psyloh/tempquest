@@ -1,0 +1,73 @@
+{
+  "id": "albase:bosshunt-ashenlurker",
+  "cooldown": 7,
+  "perPlayer": true,
+  "predecessor": "albase:bosshunt-intro",
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:bosshunt",
+        "albase:bosshunt-ashenlurker",
+        "albase:bosshunt-ashenlurker-title",
+        "albase:bosshunt-ashenlurker-journal-text"
+      ]
+    },
+    {
+      "id": "notify",
+      "args": [
+        "albase:bosshunt-use-tracker"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "killactiontarget",
+      "objectiveId": "ashenlurker",
+      "onCompleteActions": "addjournalentry albase:bosshunt albase:bosshunt-ashenlurker albase:bosshunt-ashenlurker-title overwrite albase:bosshunt-ashenlurker-reward-journal-text",
+      "args": [
+        "albase:bosshunt-ashenlurker",
+        "ashenlurker",
+        "albase:bosshunt:ashenlurker",
+        "1"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-reward-ashenlurker"
+      ]
+    },
+    {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-reward-ashenlurker-veil"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-bosshunter-final-title",
+        "albase:dialogue-bosshunter-final-text",
+        "albase:dialogue-bosshunter-final-option"
+      ]
+    },
+    {
+      "id": "notify",
+      "args": [
+        "albase:bosshunt-ashenlurker-reward"
+      ]
+    }
+  ]
+}

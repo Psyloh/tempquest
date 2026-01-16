@@ -1,0 +1,160 @@
+{
+  "code": "ossuarywarden",
+  "class": "EntityDrifter",
+  "tags": ["rust-creature", "habitat-land"],
+  "variantgroups": [
+    { "code": "type", "states": ["nightmare"] }
+  ],
+  "canClimb": true,
+  "hitboxSize": { "x": 2.4, "y": 4.2 },
+  "deadHitboxSize": { "x": 2.0, "y": 2.4 },
+  "eyeHeight": 4.0,
+  "attributes": {
+    "killedByInfoText": "deadcreature-vile",
+    "reckless": true,
+    "vsquestSoundPitchMul": 0.6,
+    "alegacyvsquestHideInfoText": true
+  },
+  "drops": [],
+  "client": {
+    "renderer": "Shape",
+    "pitchStep": false,
+    "size": 2,
+    "shapeByType": {
+      "*-nightmare": { "base": "game:entity/lore/drifter/knife" }
+    },
+    "texturesByType": {
+      "*-nightmare": {
+        "skin": { "base": "game:entity/lore/drifter/knife" }
+      }
+    },
+    "behaviors": [
+      { "code": "repulseagents" },
+      { "code": "controlledphysics", "stepHeight": 1.1251 },
+      { "code": "floatupwhenstuck", "onlyWhenDead": true },
+      { "code": "interpolateposition" },
+      { "code": "boss", "bossHpBarRange": 60 },
+      { "code": "harvestable", "duration": 2 },
+      { "code": "bossnametag", "nameLangKey": "item-creature-ossuarywarden", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
+    ],
+    "animations": [
+      { "code": "hurt", "animation": "standhurt", "animationSpeed": 2, "weight": 10, "blendMode": "AddAverage" },
+      { "code": "die", "animation": "standdie", "animationSpeed": 0.7, "weight": 10, "blendMode": "Average", "triggeredBy": { "onControls": ["dead"] } },
+      { "code": "idle", "animation": "standidle", "blendMode": "Average", "triggeredBy": { "defaultAnim": true } },
+      { "code": "standwalk", "animation": "standwalk", "blendMode": "Average" },
+      { "code": "standrun", "animation": "standrun", "blendMode": "Average" },
+      { "code": "standattack", "animation": "standattack", "animationSpeed": 1.5, "blendMode": "Average", "weight": 100 },
+      { "code": "standthrowleft", "animation": "standthrowleft", "animationSpeed": 1.5, "blendMode": "Average" },
+      { "code": "standdespair", "animation": "standdespair", "animationSpeed": 1.25 },
+      { "code": "standcry", "animation": "standcry", "animationSpeed": 1 },
+      { "code": "standlowwalk", "animation": "standlowwalk", "blendMode": "Average" }
+    ]
+  },
+  "server": {
+    "behaviors": [
+      { "code": "repulseagents" },
+      { "code": "controlledphysics", "stepHeight": 1.1251 },
+      { "code": "health", "currenthealth": 320, "maxhealth": 320 },
+      { "code": "bossrebirth", "rebirthEntityCode": "albase:ossuarywarden-reborn", "isFinalStage": false },
+      { "code": "bosshuntcombatmarker" },
+      { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
+      {
+        "code": "emotionstates",
+        "states": [
+          { "code": "aggressiveondamage", "duration": 30, "chance": 1, "slot": 0, "priority": 0.5, "accumType": "noaccum" },
+          { "code": "ossuarywarden-ritual", "duration": 999999, "chance": 1, "slot": 1, "priority": 1, "accumType": "noaccum", "whenHealthRelBelow": 0.6 },
+          { "code": "ossuarywarden-requiem", "duration": 999999, "chance": 1, "slot": 1, "priority": 2, "accumType": "noaccum", "whenHealthRelBelow": 0.25 }
+        ]
+      },
+      {
+        "code": "taskai",
+        "aitasks": [
+          {
+            "code": "meleeattack",
+            "entityCodes": ["player"],
+            "priority": 2,
+            "damage": 14,
+            "damageTier": 3,
+            "minDist": 2.4,
+            "minVerDist": 2.0,
+            "attackAngleRangeDeg": 120,
+            "mincooldown": 300,
+            "maxcooldown": 900,
+            "damagePlayerAtMs": 400,
+            "attackDurationMs": 1000,
+            "animation": "standattack",
+            "animationSpeed": 1.4,
+            "sound": "creature/drifter-hit",
+            "soundStartMs": 400
+          },
+          {
+            "code": "meleeattack",
+            "entityCodes": ["player"],
+            "priority": 2.1,
+            "damage": 22,
+            "damageTier": 4,
+            "minDist": 4.0,
+            "minVerDist": 2.5,
+            "attackAngleRangeDeg": 120,
+            "mincooldown": 2400,
+            "maxcooldown": 3600,
+            "damagePlayerAtMs": 700,
+            "attackDurationMs": 1200,
+            "animation": "standthrowleft",
+            "animationSpeed": 1.2,
+            "sound": "creature/drifter-hit",
+            "soundStartMs": 500,
+            "whenInEmotionState": "ossuarywarden-ritual|ossuarywarden-requiem"
+          },
+          {
+            "code": "meleeattack",
+            "entityCodes": ["player"],
+            "priority": 2.35,
+            "damage": 28,
+            "damageTier": 5,
+            "minDist": 4.5,
+            "minVerDist": 2.8,
+            "attackAngleRangeDeg": 150,
+            "mincooldown": 2000,
+            "maxcooldown": 3000,
+            "damagePlayerAtMs": 500,
+            "attackDurationMs": 1000,
+            "animation": "standattack",
+            "animationSpeed": 1.6,
+            "sound": "creature/drifter-hit",
+            "soundStartMs": 350,
+            "whenInEmotionState": "ossuarywarden-requiem"
+          },
+          {
+            "code": "seekentity",
+            "entityCodes": ["player"],
+            "priority": 1.5,
+            "mincooldown": 500,
+            "maxcooldown": 900,
+            "movespeed": 0.018,
+            "seekingRange": 30,
+            "maxFollowTime": 120,
+            "animation": "standrun",
+            "animationSpeed": 1.3
+          },
+          {
+            "code": "wander",
+            "priority": 1.0,
+            "movespeed": 0.01,
+            "animation": "standwalk",
+            "animationSpeed": 1.2,
+            "preferredLightLevel": 15
+          },
+          { "code": "lookaround", "priority": 0.5 }
+        ]
+      },
+      { "code": "floatupwhenstuck", "onlyWhenDead": true }
+    ]
+  },
+  "idleSoundRange": 32,
+  "sounds": {
+    "hurt": "creature/drifter-hurt",
+    "death": "creature/drifter-death",
+    "idle": "creature/drifter-idle"
+  }
+}

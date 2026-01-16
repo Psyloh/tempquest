@@ -1,6 +1,162 @@
 {
   "actionItems": [
     {
+      "id": "albase:bosshunt-tracker",
+      "itemCode": "game:gear-temporal",
+      "name": "<font color=\"#D97706\">Следопыт-кристалл</font>",
+      "description": "<font color=\"#F59E0B\">Тусклый кристалл, ведущий по следу древнего стража. Шепчет расстояние, но забирает кровь.</font>",
+      "actions": [
+        {
+          "id": "trackboss",
+          "args": []
+        }
+      ],
+      "blockMove": true,
+      "blockEquip": true,
+      "blockDrop": true,
+      "blockDeath": true,
+      "blockGroundStorage": true,
+      "showAttributes": [],
+      "hideVanillaTooltips": [
+        "durability",
+        "modsource"
+      ]
+    },
+    {
+      "id": "albase:bosshunt-reward-ossuarywarden",
+      "itemCode": "game:clothes-shoulder-embroidered-collar",
+      "name": "<font color=\"#9CA3AF\">Костяной филактерий</font>",
+      "description": "<font color=\"#E5E7EB\">Осколки кости, связанные нитями клятвы. Защищает, но тянет силы изнутри.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 0.6,
+        "protectionperc": 0.04,
+        "walkspeed": -0.04,
+        "hungerrate": 0.08
+      },
+      "showAttributes": [
+        "protection",
+        "protectionperc",
+        "walkspeed",
+        "hungerrate"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-ashenlurker",
+      "itemCode": "game:clothes-shoulder-hooded-cape",
+      "name": "<font color=\"#F97316\">Пепельный знак Ловчего</font>",
+      "description": "<font color=\"#FDBA74\">Зола держит форму, пока ты дышишь. Прибавляет меткости, но отнимает тепло.</font>",
+      "actions": [],
+      "attributes": {
+        "rangedaccuracy": 0.1,
+        "rangedchargspeed": 0.08,
+        "warmth": -0.8
+      },
+      "showAttributes": [
+        "rangedaccuracy",
+        "rangedchargspeed",
+        "warmth"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-bonecolossus",
+      "itemCode": "game:clothes-shoulder-hunter-poncho",
+      "name": "<font color=\"#A8A29E\">Метка Костяного Колосса</font>",
+      "description": "<font color=\"#E7E5E4\">Тяжёлая печать на ткани. Делает руку точнее, но замедляет тело.</font>",
+      "actions": [],
+      "attributes": {
+        "rangedaccuracy": 0.06,
+        "walkspeed": -0.06,
+        "healingeffectiveness": -0.05
+      },
+      "showAttributes": [
+        "rangedaccuracy",
+        "walkspeed",
+        "healingeffectiveness"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-rare",
+      "itemCode": "game:clothes-shoulder-aristocrat-mantle",
+      "name": "<font color=\"#B91C1C\">Печать Кровавой Охоты</font>",
+      "description": "<font color=\"#FCA5A5\">Редкая метка древней охоты. Дарует силу и скорость, но оставляет тело голодным и холодным.</font>",
+      "actions": [],
+      "attributes": {
+        "protectionperc": 0.12,
+        "walkspeed": 0.08,
+        "healingeffectiveness": 0.15,
+        "hungerrate": 0.22,
+        "warmth": -1.2
+      },
+      "showAttributes": [
+        "protectionperc",
+        "walkspeed",
+        "healingeffectiveness",
+        "hungerrate",
+        "warmth"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-ossuarywarden-chain",
+      "itemCode": "game:clothes-waist-jailor-belt",
+      "name": "<font color=\"#E5E7EB\">Цепь костного дозора</font>",
+      "description": "<font color=\"#F3F4F6\">Пояс с холодной цепью. Защищает лучше, но стягивает дыхание и еду.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 0.4,
+        "protectionperc": 0.06,
+        "walkspeed": -0.03,
+        "hungerrate": 0.12
+      },
+      "showAttributes": [
+        "protection",
+        "protectionperc",
+        "walkspeed",
+        "hungerrate"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-ashenlurker-veil",
+      "itemCode": "game:clothes-shoulder-woolen-scarf",
+      "name": "<font color=\"#FB923C\">Пепельная вуаль</font>",
+      "description": "<font color=\"#FED7AA\">Тёплый шарф с запахом золы. Согревает и ускоряет прицел, но замедляет восстановление.</font>",
+      "actions": [],
+      "attributes": {
+        "warmth": 1.2,
+        "rangedaccuracy": 0.05,
+        "healingeffectiveness": -0.08
+      },
+      "showAttributes": [
+        "warmth",
+        "rangedaccuracy",
+        "healingeffectiveness"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
+      "id": "albase:bosshunt-reward-bonecolossus-girdle",
+      "itemCode": "game:clothes-waist-messenger-belt",
+      "name": "<font color=\"#D6D3D1\">Ремень хребтодробителя</font>",
+      "description": "<font color=\"#F5F5F4\">Туго стянутый ремень. Даёт скорость и точность, но усиливает голод.</font>",
+      "actions": [],
+      "attributes": {
+        "walkspeed": 0.05,
+        "rangedaccuracy": 0.05,
+        "hungerrate": 0.14
+      },
+      "showAttributes": [
+        "walkspeed",
+        "rangedaccuracy",
+        "hungerrate"
+      ],
+      "hideVanillaTooltips": []
+    },
+    {
       "id": "albase:innkeeper-nightmantle",
       "itemCode": "game:clothes-emblem-silver-pin",
       "name": "<font color=\"#8B5CF6\">Брошь трактирщика</font>",

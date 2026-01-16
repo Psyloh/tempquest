@@ -331,6 +331,23 @@ Recruits the current quest giver entity as a companion/guard for the player. Set
 
 ## UI & Feedback Category
 
+### `closedialogue`
+
+Closes the currently open NPC dialogue for the current quest giver.
+
+**Arguments:** None
+
+---
+
+### `revealname`
+
+Reveals the NPC name tag for the player. When a selector is supplied, it reveals for all matching entities.
+
+**Arguments:**
+- `[selector]` — Optional entity selector (e.g. `e[type=*,range=5]`). If omitted, reveals the current quest giver.
+
+---
+
 ### `notify`
 
 Shows a notification message to the player. The message is sent via network and displayed on the client.

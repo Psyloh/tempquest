@@ -325,6 +325,17 @@ namespace VsQuest
             var attributes = slot.Itemstack.Attributes;
             if (!TryGetActionItemActionsFromAttributes(attributes, out var actions, out string sourceQuestId)) return;
 
+            if (!string.IsNullOrWhiteSpace(sourceQuestId)
+                && !string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase))
+            {
+                var active = questSystem?.GetPlayerQuests(fromPlayer.PlayerUID);
+                bool isActive = active != null && active.Exists(q => q != null && string.Equals(q.questId, sourceQuestId, StringComparison.OrdinalIgnoreCase));
+                if (!isActive)
+                {
+                    return;
+                }
+            }
+
             foreach (var action in actions)
             {
                 if (questSystem.ActionRegistry.TryGetValue(action.id, out var registeredAction))

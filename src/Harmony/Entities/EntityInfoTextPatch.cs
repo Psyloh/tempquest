@@ -33,6 +33,18 @@ namespace VsQuest.Harmony
         {
             if (entity == null) return false;
 
+            try
+            {
+                if (entity.Properties?.Attributes != null
+                    && entity.Properties.Attributes["alegacyvsquestHideInfoText"].AsBool(false))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
             string domain = entity.Code?.Domain;
             if (!string.Equals(domain, "alstory", StringComparison.OrdinalIgnoreCase)) return false;
 

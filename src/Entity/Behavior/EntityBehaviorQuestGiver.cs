@@ -31,6 +31,7 @@ namespace VsQuest
         private string[] priorityQuests;
         private string noAvailableQuestDescLangKey;
         private string noAvailableQuestCooldownDescLangKey;
+        private bool bossHuntActiveOnly;
 
         public static string ChainCooldownLastCompletedKey(long questGiverEntityId) => $"vsquest:questgiver:lastcompleted-{questGiverEntityId}";
 
@@ -51,6 +52,7 @@ namespace VsQuest
             chainCooldownDays = attributes["chaincooldowndays"].AsInt(0);
             maxAvailableQuests = attributes["maxavailablequests"].AsInt(0);
             priorityQuests = attributes["priorityquests"].AsArray<string>() ?? Array.Empty<string>();
+            bossHuntActiveOnly = attributes["bosshuntactiveonly"].AsBool(false);
 
             quests = attributes["quests"].AsArray<string>() ?? Array.Empty<string>();
             alwaysQuests = attributes["alwaysquests"].AsArray<string>() ?? Array.Empty<string>();
@@ -130,6 +132,18 @@ namespace VsQuest
                 {
                     if (!IsExcluded(q)) result.Add(q);
                 }
+            }
+
+            if (bossHuntActiveOnly)
+            {
+                var bossSystem = sapi?.ModLoader?.GetModSystem<BossHuntSystem>();
+                var activeQuestId = bossSystem?.GetActiveBossQuestId();
+                if (!string.IsNullOrWhiteSpace(activeQuestId) && !IsExcluded(activeQuestId) && !result.Contains(activeQuestId))
+                {
+                    result.Add(activeQuestId);
+                }
+
+                return result;
             }
 
             var pool = rotationPool ?? quests;

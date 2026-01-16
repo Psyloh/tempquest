@@ -1,0 +1,99 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-work", "jumpTo": "openquests" },
+        { "value": "albase:dialogue-bosshunter-whoareyou", "jumpTo": "whoareyou" },
+        { "value": "albase:dialogue-bosshunter-about", "jumpTo": "about" },
+        { "value": "albase:dialogue-bosshunter-whycrypts", "jumpTo": "whycrypts" },
+        { "value": "albase:dialogue-bosshunter-howtracker", "jumpTo": "howtracker" },
+        { "value": "albase:dialogue-bosshunter-aboutreward", "jumpTo": "aboutreward" },
+        { "value": "albase:dialogue-bosshunter-aboutmarks", "jumpTo": "aboutmarks" },
+        { "value": "albase:dialogue-bosshunter-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "whoareyou",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-whoareyou-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "about",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-about-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "whycrypts",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-whycrypts-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "howtracker",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-howtracker-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "aboutreward",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-aboutreward-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "aboutmarks",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-aboutmarks-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "openquests",
+      "owner": "npc",
+      "type": "talk",
+      "trigger": "openquests",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-openquests-confirm" }
+      ]
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-bosshunter-close-answer" }
+      ]
+    }
+  ]
+}

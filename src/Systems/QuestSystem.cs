@@ -7,6 +7,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.API.Datastructures;
 
 namespace VsQuest
 {
@@ -48,6 +49,9 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("bossnametag", typeof(EntityBehaviorBossNameTag));
             api.RegisterEntityBehaviorClass("bossrespawn", typeof(EntityBehaviorBossRespawn));
             api.RegisterEntityBehaviorClass("bossdespair", typeof(EntityBehaviorBossDespair));
+            api.RegisterEntityBehaviorClass("bosshuntcombatmarker", typeof(EntityBehaviorBossHuntCombatMarker));
+            api.RegisterEntityBehaviorClass("bosssummonritual", typeof(EntityBehaviorBossSummonRitual));
+            api.RegisterEntityBehaviorClass("bossrebirth", typeof(EntityBehaviorBossRebirth));
             api.RegisterEntityBehaviorClass("shiverdebug", typeof(EntityBehaviorShiverDebug));
 
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));
@@ -58,6 +62,9 @@ namespace VsQuest
 
             api.RegisterBlockClass("BlockQuestSpawner", typeof(BlockQuestSpawner));
             api.RegisterBlockEntityClass("QuestSpawner", typeof(BlockEntityQuestSpawner));
+
+            api.RegisterBlockClass("BlockBossHuntAnchor", typeof(BlockBossHuntAnchor));
+            api.RegisterBlockEntityClass("BossHuntAnchor", typeof(BlockEntityBossHuntAnchor));
 
             // Register objectives
             objectiveRegistry = new QuestObjectiveRegistry(ActionObjectiveRegistry, api);
@@ -214,17 +221,65 @@ namespace VsQuest
                 {
                     try
                     {
-                        if (questAsset.Value != null && !QuestRegistry.ContainsKey(questAsset.Value.id))
-                        {
-                            QuestRegistry.Add(questAsset.Value.id, questAsset.Value);
-                        }
+                        TryRegisterQuest(api, questAsset.Value, questAsset.Key);
                     }
                     catch (Exception e)
                     {
                         api.Logger.Error($"Failed to load quest from {questAsset.Key}: {e.Message}");
                     }
                 }
+
+                LoadQuestAssetsFromFile(api, mod.Info.ModID);
             }
+        }
+
+        private void LoadQuestAssetsFromFile(ICoreAPI api, string domain)
+        {
+            if (api == null || string.IsNullOrWhiteSpace(domain)) return;
+
+            var assets = api.Assets;
+            var asset = assets.TryGet(new AssetLocation(domain, "config/quests.json"))
+                ?? assets.TryGet(new AssetLocation(domain, "config/quest.json"));
+
+            if (asset == null) return;
+
+            try
+            {
+                var root = asset.ToObject<JsonObject>();
+                if (root == null) return;
+
+                if (root.IsArray())
+                {
+                    var array = root.AsArray();
+                    if (array == null) return;
+
+                    foreach (var entry in array)
+                    {
+                        if (entry == null || !entry.Exists) continue;
+                        var quest = entry.AsObject<Quest>();
+                        TryRegisterQuest(api, quest, asset.Location?.ToString() ?? "config/quests.json");
+                    }
+
+                    return;
+                }
+
+                var singleQuest = root.AsObject<Quest>();
+                TryRegisterQuest(api, singleQuest, asset.Location?.ToString() ?? "config/quests.json");
+            }
+            catch (Exception e)
+            {
+                api.Logger.Error($"Failed to load quests from {asset.Location}: {e.Message}");
+            }
+        }
+
+        private void TryRegisterQuest(ICoreAPI api, Quest quest, string source)
+        {
+            if (quest == null) return;
+            if (string.IsNullOrWhiteSpace(quest.id)) return;
+
+            if (QuestRegistry.ContainsKey(quest.id)) return;
+
+            QuestRegistry.Add(quest.id, quest);
         }
 
         public List<ActiveQuest> GetPlayerQuests(string playerUID)

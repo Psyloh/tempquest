@@ -150,7 +150,7 @@ The `trigger: "openquests"` line executes the Alegacy VS Quest action to show th
 
 ## Step 4: Quest Definition
 
-Create `config/quests/priest-quest.json`:
+Create `config/quests/priest-quest.json` (or use a single-file `config/quest.json` / `config/quests.json` with one or multiple quest objects):
 
 ```json
 {
