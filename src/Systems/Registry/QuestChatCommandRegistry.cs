@@ -47,7 +47,7 @@ namespace VsQuest
 
             var questEntityHandler = new QuestEntityCommandHandler(sapi, questSystem);
 
-            sapi.ChatCommands.GetOrCreate("quest")
+            sapi.ChatCommands.GetOrCreate("vsq")
                 .WithDescription("Quest administration commands")
                 .RequiresPrivilege(Privilege.give)
                 .BeginSubCommand("fx")

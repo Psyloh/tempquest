@@ -37,8 +37,6 @@ The boss hunt system spawns a single active boss at a time, rotates it on a long
 ## Config fields
 Each boss config supports:
 - `bossKey` (string)
-- `bossEntityCode` (string)
-- `bossTargetId` (string)
 - `questId` (string)
 - `points` (list of `x,y,z,dim` strings)
 - `rotationDays`
@@ -47,14 +45,3 @@ Each boss config supports:
 - `noRelocateAfterDamageMinutes`
 - `activationRange`
 - `playerLockRange`
-
-## Files
-- `src/Systems/BossHunt/BossHuntSystem.cs`
-- `src/Systems/Actions/Player/TrackBossAction.cs`
-- `src/Entity/Behavior/EntityBehaviorQuestGiver.cs`
-- `src/Commands/Management/BossHuntSkipCommandHandler.cs`
-- `src/Commands/Management/BossHuntStatusCommandHandler.cs`
-- `quests/albase/assets/albase/config/bosshunt/*.json`
-- `quests/albase/assets/albase/config/quests/bosshunt-*.json`
-- `quests/albase/assets/albase/config/mobdisplaynames.json`
-- `quests/albase/assets/albase/entities/*.json`
