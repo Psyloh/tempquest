@@ -15,6 +15,7 @@ namespace VsQuest
         public const string LastBossDamageTotalHoursKey = "alegacyvsquest:bosshunt:lastBossDamageTotalHours";
 
         private const string SaveKey = "alegacyvsquest:bosshunt:state";
+        private const bool DebugBossHunt = true;
 
         private ICoreServerAPI sapi;
         private readonly List<BossHuntConfig> configs = new();
@@ -27,8 +28,9 @@ namespace VsQuest
         private readonly HashSet<string> orderedAnchorsDirty = new(StringComparer.OrdinalIgnoreCase);
 
         private Entity cachedBossEntity;
-        private string cachedBossTargetId;
+        private string cachedBossKey;
         private double nextBossEntityScanTotalHours;
+        private double nextDebugLogTotalHours;
 
         public override void StartServerSide(ICoreServerAPI api)
         {
@@ -152,6 +154,26 @@ namespace VsQuest
             return created;
         }
 
+        private void NormalizeState(BossHuntConfig cfg, BossHuntStateEntry st)
+        {
+            if (cfg == null || st == null) return;
+
+            st.anchorPoints ??= new List<BossHuntAnchorPoint>();
+
+            int count = GetPointCount(cfg, st);
+            if (count <= 0)
+            {
+                st.currentPointIndex = 0;
+                return;
+            }
+
+            if (st.currentPointIndex < 0 || st.currentPointIndex >= count)
+            {
+                st.currentPointIndex = 0;
+                stateDirty = true;
+            }
+        }
+
         public string[] GetKnownBossKeys()
         {
             if (configs == null || configs.Count == 0) return Array.Empty<string>();
@@ -180,7 +202,9 @@ namespace VsQuest
             var cfg = FindConfig(bossKey);
             if (cfg == null) return;
 
-            var st = GetOrCreateState(cfg.bossKey);
+            bossKey = cfg.bossKey;
+
+            var st = GetOrCreateState(bossKey);
             NormalizeState(cfg, st);
 
             st.anchorPoints ??= new List<BossHuntAnchorPoint>();
@@ -211,7 +235,8 @@ namespace VsQuest
             existing.dim = pos.dimension;
 
             stateDirty = true;
-            orderedAnchorsDirty.Add(cfg.bossKey);
+            orderedAnchorsDirty.Add(bossKey);
+            DebugLog($"Anchor registered: bossKey={bossKey} id={anchorId} order={pointOrder} pos={pos.X},{pos.Y},{pos.Z} dim={pos.dimension}", force: true);
         }
 
         public void UnsetAnchorPoint(string bossKey, string anchorId, BlockPos pos)
@@ -224,7 +249,9 @@ namespace VsQuest
             var cfg = FindConfig(bossKey);
             if (cfg == null) return;
 
-            var st = GetOrCreateState(cfg.bossKey);
+            bossKey = cfg.bossKey;
+
+            var st = GetOrCreateState(bossKey);
             if (st.anchorPoints == null || st.anchorPoints.Count == 0) return;
 
             for (int i = st.anchorPoints.Count - 1; i >= 0; i--)
@@ -238,7 +265,7 @@ namespace VsQuest
                 {
                     st.anchorPoints.RemoveAt(i);
                     stateDirty = true;
-                    orderedAnchorsDirty.Add(cfg.bossKey);
+                    orderedAnchorsDirty.Add(bossKey);
                     break;
                 }
             }
@@ -303,6 +330,53 @@ namespace VsQuest
             return cfg?.questId;
         }
 
+        public bool ForceRotateToNext(out string bossKey, out string questId)
+        {
+            bossKey = null;
+            questId = null;
+
+            if (sapi == null) return false;
+
+            double nowHours = sapi.World.Calendar.TotalHours;
+
+            if (state == null) state = new BossHuntWorldState();
+            if (state.entries == null) state.entries = new List<BossHuntStateEntry>();
+
+            state.nextBossRotationTotalHours = nowHours - 0.01;
+            stateDirty = true;
+
+            cachedBossEntity = null;
+            cachedBossKey = null;
+            nextBossEntityScanTotalHours = 0;
+
+            var cfg = GetActiveBossConfig(nowHours);
+            if (cfg == null) return false;
+
+            bossKey = cfg.bossKey;
+            questId = cfg.questId;
+            return true;
+        }
+
+        public bool TryGetBossHuntStatus(out string bossKey, out string questId, out double hoursUntilRotation)
+        {
+            bossKey = null;
+            questId = null;
+            hoursUntilRotation = 0;
+
+            if (sapi == null) return false;
+
+            double nowHours = sapi.World.Calendar.TotalHours;
+            var cfg = GetActiveBossConfig(nowHours);
+            if (cfg == null) return false;
+
+            bossKey = cfg.bossKey;
+            questId = cfg.questId;
+            hoursUntilRotation = state?.nextBossRotationTotalHours > nowHours
+                ? state.nextBossRotationTotalHours - nowHours
+                : 0;
+            return true;
+        }
+
         private BossHuntConfig GetActiveBossConfig(double nowHours)
         {
             if (configs == null || configs.Count == 0) return null;
@@ -312,6 +386,14 @@ namespace VsQuest
 
             if (string.IsNullOrWhiteSpace(state.activeBossKey) || nowHours >= state.nextBossRotationTotalHours)
             {
+                string previousQuestId = null;
+                BossHuntConfig previousCfg = null;
+                if (!string.IsNullOrWhiteSpace(state.activeBossKey))
+                {
+                    previousCfg = FindConfig(state.activeBossKey);
+                    previousQuestId = previousCfg?.questId;
+                }
+
                 var ordered = new List<BossHuntConfig>();
                 for (int i = 0; i < configs.Count; i++)
                 {
@@ -337,12 +419,99 @@ namespace VsQuest
                 var nextCfg = ordered[nextIndex];
                 state.activeBossKey = nextCfg.bossKey;
 
+                if (previousCfg != null
+                    && !string.Equals(previousCfg.bossKey, nextCfg.bossKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    TryDespawnBossOnRotation(previousCfg, nowHours);
+                }
+
                 double rotationDays = nextCfg.rotationDays > 0 ? nextCfg.rotationDays : 7;
                 state.nextBossRotationTotalHours = nowHours + rotationDays * 24.0;
                 stateDirty = true;
+
+                if (!string.IsNullOrWhiteSpace(previousQuestId)
+                    && !string.Equals(previousQuestId, nextCfg.questId, StringComparison.OrdinalIgnoreCase))
+                {
+                    var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+                    if (questSystem != null)
+                    {
+                        foreach (var player in sapi.World.AllOnlinePlayers)
+                        {
+                            if (player is not IServerPlayer serverPlayer) continue;
+
+                            QuestSystemAdminUtils.ForgetOutdatedQuestsForPlayer(questSystem, serverPlayer, sapi);
+                        }
+                    }
+                }
             }
 
             return FindConfig(state.activeBossKey);
+        }
+
+        private void TryDespawnBossOnRotation(BossHuntConfig cfg, double nowHours)
+        {
+            if (sapi == null || cfg == null) return;
+
+            var bossEntity = FindBossEntityImmediate(cfg.bossKey);
+            if (bossEntity == null || !bossEntity.Alive) return;
+
+            // If this boss has multi-phase rebirth behavior, we must ensure no leftover phase remains when the
+            // active boss rotates away, otherwise two bosses can coexist.
+            if (bossEntity.GetBehavior<EntityBehaviorBossRebirth>() != null)
+            {
+                try
+                {
+                    sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                }
+                catch
+                {
+                }
+
+                return;
+            }
+
+            double lastDamage = bossEntity.WatchedAttributes.GetDouble(LastBossDamageTotalHoursKey, double.NaN);
+            double lockHours = cfg.GetNoRelocateAfterDamageHours();
+
+            bool okToDespawn = double.IsNaN(lastDamage) || lockHours <= 0 || nowHours - lastDamage >= lockHours;
+            if (!okToDespawn) return;
+
+            try
+            {
+                sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+            }
+            catch
+            {
+            }
+        }
+
+        private Entity FindBossEntityImmediate(string bossTargetId)
+        {
+            if (sapi == null) return null;
+            if (string.IsNullOrWhiteSpace(bossTargetId)) return null;
+
+            var loaded = sapi.World?.LoadedEntities;
+            if (loaded == null) return null;
+
+            try
+            {
+                foreach (var e in loaded.Values)
+                {
+                    if (e == null || !e.Alive) continue;
+                    var qt = e.GetBehavior<EntityBehaviorQuestTarget>();
+                    if (qt == null) continue;
+
+                    if (string.Equals(qt.TargetId, bossTargetId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return e;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return null;
         }
 
         private void OnTick(float dt)
@@ -358,7 +527,8 @@ namespace VsQuest
             var cfg = activeCfg;
             if (!cfg.IsValid()) return;
 
-            var st = GetOrCreateState(cfg.bossKey);
+            var bossKey = cfg.bossKey;
+            var st = GetOrCreateState(bossKey);
             NormalizeState(cfg, st);
 
             if (st.nextRelocateAtTotalHours <= 0)
@@ -366,87 +536,62 @@ namespace VsQuest
                 st.nextRelocateAtTotalHours = nowHours + cfg.GetRelocateIntervalHours();
                 stateDirty = true;
             }
-                Entity bossEntity = FindBossEntity(cfg, nowHours);
-                bool bossAlive = bossEntity != null && bossEntity.Alive;
+            Entity bossEntity = FindBossEntity(cfg, nowHours);
+            bool bossAlive = bossEntity != null && bossEntity.Alive;
 
-                // Handle relocation
-                if (nowHours >= st.nextRelocateAtTotalHours)
+            // Handle relocation
+            if (nowHours >= st.nextRelocateAtTotalHours)
+            {
+                if (bossAlive && !IsSafeToRelocate(cfg, bossEntity, nowHours))
                 {
-                    if (bossAlive && !IsSafeToRelocate(cfg, bossEntity, nowHours))
-                    {
-                        // Postpone a bit
-                        st.nextRelocateAtTotalHours = nowHours + 0.25;
-                        stateDirty = true;
-                    }
-                    else
-                    {
-                        int nextIndex = PickAnotherIndex(st.currentPointIndex, GetPointCount(cfg, st));
-                        st.currentPointIndex = nextIndex;
-                        st.nextRelocateAtTotalHours = nowHours + cfg.GetRelocateIntervalHours();
-                        stateDirty = true;
-
-                        // If boss is currently alive in the world and it's safe, remove it so it effectively "moves".
-                        if (bossAlive)
-                        {
-                            try
-                            {
-                                sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
-                            }
-                            catch
-                            {
-                            }
-                        }
-
-                        bossEntity = null;
-                        bossAlive = false;
-                    }
+                    // Postpone a bit
+                    st.nextRelocateAtTotalHours = nowHours + 0.25;
+                    stateDirty = true;
                 }
+                else
+                {
+                    int nextIndex = PickAnotherIndex(st.currentPointIndex, GetPointCount(cfg, st));
+                    st.currentPointIndex = nextIndex;
+                    st.nextRelocateAtTotalHours = nowHours + cfg.GetRelocateIntervalHours();
+                    stateDirty = true;
 
-                // Handle respawn timer
+                    // If boss is currently alive in the world and it's safe, remove it so it effectively "moves".
+                    if (bossAlive)
+                    {
+                        try
+                        {
+                            sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    bossEntity = null;
+                    bossAlive = false;
+                }
+            }
+
+            // Handle respawn timer
             if (st.deadUntilTotalHours > nowHours)
             {
                 SaveStateIfDirty();
                 return;
             }
 
-                // Ensure boss is spawned when a player comes close to its current point.
+            // Ensure boss is spawned when a player comes close to its current point.
             if (!bossAlive)
             {
-                if (TryGetPoint(cfg, st, st.currentPointIndex, out var point, out int pointDim) && AnyPlayerNear(point.X, point.Y, point.Z, pointDim, cfg.GetActivationRange()))
+                if (TryGetPoint(cfg, st, st.currentPointIndex, out var point, out int pointDim)
+                    && AnyPlayerNear(point.X, point.Y, point.Z, pointDim, cfg.GetActivationRange()))
                 {
+                    DebugLog($"Spawn attempt: bossKey={bossKey} point={point.X:0.0},{point.Y:0.0},{point.Z:0.0} dim={pointDim} anchors={st.anchorPoints?.Count ?? 0} deadUntil={st.deadUntilTotalHours:0.00} now={nowHours:0.00}");
                     TrySpawnBoss(cfg, point, pointDim);
                 }
             }
 
             SaveStateIfDirty();
         }
-
-
-        private void NormalizeState(BossHuntConfig cfg, BossHuntStateEntry st)
-        {
-            if (cfg == null || st == null) return;
-
-            if (st.anchorPoints == null)
-            {
-                st.anchorPoints = new List<BossHuntAnchorPoint>();
-                stateDirty = true;
-            }
-
-            int count = GetPointCount(cfg, st);
-            if (count <= 0)
-            {
-                st.currentPointIndex = 0;
-                return;
-            }
-
-            if (st.currentPointIndex < 0 || st.currentPointIndex >= count)
-            {
-                st.currentPointIndex = 0;
-                stateDirty = true;
-            }
-        }
-
-
 
         private bool AnyPlayerNear(Vec3d point, int dim, float range)
         {
@@ -485,15 +630,6 @@ namespace VsQuest
         {
             if (bossEntity == null) return true;
 
-            float playerLockRange = cfg.GetPlayerLockRange();
-            if (playerLockRange > 0)
-            {
-                if (AnyPlayerNear(bossEntity.ServerPos.X, bossEntity.ServerPos.Y, bossEntity.ServerPos.Z, bossEntity.ServerPos.Dimension, playerLockRange))
-                {
-                    return false;
-                }
-            }
-
             double lastDamage = bossEntity.WatchedAttributes.GetDouble(LastBossDamageTotalHoursKey, double.NaN);
             if (!double.IsNaN(lastDamage))
             {
@@ -511,10 +647,12 @@ namespace VsQuest
         {
             if (cfg == null) return null;
 
+            var bossTargetId = cfg.bossKey;
+
             if (cachedBossEntity != null && cachedBossEntity.Alive)
             {
                 var qtCached = cachedBossEntity.GetBehavior<EntityBehaviorQuestTarget>();
-                if (qtCached != null && string.Equals(qtCached.TargetId, cfg.bossTargetId, StringComparison.OrdinalIgnoreCase))
+                if (qtCached != null && string.Equals(qtCached.TargetId, bossTargetId, StringComparison.OrdinalIgnoreCase))
                 {
                     return cachedBossEntity;
                 }
@@ -522,9 +660,9 @@ namespace VsQuest
                 cachedBossEntity = null;
             }
 
-            if (cachedBossTargetId == null || !string.Equals(cachedBossTargetId, cfg.bossTargetId, StringComparison.OrdinalIgnoreCase))
+            if (cachedBossKey == null || !string.Equals(cachedBossKey, bossTargetId, StringComparison.OrdinalIgnoreCase))
             {
-                cachedBossTargetId = cfg.bossTargetId;
+                cachedBossKey = bossTargetId;
                 nextBossEntityScanTotalHours = 0;
             }
 
@@ -546,7 +684,7 @@ namespace VsQuest
                     var qt = e.GetBehavior<EntityBehaviorQuestTarget>();
                     if (qt == null) continue;
 
-                    if (string.Equals(qt.TargetId, cfg.bossTargetId, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(qt.TargetId, bossTargetId, StringComparison.OrdinalIgnoreCase))
                     {
                         cachedBossEntity = e;
                         return e;
@@ -567,15 +705,23 @@ namespace VsQuest
 
             try
             {
-                var type = sapi.World.GetEntityType(new AssetLocation(cfg.bossEntityCode));
-                if (type == null) return;
+                var type = sapi.World.GetEntityType(new AssetLocation(cfg.GetBossEntityCode()));
+                if (type == null)
+                {
+                    DebugLog($"Spawn failed: entity type not found for code '{cfg.GetBossEntityCode()}'.", force: true);
+                    return;
+                }
 
                 Entity entity = sapi.World.ClassRegistry.CreateEntity(type);
-                if (entity == null) return;
+                if (entity == null)
+                {
+                    DebugLog($"Spawn failed: entity create returned null for code '{cfg.GetBossEntityCode()}'.", force: true);
+                    return;
+                }
 
                 if (entity.WatchedAttributes != null)
                 {
-                    entity.WatchedAttributes.SetString("alegacyvsquest:killaction:targetid", cfg.bossTargetId);
+                    entity.WatchedAttributes.SetString("alegacyvsquest:killaction:targetid", cfg.bossKey);
                     entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:killaction:targetid");
                 }
 
@@ -585,10 +731,27 @@ namespace VsQuest
                 entity.Pos.SetFrom(entity.ServerPos);
 
                 sapi.World.SpawnEntity(entity);
+
+                // Avoid repeated spawns: FindBossEntity() is throttled to scan loaded entities only once per minute.
+                // Cache the newly spawned boss immediately.
+                cachedBossEntity = entity;
+                cachedBossKey = cfg.bossKey;
+                nextBossEntityScanTotalHours = (sapi.World?.Calendar?.TotalHours ?? 0) + (1.0 / 60.0);
             }
             catch
             {
             }
+        }
+
+        private void DebugLog(string message, bool force = false)
+        {
+            if (!DebugBossHunt || sapi == null || string.IsNullOrWhiteSpace(message)) return;
+
+            double nowHours = sapi.World?.Calendar?.TotalHours ?? 0;
+            if (!force && nowHours < nextDebugLogTotalHours) return;
+
+            nextDebugLogTotalHours = nowHours + 0.02;
+            sapi.Logger.Notification("[BossHunt] " + message);
         }
 
         private int PickAnotherIndex(int current, int count)
@@ -772,14 +935,41 @@ namespace VsQuest
             if (qt == null) return;
 
             var rebirth = entity.GetBehavior<EntityBehaviorBossRebirth>();
-            if (rebirth != null && !rebirth.IsFinalStage) return;
+            if (rebirth != null && !rebirth.IsFinalStage)
+            {
+                // Prevent duplicate spawns during the short transition where the reborn entity is not yet present.
+                for (int i = 0; i < configs.Count; i++)
+                {
+                    var cfg = configs[i];
+                    if (cfg == null) continue;
+                    if (!string.Equals(qt.TargetId, cfg.bossKey, StringComparison.OrdinalIgnoreCase)) continue;
+
+                    var st = GetOrCreateState(cfg.bossKey);
+                    double nowHours = sapi.World.Calendar.TotalHours;
+
+                    // ~36 seconds grace (0.01h) - enough for rebirth spawnDelayMs, prevents re-spawn loop.
+                    double graceUntil = nowHours + 0.01;
+                    if (st.deadUntilTotalHours < graceUntil)
+                    {
+                        st.deadUntilTotalHours = graceUntil;
+                        stateDirty = true;
+                    }
+
+                    cachedBossEntity = null;
+                    return;
+                }
+
+                return;
+            }
 
             for (int i = 0; i < configs.Count; i++)
             {
                 var cfg = configs[i];
                 if (cfg == null) continue;
 
-                if (!string.Equals(qt.TargetId, cfg.bossTargetId, StringComparison.OrdinalIgnoreCase)) continue;
+                var bossTargetId = cfg.bossKey;
+
+                if (!string.Equals(qt.TargetId, bossTargetId, StringComparison.OrdinalIgnoreCase)) continue;
 
                 var st = GetOrCreateState(cfg.bossKey);
 
@@ -799,8 +989,6 @@ namespace VsQuest
         public class BossHuntConfig
         {
             public string bossKey;
-            public string bossEntityCode;
-            public string bossTargetId;
             public string questId;
             public double rotationDays;
             public List<string> points;
@@ -812,16 +1000,33 @@ namespace VsQuest
             public float activationRange;
             public float playerLockRange;
 
+            public string GetBossEntityCode()
+            {
+                return DeriveEntityCodeFromBossKey(bossKey);
+            }
+
+            private static string DeriveEntityCodeFromBossKey(string key)
+            {
+                if (string.IsNullOrWhiteSpace(key)) return null;
+
+                var parts = key.Split(':');
+                if (parts.Length == 2) return key;
+                if (parts.Length < 2) return null;
+
+                var domain = parts[0];
+                var bossName = parts[parts.Length - 1];
+                return domain + ":" + bossName;
+            }
+
             public bool IsValid()
             {
                 if (string.IsNullOrWhiteSpace(bossKey)) return false;
-                if (string.IsNullOrWhiteSpace(bossEntityCode)) return false;
-                if (string.IsNullOrWhiteSpace(bossTargetId)) return false;
+                if (string.IsNullOrWhiteSpace(GetBossEntityCode())) return false;
                 if (points == null || points.Count < 1) return false;
                 return true;
             }
 
-            public double GetRelocateIntervalHours() => relocateIntervalHours > 0 ? relocateIntervalHours : 6;
+            public double GetRelocateIntervalHours() => relocateIntervalHours > 0 ? relocateIntervalHours : 72;
             public double GetRespawnHours() => respawnInGameHours > 0 ? respawnInGameHours : 24;
             public double GetNoRelocateAfterDamageHours() => noRelocateAfterDamageMinutes > 0 ? (noRelocateAfterDamageMinutes / 60.0) : (10.0 / 60.0);
             public float GetActivationRange() => activationRange > 0 ? activationRange : 160f;

@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -63,6 +64,18 @@ namespace VsQuest.Harmony
                         if (mult > 0f && mult < 0.999f)
                         {
                             damage *= mult;
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        float growthMult = damageSource.SourceEntity.WatchedAttributes.GetFloat("alegacyvsquest:bossgrowthritual:damagemult", 0f);
+                        if (growthMult > 0f && Math.Abs(growthMult - 1f) > 0.001f)
+                        {
+                            damage *= growthMult;
                         }
                     }
                     catch

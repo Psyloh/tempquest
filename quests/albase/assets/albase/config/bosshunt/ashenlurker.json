@@ -1,17 +1,15 @@
 {
   "bossKey": "albase:bosshunt:ashenlurker",
-  "bossEntityCode": "albase:ashenlurker",
-  "bossTargetId": "albase:bosshunt:ashenlurker",
   "questId": "albase:bosshunt-ashenlurker",
   "points": [
     "0,0,0,0",
     "0,0,0,0",
     "0,0,0,0"
   ],
-  "relocateIntervalHours": 6,
+  "relocateIntervalHours": 72,
   "respawnInGameHours": 24,
   "noRelocateAfterDamageMinutes": 10,
   "rotationDays": 360,
   "activationRange": 160,
-  "playerLockRange": 40
+  "playerLockRange": 0
 }

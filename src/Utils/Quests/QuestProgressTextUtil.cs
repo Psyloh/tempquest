@@ -117,7 +117,7 @@ namespace VsQuest
                         string code = wa.GetString(RandomKillQuestUtils.SlotCodeKey(activeQuest.questId, slot), "?");
                         int have = wa.GetInt(RandomKillQuestUtils.SlotHaveKey(activeQuest.questId, slot), 0);
                         int need = wa.GetInt(RandomKillQuestUtils.SlotNeedKey(activeQuest.questId, slot), 0);
-                        lines.Add($"- {ApplyPrefixes($"{MobLocalizationUtils.GetMobDisplayName(code)}: {have}/{need}", null)}");
+                        lines.Add($"- {ApplyPrefixes($"{LocalizationUtils.GetMobDisplayName(code)}: {have}/{need}", null)}");
                     }
                 }
 
@@ -215,6 +215,9 @@ namespace VsQuest
                         // Do not show technical wrapper objectives
                         if (actionObjective.id == "sequence") continue;
 
+                        // Do not show interact-with-entity objectives in progress text
+                        if (actionObjective.id == "interactwithentity") continue;
+
                         // randomkill already has its own slot lines
                         if (actionObjective.id == "randomkill") continue;
 
@@ -260,9 +263,8 @@ namespace VsQuest
                                     targetCode = targetCode.Substring(lastColon + 1);
                                 }
 
-                                string nameKey = $"item-creature-{targetCode}";
-                                string targetName = LocalizationUtils.GetSafe(nameKey);
-                                if (string.IsNullOrWhiteSpace(targetName) || string.Equals(targetName, nameKey, StringComparison.OrdinalIgnoreCase))
+                                string targetName = MobLocalizationUtils.GetMobDisplayName(targetCode);
+                                if (string.IsNullOrWhiteSpace(targetName))
                                 {
                                     targetName = targetCode;
                                 }

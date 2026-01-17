@@ -4,7 +4,7 @@
       "id": "albase:bosshunt-tracker",
       "itemCode": "game:gear-temporal",
       "name": "<font color=\"#D97706\">Следопыт-кристалл</font>",
-      "description": "<font color=\"#F59E0B\">Тусклый кристалл, ведущий по следу древнего стража. Шепчет расстояние, но забирает кровь.</font>",
+      "description": "<font color=\"#F59E0B\">Тусклый кристалл, который откликается на след древнего стража. Он не укажет дорогу — лишь прошепчет расстояние. За каждый ответ кристалл берёт плату кровью.</font>",
       "actions": [
         {
           "id": "trackboss",
@@ -26,7 +26,7 @@
       "id": "albase:bosshunt-reward-ossuarywarden",
       "itemCode": "game:clothes-shoulder-embroidered-collar",
       "name": "<font color=\"#9CA3AF\">Костяной филактерий</font>",
-      "description": "<font color=\"#E5E7EB\">Осколки кости, связанные нитями клятвы. Защищает, но тянет силы изнутри.</font>",
+      "description": "<font color=\"#E5E7EB\">Осколки кости, стянутые нитями старой клятвы. Гасит часть удара, но тянет силы — будто просит ещё.</font>",
       "actions": [],
       "attributes": {
         "protection": 0.6,
@@ -40,13 +40,19 @@
         "walkspeed",
         "hungerrate"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-ashenlurker",
       "itemCode": "game:clothes-shoulder-hooded-cape",
       "name": "<font color=\"#F97316\">Пепельный знак Ловчего</font>",
-      "description": "<font color=\"#FDBA74\">Зола держит форму, пока ты дышишь. Прибавляет меткости, но отнимает тепло.</font>",
+      "description": "<font color=\"#FDBA74\">Зола держит форму, пока ты дышишь. Двигает руку увереннее, но выстуживает тело — будто рядом всегда тлеют угли.</font>",
       "actions": [],
       "attributes": {
         "rangedaccuracy": 0.1,
@@ -58,13 +64,19 @@
         "rangedchargspeed",
         "warmth"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-bonecolossus",
       "itemCode": "game:clothes-shoulder-hunter-poncho",
       "name": "<font color=\"#A8A29E\">Метка Костяного Колосса</font>",
-      "description": "<font color=\"#E7E5E4\">Тяжёлая печать на ткани. Делает руку точнее, но замедляет тело.</font>",
+      "description": "<font color=\"#E7E5E4\">Тяжёлая печать на ткани. Делает руку точнее, но отнимает лёгкость движений — словно держит за плечо.</font>",
       "actions": [],
       "attributes": {
         "rangedaccuracy": 0.06,
@@ -76,13 +88,19 @@
         "walkspeed",
         "healingeffectiveness"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-rare",
       "itemCode": "game:clothes-shoulder-aristocrat-mantle",
       "name": "<font color=\"#B91C1C\">Печать Кровавой Охоты</font>",
-      "description": "<font color=\"#FCA5A5\">Редкая метка древней охоты. Дарует силу и скорость, но оставляет тело голодным и холодным.</font>",
+      "description": "<font color=\"#FCA5A5\">Редкая метка древней охоты. Делает тебя быстрее и живучее, но расплачиваешься телом: голод приходит чаще, а тепло держится хуже.</font>",
       "actions": [],
       "attributes": {
         "protectionperc": 0.12,
@@ -98,13 +116,19 @@
         "hungerrate",
         "warmth"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-ossuarywarden-chain",
       "itemCode": "game:clothes-waist-jailor-belt",
       "name": "<font color=\"#E5E7EB\">Цепь костного дозора</font>",
-      "description": "<font color=\"#F3F4F6\">Пояс с холодной цепью. Защищает лучше, но стягивает дыхание и еду.</font>",
+      "description": "<font color=\"#F3F4F6\">Пояс с холодной цепью. Помогает держать удар, но стягивает нутро: двигаться тяжелее, а голод приходит быстрее.</font>",
       "actions": [],
       "attributes": {
         "protection": 0.4,
@@ -118,13 +142,19 @@
         "walkspeed",
         "hungerrate"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-ashenlurker-veil",
       "itemCode": "game:clothes-shoulder-woolen-scarf",
       "name": "<font color=\"#FB923C\">Пепельная вуаль</font>",
-      "description": "<font color=\"#FED7AA\">Тёплый шарф с запахом золы. Согревает и ускоряет прицел, но замедляет восстановление.</font>",
+      "description": "<font color=\"#FED7AA\">Тёплый шарф с запахом золы. Согревает и помогает держать прицел, но раны затягиваются хуже.</font>",
       "actions": [],
       "attributes": {
         "warmth": 1.2,
@@ -136,13 +166,19 @@
         "rangedaccuracy",
         "healingeffectiveness"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:bosshunt-reward-bonecolossus-girdle",
       "itemCode": "game:clothes-waist-messenger-belt",
       "name": "<font color=\"#D6D3D1\">Ремень хребтодробителя</font>",
-      "description": "<font color=\"#F5F5F4\">Туго стянутый ремень. Даёт скорость и точность, но усиливает голод.</font>",
+      "description": "<font color=\"#F5F5F4\">Туго стянутый ремень. Прибавляет собранности и шага, но сжигает силы — голод приходит чаще.</font>",
       "actions": [],
       "attributes": {
         "walkspeed": 0.05,
@@ -154,7 +190,13 @@
         "rangedaccuracy",
         "hungerrate"
       ],
-      "hideVanillaTooltips": []
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     },
     {
       "id": "albase:innkeeper-nightmantle",

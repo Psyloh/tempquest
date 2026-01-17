@@ -18,12 +18,14 @@ namespace VsQuest
         private const string GrowthAnimSeqKey = "alegacyvsquest:bossgrowthritual:animseq";
         private const string GrowthAnimKey = "alegacyvsquest:bossgrowthritual:anim";
         private const string GrowthAnimMsKey = "alegacyvsquest:bossgrowthritual:animms";
+        private const string GrowthDamageMultKey = "alegacyvsquest:bossgrowthritual:damagemult";
 
         private class GrowthStage
         {
             public float whenHealthRelBelow;
             public float sizeMultiplier;
             public float speedMultiplier;
+            public float damageMultiplier;
             public string animation;
             public int animationMs;
             public string sound;
@@ -87,6 +89,7 @@ namespace VsQuest
                         whenHealthRelBelow = stageObj["whenHealthRelBelow"].AsFloat(1f),
                         sizeMultiplier = stageObj["sizeMultiplier"].AsFloat(1f),
                         speedMultiplier = stageObj["speedMultiplier"].AsFloat(1f),
+                        damageMultiplier = stageObj["damageMultiplier"].AsFloat(0f),
                         animation = stageObj["animation"].AsString(null),
                         animationMs = stageObj["animationMs"].AsInt(0),
                         sound = stageObj["sound"].AsString(null),
@@ -100,6 +103,24 @@ namespace VsQuest
                     {
                         stages.Add(stage);
                     }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void TryRestoreFullHealth()
+        {
+            try
+            {
+                if (!BossBehaviorUtils.TryGetHealth(entity, out var healthTree, out float currentHealth, out float maxHealth)) return;
+                if (healthTree == null || maxHealth <= 0f) return;
+
+                if (currentHealth < maxHealth)
+                {
+                    healthTree.SetFloat("currenthealth", maxHealth);
+                    entity.WatchedAttributes?.MarkPathDirty("health");
                 }
             }
             catch
@@ -251,6 +272,11 @@ namespace VsQuest
             bool applySpeed = stage.speedMultiplier > 1.01f;
             if (!applySize && !applySpeed) return;
 
+            if (stage.damageMultiplier <= 0f)
+            {
+                stage.damageMultiplier = applySize ? stage.sizeMultiplier : 1f;
+            }
+
             try
             {
                 entity?.WatchedAttributes?.SetFloat(GrowthScaleKey, stage.sizeMultiplier);
@@ -319,6 +345,20 @@ namespace VsQuest
                     entity.Stats.Set("walkspeed", "alegacyvsquest", baseWalkSpeed * stage.speedMultiplier, true);
                 }
             }
+
+            if (stage.damageMultiplier > 0f && entity?.WatchedAttributes != null)
+            {
+                try
+                {
+                    entity.WatchedAttributes.SetFloat(GrowthDamageMultKey, stage.damageMultiplier);
+                    entity.WatchedAttributes.MarkPathDirty(GrowthDamageMultKey);
+                }
+                catch
+                {
+                }
+            }
+
+            TryRestoreFullHealth();
 
             TryPlayStageAnimation(stage);
             TryPlayStageSound(stage);

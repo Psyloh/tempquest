@@ -1,6 +1,6 @@
 {
   "id": "albase:bosshunt-bonecolossus",
-  "cooldown": 7,
+  "cooldown": 360,
   "perPlayer": true,
   "predecessor": "albase:bosshunt-intro",
   "onAcceptedActions": [
@@ -37,25 +37,6 @@
         "bonecolossus",
         "albase:bosshunt:bonecolossus",
         "1"
-      ]
-    },
-    {
-      "id": "interactwithentity",
-      "objectiveId": "return",
-      "args": [
-        "albase:bosshunt-bonecolossus",
-        "albase:bosshunter",
-        "1"
-      ]
-    },
-    {
-      "id": "sequence",
-      "objectiveId": "main",
-      "args": [
-        "albase:bosshunt-bonecolossus",
-        "main",
-        "bonecolossus",
-        "return"
       ]
     }
   ],

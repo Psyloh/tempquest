@@ -2,9 +2,6 @@
   "code": "ashenlurker",
   "class": "EntityLocust",
   "tags": ["mechanical", "habitat-land"],
-  "variantgroups": [
-    { "code": "type", "states": ["corrupt-sawblade"] }
-  ],
   "canClimb": true,
   "canClimbAnywhere": true,
   "climbTouchDistance": 0.1,
@@ -24,10 +21,10 @@
   "drops": [],
   "client": {
     "renderer": "Shape",
-    "shape": { "base": "game:entity/lore/locust/locust-{type}" },
+    "shape": { "base": "game:entity/lore/locust/locust-corrupt-sawblade" },
     "size": 5,
     "glowLevelByType": {
-      "*-corrupt-sawblade": 16
+      "*": 16
     },
     "behaviors": [
       { "code": "repulseagents" },

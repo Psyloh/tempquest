@@ -1,6 +1,6 @@
 {
   "id": "albase:bosshunt-ashenlurker",
-  "cooldown": 7,
+  "cooldown": 360,
   "perPlayer": true,
   "predecessor": "albase:bosshunt-intro",
   "onAcceptedActions": [
@@ -37,25 +37,6 @@
         "ashenlurker",
         "albase:bosshunt:ashenlurker",
         "1"
-      ]
-    },
-    {
-      "id": "interactwithentity",
-      "objectiveId": "return",
-      "args": [
-        "albase:bosshunt-ashenlurker",
-        "albase:bosshunter",
-        "1"
-      ]
-    },
-    {
-      "id": "sequence",
-      "objectiveId": "main",
-      "args": [
-        "albase:bosshunt-ashenlurker",
-        "main",
-        "ashenlurker",
-        "return"
       ]
     }
   ],

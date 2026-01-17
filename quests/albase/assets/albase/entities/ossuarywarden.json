@@ -2,9 +2,6 @@
   "code": "ossuarywarden",
   "class": "EntityDrifter",
   "tags": ["rust-creature", "habitat-land"],
-  "variantgroups": [
-    { "code": "type", "states": ["nightmare"] }
-  ],
   "canClimb": true,
   "hitboxSize": { "x": 2.4, "y": 2.2 },
   "deadHitboxSize": { "x": 2.0, "y": 1.2 },
@@ -13,6 +10,7 @@
     "killedByInfoText": "deadcreature-vile",
     "reckless": true,
     "vsquestSoundPitchMul": 0.6,
+    "SoundVolumeMulBySound": { "albase:bosshunt_1": 0.36 },
     "alegacyvsquestHideInfoText": true
   },
   "drops": [],
@@ -20,14 +18,8 @@
     "renderer": "Shape",
     "pitchStep": false,
     "size": 2,
-    "shapeByType": {
-      "*-nightmare": { "base": "game:entity/lore/drifter/deerhorn" }
-    },
-    "texturesByType": {
-      "*-nightmare": {
-        "skin": { "base": "game:entity/lore/drifter/deerhorn" }
-      }
-    },
+    "shape": { "base": "game:entity/lore/drifter/deerhorn" },
+    "texture": { "base": "game:entity/lore/drifter/deerhorn" },
     "behaviors": [
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.1251 },

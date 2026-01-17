@@ -53,7 +53,7 @@ namespace VsQuest
             double cooldownUntil = playerEntity.WatchedAttributes.GetDouble(cooldownKey, 0);
             if (cooldownUntil > nowHours)
             {
-                double remainingMinutes = Math.Max(0, (cooldownUntil - nowHours) * 60.0);
+                double remainingMinutes = Math.Max(1, Math.Ceiling((cooldownUntil - nowHours) * 60.0));
                 sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-cooldown", remainingMinutes), EnumChatType.Notification);
                 return;
             }

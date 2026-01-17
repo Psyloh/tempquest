@@ -463,6 +463,11 @@ namespace VsQuest
 
         public static bool ResetQuestForPlayer(QuestSystem questSystem, IServerPlayer player, string questId, ICoreServerAPI sapi = null)
         {
+            return ResetQuestForPlayer(questSystem, player, questId, sapi, true);
+        }
+
+        public static bool ResetQuestForPlayer(QuestSystem questSystem, IServerPlayer player, string questId, ICoreServerAPI sapi, bool removeJournalEntries)
+        {
             var quests = questSystem.GetPlayerQuests(player.PlayerUID);
             var activeQuest = quests.Find(q => q.questId == questId);
             bool removed = false;
@@ -475,10 +480,13 @@ namespace VsQuest
 
             if (sapi != null)
             {
-                RemoveQuestJournalEntries(sapi, questSystem, player, questId);
-                // Action items that don't specify sourceQuestId default to the "item-action" bucket.
-                // Clear it as well so journal entries added via items are removed when forgiving.
-                RemoveQuestJournalEntries(sapi, questSystem, player, ItemAttributeUtils.ActionItemDefaultSourceQuestId);
+                if (removeJournalEntries)
+                {
+                    RemoveQuestJournalEntries(sapi, questSystem, player, questId);
+                    // Action items that don't specify sourceQuestId default to the "item-action" bucket.
+                    // Clear it as well so journal entries added via items are removed when forgiving.
+                    RemoveQuestJournalEntries(sapi, questSystem, player, ItemAttributeUtils.ActionItemDefaultSourceQuestId);
+                }
                 ClearQuestGiverChainCooldowns(player, sapi);
             }
             ClearPerQuestPlayerState(player, questId);
@@ -488,6 +496,36 @@ namespace VsQuest
 
             questSystem.SavePlayerQuests(player.PlayerUID, quests);
             return removed;
+        }
+
+        public static int ForgetOutdatedQuestsForPlayer(QuestSystem questSystem, IServerPlayer player, ICoreServerAPI sapi)
+        {
+            if (questSystem == null || player == null || sapi == null) return 0;
+
+            var quests = questSystem.GetPlayerQuests(player.PlayerUID);
+            if (quests == null || quests.Count == 0) return 0;
+
+            int removedCount = 0;
+
+            for (int i = quests.Count - 1; i >= 0; i--)
+            {
+                var activeQuest = quests[i];
+                if (activeQuest == null || string.IsNullOrWhiteSpace(activeQuest.questId)) continue;
+
+                var questGiver = sapi.World.GetEntityById(activeQuest.questGiverId);
+                var questGiverBehavior = questGiver?.GetBehavior<EntityBehaviorQuestGiver>();
+                if (questGiverBehavior == null) continue;
+
+                if (!questGiverBehavior.IsQuestCurrentlyRelevant(sapi, activeQuest.questId))
+                {
+                    if (ResetQuestForPlayer(questSystem, player, activeQuest.questId, sapi, false))
+                    {
+                        removedCount++;
+                    }
+                }
+            }
+
+            return removedCount;
         }
 
         public static int ResetAllQuestsForPlayer(QuestSystem questSystem, IServerPlayer player, ICoreServerAPI sapi = null)

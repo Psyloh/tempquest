@@ -64,24 +64,54 @@ namespace VsQuest
 
             if (byPlayer?.Entity?.WatchedAttributes != null && position != null && position.Length == 3)
             {
-                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:x", position[0]);
-                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:y", position[1]);
-                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:z", position[2]);
-                byPlayer.Entity.WatchedAttributes.SetInt("alegacyvsquest:lastinteract:dim", byPlayer.Entity?.Pos?.Dimension ?? 0);
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:x");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:y");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:z");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("alegacyvsquest:lastinteract:dim");
+                var wa = byPlayer.Entity.WatchedAttributes;
+                int x = position[0];
+                int y = position[1];
+                int z = position[2];
+                int dim = byPlayer.Entity?.Pos?.Dimension ?? 0;
+
+                if (wa.GetInt("alegacyvsquest:lastinteract:x", int.MinValue) != x)
+                {
+                    wa.SetInt("alegacyvsquest:lastinteract:x", x);
+                    wa.MarkPathDirty("alegacyvsquest:lastinteract:x");
+                }
+                if (wa.GetInt("alegacyvsquest:lastinteract:y", int.MinValue) != y)
+                {
+                    wa.SetInt("alegacyvsquest:lastinteract:y", y);
+                    wa.MarkPathDirty("alegacyvsquest:lastinteract:y");
+                }
+                if (wa.GetInt("alegacyvsquest:lastinteract:z", int.MinValue) != z)
+                {
+                    wa.SetInt("alegacyvsquest:lastinteract:z", z);
+                    wa.MarkPathDirty("alegacyvsquest:lastinteract:z");
+                }
+                if (wa.GetInt("alegacyvsquest:lastinteract:dim", int.MinValue) != dim)
+                {
+                    wa.SetInt("alegacyvsquest:lastinteract:dim", dim);
+                    wa.MarkPathDirty("alegacyvsquest:lastinteract:dim");
+                }
 
                 // Backfill legacy keys for compatibility with older code paths.
-                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:x", position[0]);
-                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:y", position[1]);
-                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:z", position[2]);
-                byPlayer.Entity.WatchedAttributes.SetInt("vsquest:lastinteract:dim", byPlayer.Entity?.Pos?.Dimension ?? 0);
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:x");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:y");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:z");
-                byPlayer.Entity.WatchedAttributes.MarkPathDirty("vsquest:lastinteract:dim");
+                if (wa.GetInt("vsquest:lastinteract:x", int.MinValue) != x)
+                {
+                    wa.SetInt("vsquest:lastinteract:x", x);
+                    wa.MarkPathDirty("vsquest:lastinteract:x");
+                }
+                if (wa.GetInt("vsquest:lastinteract:y", int.MinValue) != y)
+                {
+                    wa.SetInt("vsquest:lastinteract:y", y);
+                    wa.MarkPathDirty("vsquest:lastinteract:y");
+                }
+                if (wa.GetInt("vsquest:lastinteract:z", int.MinValue) != z)
+                {
+                    wa.SetInt("vsquest:lastinteract:z", z);
+                    wa.MarkPathDirty("vsquest:lastinteract:z");
+                }
+                if (wa.GetInt("vsquest:lastinteract:dim", int.MinValue) != dim)
+                {
+                    wa.SetInt("vsquest:lastinteract:dim", dim);
+                    wa.MarkPathDirty("vsquest:lastinteract:dim");
+                }
             }
 
             if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "interact")) return;

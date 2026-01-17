@@ -42,6 +42,10 @@ namespace VsQuest
                 try
                 {
                     QuestJournalMigration.MigrateFromVanilla(sapi, byPlayer);
+
+                    var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+                    QuestSystemAdminUtils.ForgetOutdatedQuestsForPlayer(questSystem, byPlayer, sapi);
+
                 }
                 catch (Exception e)
                 {

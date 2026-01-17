@@ -25,6 +25,11 @@ The boss hunt system spawns a single active boss at a time, rotates it on a long
 - Tracking only works when the player has the **active boss quest**.
 - Cooldown is 5 minutes and costs 2 HP per use.
 
+## Commands
+- `/vsq bosshunt status`: Shows the current active boss key and time until rotation.
+- `/vsq bosshunt skip`: Forces rotation to the next boss entry.
+- Both commands require `give` privilege.
+
 ## Questgiver behavior
 - Boss hunter NPC uses `bosshuntactiveonly: true` to offer only the active boss quest.
 - Intro quest is always offered once and grants the tracker item.
@@ -47,6 +52,9 @@ Each boss config supports:
 - `src/Systems/BossHunt/BossHuntSystem.cs`
 - `src/Systems/Actions/Player/TrackBossAction.cs`
 - `src/Entity/Behavior/EntityBehaviorQuestGiver.cs`
+- `src/Commands/Management/BossHuntSkipCommandHandler.cs`
+- `src/Commands/Management/BossHuntStatusCommandHandler.cs`
 - `quests/albase/assets/albase/config/bosshunt/*.json`
 - `quests/albase/assets/albase/config/quests/bosshunt-*.json`
+- `quests/albase/assets/albase/config/mobdisplaynames.json`
 - `quests/albase/assets/albase/entities/*.json`

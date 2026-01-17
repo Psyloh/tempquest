@@ -70,6 +70,8 @@ namespace VsQuest
             var harmony = new HarmonyLib.Harmony("alegacyvsquest");
             harmony.PatchAll();
 
+            LocalizationUtils.LoadFromAssets(api);
+
             VsQuest.Harmony.EntityInteractPatch.TryPatch(harmony);
 
             // Register objectives
@@ -230,6 +232,8 @@ namespace VsQuest
         public override void AssetsLoaded(ICoreAPI api)
         {
             base.AssetsLoaded(api);
+
+            MobLocalizationUtils.LoadFromAssets(api);
 
             LocalizationUtils.LoadFromAssets(api);
             foreach (var mod in api.ModLoader.Mods)

@@ -36,6 +36,9 @@ namespace VsQuest
             var questAttrRemoveHandler = new QuestAttrRemoveCommandHandler(sapi);
             var questAttrListHandler = new QuestAttrListCommandHandler(sapi);
 
+            var bossHuntSkipHandler = new BossHuntSkipCommandHandler(sapi);
+            var bossHuntStatusHandler = new BossHuntStatusCommandHandler(sapi);
+
             var questWAttrHandler = new QuestWAttrCommandHandler(sapi);
 
             var questStartHandler = new QuestStartCommandHandler(sapi, questSystem);
@@ -240,6 +243,20 @@ namespace VsQuest
                         sapi.ChatCommands.Parsers.All("actionString")
                     )
                     .HandleWith(questExecActionStringHandler.Handle)
+                .EndSubCommand()
+                .BeginSubCommand("bosshunt")
+                    .WithDescription("Bosshunt admin commands")
+                    .RequiresPrivilege(Privilege.give)
+                    .BeginSubCommand("skip")
+                        .WithDescription("Force-rotates the active bosshunt target to the next entry.")
+                        .RequiresPrivilege(Privilege.give)
+                        .HandleWith(bossHuntSkipHandler.Handle)
+                    .EndSubCommand()
+                    .BeginSubCommand("status")
+                        .WithDescription("Shows the current bosshunt target and time until rotation.")
+                        .RequiresPrivilege(Privilege.give)
+                        .HandleWith(bossHuntStatusHandler.Handle)
+                    .EndSubCommand()
                 .EndSubCommand()
                 ;
         }

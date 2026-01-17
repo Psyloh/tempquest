@@ -10,6 +10,7 @@
     "killedByInfoText": "deadcreature-vile",
     "reckless": true,
     "vsquestSoundPitchMul": 0.6,
+    "SoundVolumeMulBySound": { "albase:bosshunt_1": 0.36 },
     "alegacyvsquestHideInfoText": true
   },
   "drops": [],

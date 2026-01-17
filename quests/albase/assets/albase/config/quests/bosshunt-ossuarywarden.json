@@ -1,6 +1,6 @@
 {
   "id": "albase:bosshunt-ossuarywarden",
-  "cooldown": 7,
+  "cooldown": 360,
   "perPlayer": true,
   "predecessor": "albase:bosshunt-intro",
   "onAcceptedActions": [
@@ -37,25 +37,6 @@
         "warden",
         "albase:bosshunt:ossuarywarden",
         "1"
-      ]
-    },
-    {
-      "id": "interactwithentity",
-      "objectiveId": "return",
-      "args": [
-        "albase:bosshunt-ossuarywarden",
-        "albase:bosshunter",
-        "1"
-      ]
-    },
-    {
-      "id": "sequence",
-      "objectiveId": "main",
-      "args": [
-        "albase:bosshunt-ossuarywarden",
-        "main",
-        "warden",
-        "return"
       ]
     }
   ],

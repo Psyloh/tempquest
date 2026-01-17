@@ -39,6 +39,17 @@ namespace VsQuest
         {
         }
 
+        public bool IsQuestCurrentlyRelevant(ICoreServerAPI sapi, string questId)
+        {
+            if (string.IsNullOrWhiteSpace(questId)) return false;
+
+            var selection = allQuests
+                ? BuildAllQuestIds().ToList()
+                : GetCurrentQuestSelection(sapi);
+
+            return selection.Any(q => string.Equals(q, questId, StringComparison.OrdinalIgnoreCase));
+        }
+
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
             base.Initialize(properties, attributes);
