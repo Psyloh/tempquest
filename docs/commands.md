@@ -30,13 +30,13 @@ All commands require **`give` privilege** and are accessed via the `/vsq` comman
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq list` | — | Lists all registered quest IDs and their titles |
-| `/vsq check` | `<playerName>` | Shows active/completed quests and progress for a player |
-| `/vsq complete` | `<questId> <playerName>` | Force-completes a specific active quest for a player |
-| `/vsq completeactive` | `[playerName]` | Force-completes the player's currently active quest |
-| `/vsq start` | `<questId> <playerName>` | Starts a quest for a player |
-| `/vsq forgive` | `<questId> <playerName>` | Resets a quest for a player: removes from active quests, clears cooldown and completed flags |
-| `/vsq forgiveall` | `[playerName]` | Resets ALL quests for a player: clears active quests, completed flags, and cooldowns |
+| `/vsq qlist` | — | Lists all registered quest IDs and their titles |
+| `/vsq qcheck` | `<playerName>` | Shows active/completed quests and progress for a player |
+| `/vsq qcomplete` | `<questId> <playerName>` | Force-completes a specific active quest for a player |
+| `/vsq qcompleteactive` | `[playerName]` | Force-completes the player's currently active quest |
+| `/vsq qstart` | `<questId> <playerName>` | Starts a quest for a player |
+| `/vsq qforgive` | `<modeOrQuestId> [playerName]` | Resets quests or notes for a player: `all`, `notes`, `active`, or a specific quest id |
+| `/vsq nforgive` | `[playerName]` | Removes all note entries from the journal for a player |
 | `/vsq exec` | `[playerName] <actionString>` | Executes an action string on a player. If no player is given, uses the caller |
 
 ---
@@ -67,19 +67,25 @@ Player attributes are persistent flags used for quest progress tracking.
 
 ```
 # List all available quests
-/vsq list
+/vsq qlist
 
 # Check player's quest progress
-/vsq check PlayerName
+/vsq qcheck PlayerName
 
 # Give action item
 /vsq getactionitem example_sword 1
 
 # Reset a specific quest for a player
-/vsq forgive innkeeper-firstimpression PlayerName
+/vsq qforgive innkeeper-firstimpression PlayerName
 
 # Reset all quest progress for a player
-/vsq forgiveall PlayerName
+/vsq qforgive all PlayerName
+
+# Remove all note entries for a player
+/vsq nforgive PlayerName
+
+# Forget the active quest for a player
+/vsq qforgive active PlayerName
 
 # Set a custom attribute
 /vsq attr set PlayerName talked_to_innkeeper true

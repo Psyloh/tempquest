@@ -56,6 +56,12 @@
       ]
     },
     {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-reward-ashenlurker-lens"
+      ]
+    },
+    {
       "id": "showquestfinaldialog",
       "args": [
         "albase:dialogue-bosshunter-final-title",

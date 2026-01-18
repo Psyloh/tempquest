@@ -66,25 +66,66 @@ namespace VsQuest
 
         private void OnEntityDeath(Entity entity, DamageSource damageSource)
         {
-            if (damageSource?.SourceEntity is EntityPlayer player)
-            {
-                var quests = persistenceManager.GetPlayerQuests(player.PlayerUID);
-                QuestDeathUtil.HandleEntityDeath(sapi, quests, player, entity);
+            var credited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+            if (damageSource?.SourceEntity is EntityPlayer player && !string.IsNullOrWhiteSpace(player.PlayerUID))
+            {
+                credited.Add(player.PlayerUID);
+            }
+
+            if (IsBossEntity(entity) && IsFinalBossStage(entity))
+            {
                 try
                 {
-                    if (IsBossEntity(entity) && IsFinalBossStage(entity))
+                    var wa = entity?.WatchedAttributes;
+                    if (wa != null)
                     {
-                        var serverPlayer = player.Player as IServerPlayer;
-                        if (serverPlayer != null)
+                        var attackers = wa.GetStringArray(EntityBehaviorBossHuntCombatMarker.BossHuntAttackersKey, new string[0]) ?? new string[0];
+                        for (int i = 0; i < attackers.Length; i++)
                         {
-                            BossKillAnnouncementUtil.AnnounceBossDefeated(sapi, serverPlayer, entity);
+                            if (!string.IsNullOrWhiteSpace(attackers[i])) credited.Add(attackers[i]);
                         }
                     }
                 }
                 catch
                 {
                 }
+            }
+
+            foreach (var uid in credited)
+            {
+                if (string.IsNullOrWhiteSpace(uid)) continue;
+
+                IPlayer iPlayer = null;
+                try
+                {
+                    iPlayer = sapi?.World?.PlayerByUid(uid);
+                }
+                catch
+                {
+                    iPlayer = null;
+                }
+
+                var epl = iPlayer?.Entity as EntityPlayer;
+                if (epl == null) continue;
+
+                var quests = persistenceManager.GetPlayerQuests(uid);
+                QuestDeathUtil.HandleEntityDeath(sapi, quests, epl, entity);
+            }
+
+            try
+            {
+                if (damageSource?.SourceEntity is EntityPlayer announcePlayer && IsBossEntity(entity) && IsFinalBossStage(entity))
+                {
+                    var serverPlayer = announcePlayer.Player as IServerPlayer;
+                    if (serverPlayer != null)
+                    {
+                        BossKillAnnouncementUtil.AnnounceBossDefeated(sapi, serverPlayer, entity);
+                    }
+                }
+            }
+            catch
+            {
             }
 
             var victimPlayer = entity as EntityPlayer;

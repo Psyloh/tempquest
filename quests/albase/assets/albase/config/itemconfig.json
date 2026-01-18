@@ -25,14 +25,14 @@
     {
       "id": "albase:bosshunt-reward-ossuarywarden",
       "itemCode": "game:clothes-shoulder-embroidered-collar",
-      "name": "<font color=\"#9CA3AF\">Костяной филактерий</font>",
-      "description": "<font color=\"#E5E7EB\">Осколки кости, стянутые нитями старой клятвы. Гасит часть удара, но тянет силы — будто просит ещё.</font>",
+      "name": "<font color=\"#9CA3AF\">Костяной ворот Дозора</font>",
+      "description": "<font color=\"#E5E7EB\">Вышитый воротник, усиленный костяными пластинами. Смягчает удар по шее и плечам, но требует носить его сдержанно — иначе быстро выматывает.</font>",
       "actions": [],
       "attributes": {
-        "protection": 0.6,
-        "protectionperc": 0.04,
-        "walkspeed": -0.04,
-        "hungerrate": 0.08
+        "protection": 0.5,
+        "protectionperc": 0.05,
+        "walkspeed": -0.03,
+        "hungerrate": 0.06
       },
       "showAttributes": [
         "protection",
@@ -51,13 +51,13 @@
     {
       "id": "albase:bosshunt-reward-ashenlurker",
       "itemCode": "game:clothes-shoulder-hooded-cape",
-      "name": "<font color=\"#F97316\">Пепельный знак Ловчего</font>",
-      "description": "<font color=\"#FDBA74\">Зола держит форму, пока ты дышишь. Двигает руку увереннее, но выстуживает тело — будто рядом всегда тлеют угли.</font>",
+      "name": "<font color=\"#F97316\">Пепельный плащ Ловчего</font>",
+      "description": "<font color=\"#FDBA74\">Лёгкий плащ с капюшоном, пропитанный золой. Стабилизирует руки при прицеливании, но плохо держит тепло — будто ветер пробирает сквозь ткань.</font>",
       "actions": [],
       "attributes": {
-        "rangedaccuracy": 0.1,
-        "rangedchargspeed": 0.08,
-        "warmth": -0.8
+        "rangedaccuracy": 0.08,
+        "rangedchargspeed": 0.06,
+        "warmth": -0.6
       },
       "showAttributes": [
         "rangedaccuracy",
@@ -75,13 +75,13 @@
     {
       "id": "albase:bosshunt-reward-bonecolossus",
       "itemCode": "game:clothes-shoulder-hunter-poncho",
-      "name": "<font color=\"#A8A29E\">Метка Костяного Колосса</font>",
-      "description": "<font color=\"#E7E5E4\">Тяжёлая печать на ткани. Делает руку точнее, но отнимает лёгкость движений — словно держит за плечо.</font>",
+      "name": "<font color=\"#A8A29E\">Тяжёлое пончо Колосса</font>",
+      "description": "<font color=\"#E7E5E4\">Пончо, утяжелённое грубыми нашивками. Ровнее держит стойку и прицел, но сковывает шаг — как будто на плечи легла костяная рука.</font>",
       "actions": [],
       "attributes": {
-        "rangedaccuracy": 0.06,
-        "walkspeed": -0.06,
-        "healingeffectiveness": -0.05
+        "rangedaccuracy": 0.05,
+        "walkspeed": -0.04,
+        "healingeffectiveness": -0.04
       },
       "showAttributes": [
         "rangedaccuracy",
@@ -103,11 +103,11 @@
       "description": "<font color=\"#FCA5A5\">Редкая метка древней охоты. Делает тебя быстрее и живучее, но расплачиваешься телом: голод приходит чаще, а тепло держится хуже.</font>",
       "actions": [],
       "attributes": {
-        "protectionperc": 0.12,
-        "walkspeed": 0.08,
-        "healingeffectiveness": 0.15,
-        "hungerrate": 0.22,
-        "warmth": -1.2
+        "protectionperc": 0.1,
+        "walkspeed": 0.06,
+        "healingeffectiveness": 0.1,
+        "hungerrate": 0.18,
+        "warmth": -1
       },
       "showAttributes": [
         "protectionperc",
@@ -127,14 +127,14 @@
     {
       "id": "albase:bosshunt-reward-ossuarywarden-chain",
       "itemCode": "game:clothes-waist-jailor-belt",
-      "name": "<font color=\"#E5E7EB\">Цепь костного дозора</font>",
-      "description": "<font color=\"#F3F4F6\">Пояс с холодной цепью. Помогает держать удар, но стягивает нутро: двигаться тяжелее, а голод приходит быстрее.</font>",
+      "name": "<font color=\"#E5E7EB\">Цепной пояс Дозора</font>",
+      "description": "<font color=\"#F3F4F6\">Кандальный пояс с холодными звеньями. Гасит часть удара в корпус, но тянет вниз и делает шаг чуть тяжелее.</font>",
       "actions": [],
       "attributes": {
-        "protection": 0.4,
-        "protectionperc": 0.06,
-        "walkspeed": -0.03,
-        "hungerrate": 0.12
+        "protection": 0.35,
+        "protectionperc": 0.05,
+        "walkspeed": -0.02,
+        "hungerrate": 0.08
       },
       "showAttributes": [
         "protection",
@@ -157,9 +157,9 @@
       "description": "<font color=\"#FED7AA\">Тёплый шарф с запахом золы. Согревает и помогает держать прицел, но раны затягиваются хуже.</font>",
       "actions": [],
       "attributes": {
-        "warmth": 1.2,
-        "rangedaccuracy": 0.05,
-        "healingeffectiveness": -0.08
+        "warmth": 1,
+        "rangedaccuracy": 0.04,
+        "healingeffectiveness": -0.06
       },
       "showAttributes": [
         "warmth",
@@ -181,14 +181,62 @@
       "description": "<font color=\"#F5F5F4\">Туго стянутый ремень. Прибавляет собранности и шага, но сжигает силы — голод приходит чаще.</font>",
       "actions": [],
       "attributes": {
-        "walkspeed": 0.05,
-        "rangedaccuracy": 0.05,
-        "hungerrate": 0.14
+        "walkspeed": 0.04,
+        "rangedaccuracy": 0.04,
+        "hungerrate": 0.1
       },
       "showAttributes": [
         "walkspeed",
         "rangedaccuracy",
         "hungerrate"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "albase:bosshunt-reward-ashenlurker-lens",
+      "itemCode": "game:clothes-face-survivor",
+      "name": "<font color=\"#FDBA74\">Закопчённые линзы Ловчего</font>",
+      "description": "<font color=\"#FFEDD5\">Стекло, потемневшее от золы и масла. Убирает блики и помогает удержать цель, но под маской становится холоднее.</font>",
+      "actions": [],
+      "attributes": {
+        "rangedaccuracy": 0.06,
+        "rangedchargspeed": 0.04,
+        "warmth": -0.3
+      },
+      "showAttributes": [
+        "rangedaccuracy",
+        "rangedchargspeed",
+        "warmth"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "albase:bosshunt-reward-ossuarywarden-signet",
+      "itemCode": "game:clothes-neck-malefactor-pendant",
+      "name": "<font color=\"#E5E7EB\">Печать Оссуарного стража</font>",
+      "description": "<font color=\"#F3F4F6\">Тяжёлый медальон, будто отмечающий носителя для удара. Лучше держит удар, но ускоряет голод и мешает восстановлению.</font>",
+      "actions": [],
+      "attributes": {
+        "protectionperc": 0.07,
+        "hungerrate": 0.1,
+        "healingeffectiveness": -0.03
+      },
+      "showAttributes": [
+        "protectionperc",
+        "hungerrate",
+        "healingeffectiveness"
       ],
       "hideVanillaTooltips": [
         "armor",

@@ -26,36 +26,72 @@ namespace VsQuest
             string loreCode;
             string title;
             bool overwriteMode = false;
+            bool? isNoteOverride = null;
             int chapterStartIndex;
+            bool TryParseFlag(string value)
+            {
+                if (string.Equals(value, "overwrite", StringComparison.OrdinalIgnoreCase))
+                {
+                    overwriteMode = true;
+                    return true;
+                }
+
+                if (string.Equals(value, "note", StringComparison.OrdinalIgnoreCase))
+                {
+                    isNoteOverride = true;
+                    return true;
+                }
+
+                if (string.Equals(value, "quest", StringComparison.OrdinalIgnoreCase))
+                {
+                    isNoteOverride = false;
+                    return true;
+                }
+
+                return false;
+            }
 
             if (args.Length >= 4)
             {
                 groupId = args[0];
                 loreCode = args[1];
-                title = LocalizationUtils.GetSafe(args[2]);
-
-                if (args.Length >= 5 && string.Equals(args[3], "overwrite", StringComparison.OrdinalIgnoreCase))
-                {
-                    overwriteMode = true;
-                    chapterStartIndex = 4;
-                }
-                else
-                {
-                    chapterStartIndex = 3;
-                }
+                chapterStartIndex = 2;
             }
-            else if (args.Length >= 3)
+            else if (args.Length >= 2)
             {
                 loreCode = args[0];
-                title = LocalizationUtils.GetSafe(args[1]);
-                chapterStartIndex = 2;
+                chapterStartIndex = 1;
             }
             else
             {
                 loreCode = args[0];
                 title = loreCode;
                 chapterStartIndex = 1;
+                goto AfterHeaderParse;
             }
+
+            while (chapterStartIndex < args.Length && TryParseFlag(args[chapterStartIndex]))
+            {
+                chapterStartIndex++;
+            }
+
+            if (chapterStartIndex < args.Length)
+            {
+                title = LocalizationUtils.GetSafe(args[chapterStartIndex]);
+                chapterStartIndex++;
+            }
+            else
+            {
+                title = loreCode;
+                goto AfterHeaderParse;
+            }
+
+            while (chapterStartIndex < args.Length && TryParseFlag(args[chapterStartIndex]))
+            {
+                chapterStartIndex++;
+            }
+
+        AfterHeaderParse:
 
             // Build incoming chapters (dedupe empty)
             var incomingChapters = new List<JournalChapter>();
@@ -77,6 +113,7 @@ namespace VsQuest
 
             var wa = player.Entity.WatchedAttributes;
             var entries = QuestJournalEntry.Load(wa);
+            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
 
             QuestJournalEntry entry = null;
             foreach (var existing in entries)
@@ -100,6 +137,18 @@ namespace VsQuest
                 resolvedQuestId = loreCode;
             }
 
+            bool isNote = isNoteOverride ?? entry?.IsNote ?? false;
+            if (isNoteOverride == null && entry?.IsNote == true)
+            {
+                bool hasQuestById = questSystem?.QuestRegistry?.ContainsKey(resolvedQuestId) == true;
+                bool hasQuestByLore = !string.IsNullOrWhiteSpace(loreCode)
+                    && questSystem?.QuestRegistry?.ContainsKey(loreCode) == true;
+                if (hasQuestById || hasQuestByLore)
+                {
+                    isNote = false;
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(resolvedQuestId) && !string.IsNullOrWhiteSpace(loreCode))
             {
                 string key = $"alegacyvsquest:journal:{resolvedQuestId}:lorecodes";
@@ -119,7 +168,8 @@ namespace VsQuest
                     QuestId = resolvedQuestId,
                     LoreCode = loreCode,
                     Title = title,
-                    Chapters = new List<string>()
+                    Chapters = new List<string>(),
+                    IsNote = isNote
                 };
                 entries.Add(entry);
                 changed = true;
@@ -129,6 +179,12 @@ namespace VsQuest
                 if (string.IsNullOrWhiteSpace(entry.QuestId) && !string.IsNullOrWhiteSpace(resolvedQuestId))
                 {
                     entry.QuestId = resolvedQuestId;
+                    changed = true;
+                }
+
+                if (entry.IsNote != isNote)
+                {
+                    entry.IsNote = isNote;
                     changed = true;
                 }
             }

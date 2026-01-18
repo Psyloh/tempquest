@@ -45,6 +45,7 @@ namespace VsQuest
             actionRegistry.Add("acceptquest", new AcceptQuestAction(sapi, onQuestAcceptedCallback));
 
             actionRegistry.Add("addjournalentry", new AddJournalEntryQuestAction());
+            actionRegistry.Add("addvanillajournalentry", new AddVanillaJournalEntryQuestAction());
 
             actionRegistry.Add("giveitem", new GiveItemAction());
             actionRegistry.Add("addtraits", new AddTraitsAction());

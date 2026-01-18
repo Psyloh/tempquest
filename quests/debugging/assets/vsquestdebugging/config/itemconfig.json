@@ -31,6 +31,86 @@
           ]
         }
       ]
+    },
+    {
+      "id": "vsquestdebugging:protection5",
+      "itemCode": "game:clothes-neck-malefactor-pendant",
+      "name": "<font color=\"#22C55E\">Debug: Protection +5</font>",
+      "description": "<font color=\"#60A5FA\">Тестовый предмет. Даёт плоскую защиту: -5 урона.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 5
+      },
+      "showAttributes": [
+        "protection"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "vsquestdebugging:protection10",
+      "itemCode": "game:clothes-neck-malefactor-pendant",
+      "name": "<font color=\"#22C55E\">Debug: Protection +10</font>",
+      "description": "<font color=\"#60A5FA\">Тестовый предмет. Даёт плоскую защиту: -10 урона.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 10
+      },
+      "showAttributes": [
+        "protection"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "vsquestdebugging:protection20",
+      "itemCode": "game:clothes-neck-malefactor-pendant",
+      "name": "<font color=\"#22C55E\">Debug: Protection +20</font>",
+      "description": "<font color=\"#60A5FA\">Тестовый предмет. Даёт плоскую защиту: -20 урона.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 20
+      },
+      "showAttributes": [
+        "protection"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "vsquestdebugging:protection30",
+      "itemCode": "game:clothes-neck-malefactor-pendant",
+      "name": "<font color=\"#22C55E\">Debug: Protection +30</font>",
+      "description": "<font color=\"#60A5FA\">Тестовый предмет. Даёт плоскую защиту: -30 урона.</font>",
+      "actions": [],
+      "attributes": {
+        "protection": 30
+      },
+      "showAttributes": [
+        "protection"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
     }
   ]
 }

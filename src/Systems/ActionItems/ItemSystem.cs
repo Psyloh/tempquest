@@ -327,10 +327,24 @@ namespace VsQuest
             var attributes = slot.Itemstack.Attributes;
             if (!TryGetActionItemActionsFromAttributes(attributes, out var actions, out string sourceQuestId)) return;
 
-            if (!string.IsNullOrWhiteSpace(sourceQuestId)
-                && !string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase))
+            string actionItemId = attributes.GetString(ItemAttributeUtils.ActionItemIdKey);
+            var wa = fromPlayer?.Entity?.WatchedAttributes;
+            bool enforceOnce = !string.IsNullOrWhiteSpace(actionItemId)
+                && wa != null
+                && (string.IsNullOrWhiteSpace(sourceQuestId)
+                    || string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase)
+                    || questSystem?.QuestRegistry?.ContainsKey(sourceQuestId) != true);
+            string onceKey = enforceOnce ? $"alegacyvsquest:itemaction:invadd:{actionItemId}" : null;
+            if (enforceOnce && wa.GetBool(onceKey, false))
             {
-                var active = questSystem?.GetPlayerQuests(fromPlayer.PlayerUID);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(sourceQuestId)
+                && !string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase)
+                && questSystem?.QuestRegistry?.ContainsKey(sourceQuestId) == true)
+            {
+                var active = questSystem.GetPlayerQuests(fromPlayer.PlayerUID);
                 bool isActive = active != null && active.Exists(q => q != null && string.Equals(q.questId, sourceQuestId, StringComparison.OrdinalIgnoreCase));
                 if (!isActive)
                 {
@@ -345,6 +359,12 @@ namespace VsQuest
                     var message = new QuestAcceptedMessage { questGiverId = fromPlayer.Entity.EntityId, questId = sourceQuestId };
                     registeredAction.Execute(sapi, message, fromPlayer, action.args);
                 }
+            }
+
+            if (enforceOnce)
+            {
+                wa.SetBool(onceKey, true);
+                wa.MarkPathDirty(onceKey);
             }
         }
 
@@ -435,7 +455,8 @@ namespace VsQuest
 
                         // If this action item is tied to a quest, only auto-trigger it while that quest is active.
                         // This prevents pre-collecting quest items and consuming their one-time trigger too early.
-                        if (!string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase))
+                        if (!string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase)
+                            && questSystem?.QuestRegistry?.ContainsKey(sourceQuestId) == true)
                         {
                             var active = questSystem.GetPlayerQuests(sp.PlayerUID);
                             bool isActive = active != null && active.Exists(q => q != null && string.Equals(q.questId, sourceQuestId, StringComparison.OrdinalIgnoreCase));

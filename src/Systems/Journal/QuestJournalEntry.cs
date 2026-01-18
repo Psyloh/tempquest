@@ -12,6 +12,7 @@ namespace VsQuest
         public string LoreCode { get; set; }
         public string Title { get; set; }
         public List<string> Chapters { get; set; } = new List<string>();
+        public bool IsNote { get; set; }
 
         public static List<QuestJournalEntry> Load(ITreeAttribute attributes)
         {

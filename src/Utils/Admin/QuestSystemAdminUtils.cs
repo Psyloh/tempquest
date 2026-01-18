@@ -288,24 +288,28 @@ namespace VsQuest
                     sapi?.Logger.Warning($"[vsquest] Failed to remove journal entries for player {player.PlayerUID}: {e.Message}");
                 }
             }
-            finally
-            {
-                player.Entity.WatchedAttributes.RemoveAttribute(loreCodesKey);
-                player.Entity.WatchedAttributes.MarkPathDirty(loreCodesKey);
+        }
 
-                foreach (var loreCode in loreCodes ?? Array.Empty<string>())
-                {
-                    if (string.IsNullOrWhiteSpace(loreCode)) continue;
-                    string idKey = $"alegacyvsquest:journal:entryid:{loreCode}";
-                    player.Entity.WatchedAttributes.RemoveAttribute(idKey);
-                    player.Entity.WatchedAttributes.MarkPathDirty(idKey);
-                }
-            }
+        public static int RemoveNoteJournalEntries(IServerPlayer player)
+        {
+            if (player?.Entity?.WatchedAttributes == null) return 0;
+
+            var wa = player.Entity.WatchedAttributes;
+            var entries = QuestJournalEntry.Load(wa);
+            if (entries == null || entries.Count == 0) return 0;
+
+            int removed = entries.RemoveAll(e => e != null && e.IsNote);
+            if (removed <= 0) return 0;
+
+            QuestJournalEntry.Save(wa, entries);
+            wa.MarkPathDirty(QuestJournalEntry.JournalEntriesKey);
+            return removed;
         }
 
         private static void ClearPerQuestPlayerState(IServerPlayer player, string questId)
         {
             if (player?.Entity?.WatchedAttributes == null) return;
+            if (string.IsNullOrWhiteSpace(questId)) return;
 
             string cooldownKey = string.Format("alegacyvsquest:lastaccepted-{0}", questId);
             // Do NOT remove cooldownKey here.
@@ -496,6 +500,36 @@ namespace VsQuest
 
             questSystem.SavePlayerQuests(player.PlayerUID, quests);
             return removed;
+        }
+
+        public static bool ForgetQuestForPlayer(QuestSystem questSystem, IServerPlayer player, string questId)
+        {
+            if (questSystem == null || player == null || string.IsNullOrWhiteSpace(questId)) return false;
+
+            var quests = questSystem.GetPlayerQuests(player.PlayerUID);
+            var activeQuest = quests.Find(q => q.questId == questId);
+            if (activeQuest == null) return false;
+
+            quests.Remove(activeQuest);
+            questSystem.SavePlayerQuests(player.PlayerUID, quests);
+            return true;
+        }
+
+        public static bool ForgetActiveQuestForPlayer(QuestSystem questSystem, IServerPlayer player, out string questId)
+        {
+            questId = null;
+            if (questSystem == null || player == null) return false;
+
+            var quests = questSystem.GetPlayerQuests(player.PlayerUID);
+            if (quests == null || quests.Count == 0) return false;
+
+            var activeQuest = quests[0];
+            if (activeQuest == null || string.IsNullOrWhiteSpace(activeQuest.questId)) return false;
+
+            questId = activeQuest.questId;
+            quests.RemoveAt(0);
+            questSystem.SavePlayerQuests(player.PlayerUID, quests);
+            return true;
         }
 
         public static int ForgetOutdatedQuestsForPlayer(QuestSystem questSystem, IServerPlayer player, ICoreServerAPI sapi)
