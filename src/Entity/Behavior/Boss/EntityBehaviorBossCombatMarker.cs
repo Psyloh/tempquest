@@ -3,14 +3,23 @@ using Vintagestory.API.Common.Entities;
 
 namespace VsQuest
 {
-    public class EntityBehaviorBossHuntCombatMarker : EntityBehavior
+    public class EntityBehaviorBossCombatMarker : EntityBehavior
     {
-        public const string BossHuntAttackersKey = "alegacyvsquest:bosshunt:attackers";
-        public const string BossHuntDamageByPlayerKey = "alegacyvsquest:bosshunt:damageByPlayer";
-        public const string BossHuntLastDamageMsKey = "alegacyvsquest:bosshunt:lastDamageMs";
+        public const string BossCombatAttackersKey = "alegacyvsquest:bosscombat:attackers";
+        public const string BossCombatDamageByPlayerKey = "alegacyvsquest:bosscombat:damageByPlayer";
+        public const string BossCombatLastDamageMsKey = "alegacyvsquest:bosscombat:lastDamageMs";
 
-        public EntityBehaviorBossHuntCombatMarker(Entity entity) : base(entity)
+        private bool trackBossHuntDamageLock;
+
+        public EntityBehaviorBossCombatMarker(Entity entity) : base(entity)
         {
+        }
+
+        public override void Initialize(EntityProperties properties, Vintagestory.API.Datastructures.JsonObject attributes)
+        {
+            base.Initialize(properties, attributes);
+
+            trackBossHuntDamageLock = attributes["trackBossHuntDamageLock"].AsBool(false);
         }
 
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
@@ -25,8 +34,8 @@ namespace VsQuest
                 var wa = entity.WatchedAttributes;
                 if (wa != null)
                 {
-                    wa.SetLong(BossHuntLastDamageMsKey, entity.World.ElapsedMilliseconds);
-                    wa.MarkPathDirty(BossHuntLastDamageMsKey);
+                    wa.SetLong(BossCombatLastDamageMsKey, entity.World.ElapsedMilliseconds);
+                    wa.MarkPathDirty(BossCombatLastDamageMsKey);
                 }
             }
             catch
@@ -40,7 +49,7 @@ namespace VsQuest
                     var wa = entity.WatchedAttributes;
                     if (wa != null)
                     {
-                        var existing = wa.GetStringArray(BossHuntAttackersKey, new string[0]) ?? new string[0];
+                        var existing = wa.GetStringArray(BossCombatAttackersKey, new string[0]) ?? new string[0];
                         bool found = false;
                         for (int i = 0; i < existing.Length; i++)
                         {
@@ -56,22 +65,22 @@ namespace VsQuest
                             var merged = new string[existing.Length + 1];
                             for (int i = 0; i < existing.Length; i++) merged[i] = existing[i];
                             merged[existing.Length] = byPlayer.PlayerUID;
-                            wa.SetStringArray(BossHuntAttackersKey, merged);
-                            wa.MarkPathDirty(BossHuntAttackersKey);
+                            wa.SetStringArray(BossCombatAttackersKey, merged);
+                            wa.MarkPathDirty(BossCombatAttackersKey);
                         }
 
                         try
                         {
-                            var tree = wa.GetTreeAttribute(BossHuntDamageByPlayerKey);
+                            var tree = wa.GetTreeAttribute(BossCombatDamageByPlayerKey);
                             if (tree == null)
                             {
                                 tree = new Vintagestory.API.Datastructures.TreeAttribute();
-                                wa.SetAttribute(BossHuntDamageByPlayerKey, tree);
+                                wa.SetAttribute(BossCombatDamageByPlayerKey, tree);
                             }
 
                             double prev = tree.GetDouble(byPlayer.PlayerUID, 0);
                             tree.SetDouble(byPlayer.PlayerUID, prev + damage);
-                            wa.MarkPathDirty(BossHuntDamageByPlayerKey);
+                            wa.MarkPathDirty(BossCombatDamageByPlayerKey);
                         }
                         catch
                         {
@@ -83,24 +92,27 @@ namespace VsQuest
                 }
             }
 
-            try
+            if (trackBossHuntDamageLock)
             {
-                var calendar = entity.World?.Calendar;
-                if (calendar == null) return;
+                try
+                {
+                    var calendar = entity.World?.Calendar;
+                    if (calendar == null) return;
 
-                double nowHours = calendar.TotalHours;
+                    double nowHours = calendar.TotalHours;
 
-                var wa = entity.WatchedAttributes;
-                if (wa == null) return;
+                    var wa = entity.WatchedAttributes;
+                    if (wa == null) return;
 
-                wa.SetDouble(BossHuntSystem.LastBossDamageTotalHoursKey, nowHours);
-                wa.MarkPathDirty(BossHuntSystem.LastBossDamageTotalHoursKey);
-            }
-            catch
-            {
+                    wa.SetDouble(BossHuntSystem.LastBossDamageTotalHoursKey, nowHours);
+                    wa.MarkPathDirty(BossHuntSystem.LastBossDamageTotalHoursKey);
+                }
+                catch
+                {
+                }
             }
         }
 
-        public override string PropertyName() => "bosshuntcombatmarker";
+        public override string PropertyName() => "bosscombatmarker";
     }
 }

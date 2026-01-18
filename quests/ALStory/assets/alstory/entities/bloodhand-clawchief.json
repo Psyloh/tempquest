@@ -52,6 +52,7 @@
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 2.1251 },
       { "code": "health", "currenthealth": 300, "maxhealth": 300 },
+      { "code": "bosscombatmarker" },
       { "code": "bossdespair", "despairDurationMultiplier": 3 },
       { "code": "questtarget", "targetId": "alstory:echo-proklyatiya:clawchief" },
       { "code": "deaddecay", "hoursToDecay": 999999 },
@@ -86,7 +87,7 @@
             "priority": 1.5,
             "mincooldown": 100,
             "maxcooldown": 250,
-            "movespeed": 0.06,
+            "movespeed": 0.12,
             "seekingRange": 45,
             "maxFollowTime": 300,
             "searchWaitMs": 500,
@@ -97,7 +98,7 @@
           {
             "code": "wander",
             "priority": 1.0,
-            "movespeed": 0.02,
+            "movespeed": 0.04,
             "animationSpeed": 1,
             "animation": "walk",
             "preferredLightLevel": 15

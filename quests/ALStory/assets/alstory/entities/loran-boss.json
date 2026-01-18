@@ -26,6 +26,7 @@
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.01 },
       { "code": "health", "currenthealth": 750, "maxhealth": 750 },
+      { "code": "bosscombatmarker" },
       {
         "code": "taskai",
         "aitasks": [
@@ -51,7 +52,7 @@
             "priority": 1.5,
             "mincooldown": 200,
             "maxcooldown": 400,
-            "movespeed": 0.06,
+            "movespeed": 0.12,
             "seekingRange": 45,
             "maxFollowTime": 300,
             "searchWaitMs": 500,

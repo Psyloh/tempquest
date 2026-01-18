@@ -11,10 +11,19 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("bossnametag", typeof(EntityBehaviorBossNameTag));
             api.RegisterEntityBehaviorClass("bossrespawn", typeof(EntityBehaviorBossRespawn));
             api.RegisterEntityBehaviorClass("bossdespair", typeof(EntityBehaviorBossDespair));
+            api.RegisterEntityBehaviorClass("bosscombatmarker", typeof(EntityBehaviorBossCombatMarker));
             api.RegisterEntityBehaviorClass("bosshuntcombatmarker", typeof(EntityBehaviorBossHuntCombatMarker));
+            api.RegisterEntityBehaviorClass("bosssong", typeof(EntityBehaviorBossMusicController));
+            api.RegisterEntityBehaviorClass("bossmusicurl", typeof(EntityBehaviorBossMusicUrlController));
             api.RegisterEntityBehaviorClass("bosssummonritual", typeof(EntityBehaviorBossSummonRitual));
             api.RegisterEntityBehaviorClass("bossgrowthritual", typeof(EntityBehaviorBossGrowthRitual));
             api.RegisterEntityBehaviorClass("bossrebirth", typeof(EntityBehaviorBossRebirth));
+            api.RegisterEntityBehaviorClass("bosscastphase", typeof(EntityBehaviorBossCastPhase));
+            api.RegisterEntityBehaviorClass("bossdash", typeof(EntityBehaviorBossDash));
+            api.RegisterEntityBehaviorClass("bossteleport", typeof(EntityBehaviorBossTeleport));
+            api.RegisterEntityBehaviorClass("bosshook", typeof(EntityBehaviorBossHook));
+            api.RegisterEntityBehaviorClass("bossgrab", typeof(EntityBehaviorBossGrab));
+            api.RegisterEntityBehaviorClass("bossdamageshield", typeof(EntityBehaviorBossDamageShield));
             api.RegisterEntityBehaviorClass("shiverdebug", typeof(EntityBehaviorShiverDebug));
 
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));

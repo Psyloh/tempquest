@@ -19,6 +19,20 @@
       "hideVanillaTooltips": []
     },
     {
+      "id": "vsquestdebugging:damage30",
+      "itemCode": "alegacyvsquest:debugtool",
+      "name": "<font color=\"#EF4444\">Debug: Damage 30</font>",
+      "description": "<font color=\"#60A5FA\">ПКМ по хотбару: наносит 30 урона выбранной энтити.</font>",
+      "actions": [
+        {
+          "id": "damageentity",
+          "args": [
+            "30"
+          ]
+        }
+      ]
+    },
+    {
       "id": "vsquestdebugging:damage50",
       "itemCode": "alegacyvsquest:debugtool",
       "name": "<font color=\"#EF4444\">Debug: Damage 50</font>",
@@ -28,6 +42,20 @@
           "id": "damageentity",
           "args": [
             "50"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vsquestdebugging:damage80",
+      "itemCode": "alegacyvsquest:debugtool",
+      "name": "<font color=\"#EF4444\">Debug: Damage 80</font>",
+      "description": "<font color=\"#60A5FA\">ПКМ по хотбару: наносит 80 урона выбранной энтити.</font>",
+      "actions": [
+        {
+          "id": "damageentity",
+          "args": [
+            "80"
           ]
         }
       ]

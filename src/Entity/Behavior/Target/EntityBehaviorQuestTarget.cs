@@ -11,6 +11,9 @@ namespace VsQuest
     {
         protected const string AnchorKeyPrefix = "alegacyvsquest:spawner:";
 
+        protected const double LeashNoDamageGraceHours = 2.0 / 60.0;
+        protected const float BossRegenHpPerSecond = 3f;
+
         protected string id;
         protected float? maxHealthOverride;
         protected float leashRange;
@@ -58,6 +61,53 @@ namespace VsQuest
             if (entity is not EntityAgent agent) return;
             if (!agent.Alive) return;
             if (leashRange <= 0) return;
+
+            double nowHours = agent.World.Calendar?.TotalHours ?? 0;
+            bool noDamageGraceActive = false;
+            if (nowHours > 0)
+            {
+                try
+                {
+                    double lastDamageHours = agent.WatchedAttributes.GetDouble(BossHuntSystem.LastBossDamageTotalHoursKey, double.NaN);
+                    if (!double.IsNaN(lastDamageHours) && nowHours - lastDamageHours < LeashNoDamageGraceHours)
+                    {
+                        noDamageGraceActive = true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            // Slow out-of-combat regen for bosses.
+            // Only when no damage was received recently (same window as leash grace), and only if bosscombatmarker exists.
+            if (!noDamageGraceActive && BossRegenHpPerSecond > 0f && agent.HasBehavior<EntityBehaviorBossCombatMarker>())
+            {
+                try
+                {
+                    var wa = agent.WatchedAttributes;
+                    var healthTree = wa?.GetTreeAttribute("health");
+                    if (healthTree != null)
+                    {
+                        float maxHealth = healthTree.GetFloat("maxhealth", 0f);
+                        if (maxHealth <= 0f) maxHealth = healthTree.GetFloat("basemaxhealth", 0f);
+
+                        float curHealth = healthTree.GetFloat("currenthealth", 0f);
+                        if (maxHealth > 0f && curHealth > 0f && curHealth < maxHealth)
+                        {
+                            float newHealth = Math.Min(maxHealth, curHealth + BossRegenHpPerSecond * deltaTime);
+                            healthTree.SetFloat("currenthealth", newHealth);
+                            wa.MarkPathDirty("health");
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            // If boss took damage recently, do not leash yet.
+            if (noDamageGraceActive) return;
 
             long nowMs = agent.World.ElapsedMilliseconds;
             if (nowMs - lastLeashCheckMs < leashCheckMs) return;

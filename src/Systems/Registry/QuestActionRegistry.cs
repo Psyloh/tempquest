@@ -27,6 +27,8 @@ namespace VsQuest
 
             actionRegistry.Add("playsound", new PlaySoundQuestAction());
 
+            actionRegistry.Add("preloadbossmusic", new PreloadBossMusicQuestAction());
+
             actionRegistry.Add("spawnentities", new SpawnEntitiesAction());
             actionRegistry.Add("spawnany", new SpawnAnyOfEntitiesAction());
             actionRegistry.Add("spawnsmoke", new SpawnSmokeAction());

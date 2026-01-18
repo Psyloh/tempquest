@@ -315,5 +315,17 @@ namespace VsQuest
         {
             QuestFinalDialogGui.ShowFromMessage(message, capi);
         }
+
+        internal void OnPreloadBossMusicMessage(PreloadBossMusicMessage message, ICoreClientAPI capi)
+        {
+            try
+            {
+                var sys = capi?.ModLoader?.GetModSystem<BossMusicUrlSystem>();
+                sys?.Preload(message?.Url);
+            }
+            catch
+            {
+            }
+        }
     }
 }

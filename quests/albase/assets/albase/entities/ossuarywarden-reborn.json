@@ -32,6 +32,7 @@
       { "code": "floatupwhenstuck", "onlyWhenDead": true },
       { "code": "interpolateposition" },
       { "code": "boss", "bossHpBarRange": 60 },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2", "musicUrl": "https://drive.google.com/uc?export=download&id=1JPczCvwS_ULq1ToWRuvcbc4woX-bIGNG", "range": 45, "combatTimeoutMs": 12000, "requireRecentDamage": false },
       { "code": "bossnametag", "nameLangKey": "item-creature-ossuarywarden-reborn", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
     ],
     "animations": [
@@ -53,13 +54,105 @@
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "health", "currenthealth": 420, "maxhealth": 420 },
       { "code": "bossrebirth", "isFinalStage": true },
-      { "code": "bosshuntcombatmarker" },
+      { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
       {
         "code": "emotionstates",
         "states": [
           { "code": "aggressiveondamage", "duration": 30, "chance": 1, "slot": 0, "priority": 0.5, "accumType": "noaccum" },
           { "code": "ossuarywarden-requiem", "duration": 999999, "chance": 1, "slot": 1, "priority": 2, "accumType": "noaccum", "whenHealthRelBelow": 0.5 }
+        ]
+      },
+      {
+        "code": "bossdash",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.7,
+            "cooldownSeconds": 12,
+            "minTargetRange": 5,
+            "maxTargetRange": 22,
+            "windupMs": 300,
+            "dashMs": 250,
+            "dashSpeed": 0.48,
+            "windupAnimation": "standcry",
+            "dashAnimation": "standrun",
+            "sound": "game:creature/drifter-idle",
+            "soundRange": 20,
+            "soundStartMs": 0
+          },
+          {
+            "whenHealthRelBelow": 0.35,
+            "cooldownSeconds": 9,
+            "minTargetRange": 6,
+            "maxTargetRange": 26,
+            "windupMs": 250,
+            "dashMs": 300,
+            "dashSpeed": 0.54,
+            "windupAnimation": "standdespair",
+            "dashAnimation": "standrun",
+            "sound": "game:creature/drifter-idle",
+            "soundRange": 22,
+            "soundStartMs": 0
+          }
+        ]
+      },
+      {
+        "code": "bosshook",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.7,
+            "cooldownSeconds": 10,
+            "minTargetRange": 4,
+            "maxTargetRange": 26,
+            "windupMs": 250,
+            "pullMs": 900,
+            "pullSpeed": 0.12,
+            "maxPlayerMotion": 0.22,
+            "windupAnimation": "standcry",
+            "pullAnimation": "standattack",
+            "sound": "albase:magic-sparkling",
+            "soundRange": 22,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          },
+          {
+            "whenHealthRelBelow": 0.35,
+            "cooldownSeconds": 8,
+            "minTargetRange": 4,
+            "maxTargetRange": 28,
+            "windupMs": 200,
+            "pullMs": 1100,
+            "pullSpeed": 0.14,
+            "maxPlayerMotion": 0.25,
+            "windupAnimation": "standdespair",
+            "pullAnimation": "standattack",
+            "sound": "albase:magic-sparkling",
+            "soundRange": 24,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          }
+        ]
+      },
+      {
+        "code": "bossteleport",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.5,
+            "cooldownSeconds": 3,
+            "minTargetRange": 10,
+            "maxTargetRange": 40,
+            "minRadius": 3,
+            "maxRadius": 7,
+            "tries": 12,
+            "windupMs": 250,
+            "windupAnimation": "standdespair",
+            "arriveAnimation": "standattack",
+            "sound": "albase:dark-magic-charge-up",
+            "soundRange": 40,
+            "soundStartMs": 0,
+            "soundVolume": 0.18,
+            "requireSolidGround": true
+          }
         ]
       },
       {
@@ -107,7 +200,7 @@
             "priority": 1.5,
             "mincooldown": 150,
             "maxcooldown": 250,
-            "movespeed": 0.02,
+            "movespeed": 0.04,
             "seekingRange": 35,
             "maxFollowTime": 120,
             "animation": "standrun",
@@ -116,7 +209,7 @@
           {
             "code": "wander",
             "priority": 1.0,
-            "movespeed": 0.01,
+            "movespeed": 0.02,
             "animation": "standwalk",
             "animationSpeed": 1.2,
             "preferredLightLevel": 15

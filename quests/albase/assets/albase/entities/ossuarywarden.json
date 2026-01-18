@@ -27,6 +27,7 @@
       { "code": "interpolateposition" },
       { "code": "harvestable", "duration": 999999 },
       { "code": "boss", "bossHpBarRange": 60 },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2", "musicUrl": "https://drive.google.com/uc?export=download&id=1Swpv0Jqsed7VFyCRefr7eglVLM1mfyKG", "range": 45, "combatTimeoutMs": 12000, "requireRecentDamage": false },
       { "code": "bossnametag", "nameLangKey": "item-creature-ossuarywarden", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
     ],
     "animations": [
@@ -48,7 +49,7 @@
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "health", "currenthealth": 360, "maxhealth": 360 },
       { "code": "bossrebirth", "rebirthEntityCode": "albase:ossuarywarden-reborn", "isFinalStage": false, "spawnDelayMs": 5500, "sound": "effect/translocate-active", "soundRange": 32, "soundStartMs": 0, "spawnSound": "weather/lightning-verynear", "spawnSoundRange": 48, "spawnSoundStartMs": 0, "loopSound": "effect/translocate-idle", "loopSoundRange": 24, "loopSoundIntervalMs": 250 },
-      { "code": "bosshuntcombatmarker" },
+      { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
       {
         "code": "emotionstates",
@@ -56,6 +57,49 @@
           { "code": "aggressiveondamage", "duration": 30, "chance": 1, "slot": 0, "priority": 0.5, "accumType": "noaccum" },
           { "code": "ossuarywarden-ritual", "duration": 999999, "chance": 1, "slot": 1, "priority": 1, "accumType": "noaccum", "whenHealthRelBelow": 0.6 },
           { "code": "ossuarywarden-requiem", "duration": 999999, "chance": 1, "slot": 1, "priority": 2, "accumType": "noaccum", "whenHealthRelBelow": 0.25 }
+        ]
+      },
+      {
+        "code": "bossgrab",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.75,
+            "cooldownSeconds": 14,
+            "minTargetRange": 0,
+            "maxTargetRange": 3.2,
+            "windupMs": 200,
+            "grabMs": 2200,
+            "victimWalkSpeedMult": 0.08,
+            "damageIntervalMs": 550,
+            "damage": 2.2,
+            "damageTier": 3,
+            "damageType": "PiercingAttack",
+            "windupAnimation": "crawlidle",
+            "grabAnimation": "crawlidle",
+            "sound": "albase:shock-sound-effect-horror",
+            "soundRange": 22,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          },
+          {
+            "whenHealthRelBelow": 0.35,
+            "cooldownSeconds": 11,
+            "minTargetRange": 0,
+            "maxTargetRange": 3.6,
+            "windupMs": 150,
+            "grabMs": 2600,
+            "victimWalkSpeedMult": 0.05,
+            "damageIntervalMs": 500,
+            "damage": 2.8,
+            "damageTier": 4,
+            "damageType": "PiercingAttack",
+            "windupAnimation": "crawldespair",
+            "grabAnimation": "idle",
+            "sound": "albase:shock-sound-effect-horror",
+            "soundRange": 24,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          }
         ]
       },
       {
@@ -123,7 +167,7 @@
             "priority": 1.5,
             "mincooldown": 200,
             "maxcooldown": 350,
-            "movespeed": 0.018,
+            "movespeed": 0.036,
             "seekingRange": 30,
             "maxFollowTime": 120,
             "animation": "crawlrun",
@@ -132,7 +176,7 @@
           {
             "code": "wander",
             "priority": 1.0,
-            "movespeed": 0.01,
+            "movespeed": 0.02,
             "animation": "crawlwalk",
             "animationSpeed": 1.2,
             "preferredLightLevel": 15

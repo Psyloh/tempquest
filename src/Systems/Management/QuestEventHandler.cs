@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
@@ -10,6 +11,9 @@ namespace VsQuest
 {
     public class QuestEventHandler
     {
+        private const double BossKillCreditMinShare = 0.25;
+        private const float BossKillHealFraction = 0.10f;
+
         private readonly Dictionary<string, Quest> questRegistry;
         private readonly QuestPersistenceManager persistenceManager;
         private readonly ICoreServerAPI sapi;
@@ -43,6 +47,21 @@ namespace VsQuest
                 {
                     QuestJournalMigration.MigrateFromVanilla(sapi, byPlayer);
 
+                    try
+                    {
+                        var epl = byPlayer.Entity;
+                        if (epl?.Stats != null)
+                        {
+                            epl.Stats.Remove("walkspeed", "alegacyvsquest");
+                            epl.Stats.Remove("walkspeed", "alegacyvsquest:bossgrab");
+                            epl.Stats.Remove("walkspeed", "alegacyvsquest:bosshook");
+                            epl.walkSpeed = epl.Stats.GetBlended("walkspeed");
+                        }
+                    }
+                    catch
+                    {
+                    }
+
                     var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
                     QuestSystemAdminUtils.ForgetOutdatedQuestsForPlayer(questSystem, byPlayer, sapi);
 
@@ -68,6 +87,18 @@ namespace VsQuest
         {
             var credited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+            try
+            {
+                var killer = damageSource?.SourceEntity ?? damageSource?.CauseEntity;
+                if (killer != null && killer.Alive && killer != entity && IsBossEntity(killer))
+                {
+                    TryHealBossOnKill(killer);
+                }
+            }
+            catch
+            {
+            }
+
             if (damageSource?.SourceEntity is EntityPlayer player && !string.IsNullOrWhiteSpace(player.PlayerUID))
             {
                 credited.Add(player.PlayerUID);
@@ -80,10 +111,34 @@ namespace VsQuest
                     var wa = entity?.WatchedAttributes;
                     if (wa != null)
                     {
-                        var attackers = wa.GetStringArray(EntityBehaviorBossHuntCombatMarker.BossHuntAttackersKey, new string[0]) ?? new string[0];
-                        for (int i = 0; i < attackers.Length; i++)
+                        try
                         {
-                            if (!string.IsNullOrWhiteSpace(attackers[i])) credited.Add(attackers[i]);
+                            float maxHp = 0;
+                            var healthBh = entity.GetBehavior<EntityBehaviorHealth>();
+                            if (healthBh != null)
+                            {
+                                maxHp = healthBh.MaxHealth;
+                            }
+
+                            var dmgTree = wa.GetTreeAttribute(EntityBehaviorBossCombatMarker.BossCombatDamageByPlayerKey);
+                            if (dmgTree != null && maxHp > 0)
+                            {
+                                var attackers = wa.GetStringArray(EntityBehaviorBossCombatMarker.BossCombatAttackersKey, new string[0]) ?? new string[0];
+                                for (int i = 0; i < attackers.Length; i++)
+                                {
+                                    var uid = attackers[i];
+                                    if (string.IsNullOrWhiteSpace(uid)) continue;
+
+                                    double dmg = dmgTree.GetDouble(uid, 0);
+                                    if (dmg / maxHp >= BossKillCreditMinShare)
+                                    {
+                                        credited.Add(uid);
+                                    }
+                                }
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
                 }
@@ -162,11 +217,35 @@ namespace VsQuest
             }
         }
 
+        private void TryHealBossOnKill(Entity boss)
+        {
+            if (boss == null) return;
+
+            try
+            {
+                if (!BossBehaviorUtils.TryGetHealth(boss, out ITreeAttribute healthTree, out float currentHealth, out float maxHealth)) return;
+                if (maxHealth <= 0f) return;
+
+                float add = maxHealth * BossKillHealFraction;
+                if (add <= 0f) return;
+
+                float next = currentHealth + add;
+                if (next > maxHealth) next = maxHealth;
+
+                healthTree.SetFloat("currenthealth", next);
+                boss.WatchedAttributes.MarkPathDirty("health");
+            }
+            catch
+            {
+            }
+        }
+
         private static bool IsBossEntity(Entity entity)
         {
             if (entity == null) return false;
 
             return entity.GetBehavior<EntityBehaviorBossHuntCombatMarker>() != null
+                || entity.GetBehavior<EntityBehaviorBossCombatMarker>() != null
                 || entity.GetBehavior<EntityBehaviorBossRespawn>() != null
                 || entity.GetBehavior<EntityBehaviorBossDespair>() != null
                 || entity.GetBehavior<EntityBehaviorQuestBoss>() != null;

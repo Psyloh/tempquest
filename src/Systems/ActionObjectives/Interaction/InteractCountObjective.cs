@@ -12,7 +12,19 @@ namespace VsQuest
             if (args == null || args.Length == 0) return false;
 
             var coordArgs = GetCoordArgs(args);
-            if (coordArgs.Length == 0) return false;
+            if (coordArgs.Length == 0)
+            {
+                try
+                {
+                    byPlayer?.Entity?.Api?.Logger?.Warning($"[alegacyvsquest] interactcount objective has 0 coordinates (args='{string.Join("|", args ?? Array.Empty<string>())}'). Treating as completable to avoid stuck quest.");
+                }
+                catch
+                {
+                }
+
+                // Fail-open: an invalid objective should not permanently block quest turn-in.
+                return true;
+            }
 
             return QuestInteractAtUtil.CountCompleted(byPlayer, coordArgs) >= coordArgs.Length;
         }
@@ -21,7 +33,7 @@ namespace VsQuest
         {
             var coordArgs = GetCoordArgs(args);
             int need = coordArgs.Length;
-            if (need == 0) return new List<int>(new int[] { 0, 0 });
+            if (need == 0) return new List<int>(new int[] { 0, 1 });
 
             int have = QuestInteractAtUtil.CountCompleted(byPlayer, coordArgs);
             if (have > need) have = need;

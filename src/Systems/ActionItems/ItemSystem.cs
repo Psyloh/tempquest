@@ -327,9 +327,12 @@ namespace VsQuest
             var attributes = slot.Itemstack.Attributes;
             if (!TryGetActionItemActionsFromAttributes(attributes, out var actions, out string sourceQuestId)) return;
 
+            bool triggerOnInvAdd = attributes.GetBool(ItemAttributeUtils.ActionItemTriggerOnInvAddKey, false);
+
             string actionItemId = attributes.GetString(ItemAttributeUtils.ActionItemIdKey);
             var wa = fromPlayer?.Entity?.WatchedAttributes;
-            bool enforceOnce = !string.IsNullOrWhiteSpace(actionItemId)
+            bool enforceOnce = triggerOnInvAdd
+                && !string.IsNullOrWhiteSpace(actionItemId)
                 && wa != null
                 && (string.IsNullOrWhiteSpace(sourceQuestId)
                     || string.Equals(sourceQuestId, ItemAttributeUtils.ActionItemDefaultSourceQuestId, StringComparison.OrdinalIgnoreCase)

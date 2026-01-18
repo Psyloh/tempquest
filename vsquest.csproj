@@ -4,6 +4,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>Release\build</OutputPath>
 		<ReleaseDir>$(MSBuildProjectDirectory)\Release</ReleaseDir>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,6 +35,18 @@
 		<Reference Include="cairo-sharp">
 			<HintPath>$(VINTAGE_STORY)/Lib/cairo-sharp.dll</HintPath>
 			<Private>false</Private>
+		</Reference>
+		<Reference Include="OpenTK.Audio.OpenAL">
+			<HintPath>$(VINTAGE_STORY)/Lib/OpenTK.Audio.OpenAL.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="OpenTK.Mathematics">
+			<HintPath>$(VINTAGE_STORY)/Lib/OpenTK.Mathematics.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="NLayer">
+			<HintPath>$(MSBuildProjectDirectory)\libs\NLayer.dll</HintPath>
+			<Private>true</Private>
 		</Reference>
 	</ItemGroup>
 

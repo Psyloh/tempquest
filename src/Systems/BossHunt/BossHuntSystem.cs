@@ -423,6 +423,32 @@ namespace VsQuest
                     previousQuestId = previousCfg?.questId;
                 }
 
+                // If the current boss is alive and was damaged recently, postpone rotation.
+                // Otherwise the boss can disappear mid-fight or coexist with the next boss.
+                if (previousCfg != null && nowHours >= state.nextBossRotationTotalHours)
+                {
+                    try
+                    {
+                        var bossEntity = FindBossEntityImmediate(previousCfg.bossKey);
+                        if (bossEntity != null && bossEntity.Alive)
+                        {
+                            double lastDamage = bossEntity.WatchedAttributes.GetDouble(LastBossDamageTotalHoursKey, double.NaN);
+                            double lockHours = previousCfg.GetNoRelocateAfterDamageHours();
+
+                            bool shouldPostpone = !double.IsNaN(lastDamage) && lockHours > 0 && nowHours - lastDamage < lockHours;
+                            if (shouldPostpone)
+                            {
+                                state.nextBossRotationTotalHours = nowHours + lockHours;
+                                stateDirty = true;
+                                return previousCfg;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
                 var ordered = new List<BossHuntConfig>();
                 for (int i = 0; i < configs.Count; i++)
                 {
@@ -504,12 +530,6 @@ namespace VsQuest
 
                 return;
             }
-
-            double lastDamage = bossEntity.WatchedAttributes.GetDouble(LastBossDamageTotalHoursKey, double.NaN);
-            double lockHours = cfg.GetNoRelocateAfterDamageHours();
-
-            bool okToDespawn = double.IsNaN(lastDamage) || lockHours <= 0 || nowHours - lastDamage >= lockHours;
-            if (!okToDespawn) return;
 
             try
             {
@@ -726,6 +746,7 @@ namespace VsQuest
 
             try
             {
+                Entity deadMatch = null;
                 foreach (var e in loaded.Values)
                 {
                     if (e == null) continue;
@@ -734,9 +755,23 @@ namespace VsQuest
 
                     if (string.Equals(qt.TargetId, bossTargetId, StringComparison.OrdinalIgnoreCase))
                     {
-                        cachedBossEntity = e;
-                        return e;
+                        // Prefer a live entity if one exists. During multi-phase rebirth there can be a short
+                        // overlap where a corpse and the reborn phase share the same targetId.
+                        if (e.Alive)
+                        {
+                            cachedBossEntity = e;
+                            return e;
+                        }
+
+                        // Keep the corpse as a fallback only if no living boss is found.
+                        deadMatch ??= e;
                     }
+                }
+
+                if (deadMatch != null)
+                {
+                    cachedBossEntity = deadMatch;
+                    return deadMatch;
                 }
             }
             catch
@@ -750,6 +785,20 @@ namespace VsQuest
         {
             if (cfg == null) return;
             if (point == null) return;
+
+            // Safety: do not spawn a new boss if a living one with the same targetId already exists.
+            // This can happen during multi-phase rebirth or if a corpse is detected first.
+            try
+            {
+                var existing = FindBossEntityImmediate(cfg.bossKey);
+                if (existing != null && existing.Alive)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+            }
 
             try
             {

@@ -22,7 +22,8 @@ namespace VsQuest
                 .RegisterMessageType<VanillaBlockInteractMessage>()
                 .RegisterMessageType<ShowNotificationMessage>().SetMessageHandler<ShowNotificationMessage>(message => questSystem.OnShowNotificationMessage(message, capi))
                 .RegisterMessageType<ShowDiscoveryMessage>().SetMessageHandler<ShowDiscoveryMessage>(message => questSystem.OnShowDiscoveryMessage(message, capi))
-                .RegisterMessageType<ShowQuestDialogMessage>().SetMessageHandler<ShowQuestDialogMessage>(message => questSystem.OnShowQuestDialogMessage(message, capi));
+                .RegisterMessageType<ShowQuestDialogMessage>().SetMessageHandler<ShowQuestDialogMessage>(message => questSystem.OnShowQuestDialogMessage(message, capi))
+                .RegisterMessageType<PreloadBossMusicMessage>().SetMessageHandler<PreloadBossMusicMessage>(message => questSystem.OnPreloadBossMusicMessage(message, capi));
         }
 
         public void RegisterServer(ICoreServerAPI sapi)
@@ -35,7 +36,8 @@ namespace VsQuest
                 .RegisterMessageType<VanillaBlockInteractMessage>().SetMessageHandler<VanillaBlockInteractMessage>((player, message) => questSystem.OnVanillaBlockInteract(player, message, sapi))
                 .RegisterMessageType<ShowNotificationMessage>()
                 .RegisterMessageType<ShowDiscoveryMessage>()
-                .RegisterMessageType<ShowQuestDialogMessage>();
+                .RegisterMessageType<ShowQuestDialogMessage>()
+                .RegisterMessageType<PreloadBossMusicMessage>();
         }
     }
 }

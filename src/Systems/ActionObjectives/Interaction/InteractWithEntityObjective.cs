@@ -16,14 +16,26 @@ namespace VsQuest
 
         public override bool IsCompletable(IPlayer byPlayer, params string[] args)
         {
-            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need)) return false;
+            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need))
+            {
+                try
+                {
+                    byPlayer?.Entity?.Api?.Logger?.Warning($"[alegacyvsquest] interactwithentity objective has invalid args (args='{string.Join("|", args ?? Array.Empty<string>())}'). Treating as completable to avoid stuck quest.");
+                }
+                catch
+                {
+                }
+
+                // Fail-open: an invalid objective should not permanently block quest turn-in.
+                return true;
+            }
             int have = GetHave(byPlayer, questId, targetIdOrCode);
             return have >= need;
         }
 
         public override List<int> GetProgress(IPlayer byPlayer, params string[] args)
         {
-            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need)) return new List<int>(new int[] { 0, 0 });
+            if (!TryParseArgs(args, out string questId, out string targetIdOrCode, out int need)) return new List<int>(new int[] { 0, 1 });
 
             int have = GetHave(byPlayer, questId, targetIdOrCode);
             if (have > need) have = need;

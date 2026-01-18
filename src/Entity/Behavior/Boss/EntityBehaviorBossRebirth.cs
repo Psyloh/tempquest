@@ -13,6 +13,7 @@ namespace VsQuest
     {
         private const string AnchorKeyPrefix = "alegacyvsquest:spawner:";
         private const string TargetIdKey = "alegacyvsquest:killaction:targetid";
+        private const string RespawnBlockAtHoursKey = "alegacyvsquest:bossrespawnAtTotalHours";
 
         private ICoreServerAPI sapi;
         private string rebirthEntityCode;
@@ -129,6 +130,19 @@ namespace VsQuest
                 Vec3d pos = new Vec3d(entity.ServerPos.X, entity.ServerPos.Y, entity.ServerPos.Z);
                 int dim = entity.ServerPos.Dimension;
                 float yaw = entity.ServerPos.Yaw;
+
+                try
+                {
+                    // Block quest spawners during phase transition to prevent a duplicate spawn on servers.
+                    // The spawner checks for a corpse with bossrespawnAtTotalHours and will not spawn additional copies.
+                    double nowHours = sapi.World.Calendar.TotalHours;
+                    double blockHours = Math.Max(0, spawnDelayMs) / 3600000.0;
+                    entity.WatchedAttributes.SetDouble(RespawnBlockAtHoursKey, nowHours + Math.Max(0.01, blockHours));
+                    entity.WatchedAttributes.MarkPathDirty(RespawnBlockAtHoursKey);
+                }
+                catch
+                {
+                }
 
                 TryPlaySound(pos);
                 StartLoopSound();

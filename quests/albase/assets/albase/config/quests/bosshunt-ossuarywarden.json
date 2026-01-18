@@ -12,6 +12,13 @@
       ]
     },
     {
+      "id": "preloadbossmusic",
+      "args": [
+        "https://drive.google.com/uc?export=download&id=1Swpv0Jqsed7VFyCRefr7eglVLM1mfyKG",
+        "https://drive.google.com/uc?export=download&id=1JPczCvwS_ULq1ToWRuvcbc4woX-bIGNG"
+      ]
+    },
+    {
       "id": "addjournalentry",
       "args": [
         "albase:bosshunt",
