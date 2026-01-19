@@ -19,6 +19,8 @@ namespace VsQuest
         {
             public float whenHealthRelBelow;
             public string entityCode;
+            public int maxNearby;
+            public float nearbyRange;
             public int minCount;
             public int maxCount;
             public int ritualMs;
@@ -74,6 +76,8 @@ namespace VsQuest
                     {
                         whenHealthRelBelow = stageObj["whenHealthRelBelow"].AsFloat(1f),
                         entityCode = stageObj["entityCode"].AsString(null),
+                        maxNearby = stageObj["maxNearby"].AsInt(0),
+                        nearbyRange = stageObj["nearbyRange"].AsFloat(0f),
                         minCount = stageObj["minCount"].AsInt(1),
                         maxCount = stageObj["maxCount"].AsInt(1),
                         ritualMs = stageObj["ritualMs"].AsInt(4000),
@@ -276,6 +280,15 @@ namespace VsQuest
                 count = min + sapi.World.Rand.Next(max - min + 1);
             }
 
+            if (stage.maxNearby > 0)
+            {
+                float range = stage.nearbyRange > 0f ? stage.nearbyRange : Math.Max(1f, stage.spawnRange);
+                int aliveNearby = CountAliveNearby(stage.entityCode, range);
+                int remaining = stage.maxNearby - aliveNearby;
+                if (remaining <= 0) return;
+                if (count > remaining) count = remaining;
+            }
+
             var type = sapi.World.GetEntityType(new AssetLocation(stage.entityCode));
             if (type == null) return;
 
@@ -302,6 +315,40 @@ namespace VsQuest
                 {
                     SpawnEntityAt(type, spawnPos, yaw);
                 }
+            }
+        }
+
+        private int CountAliveNearby(string entityCode, float range)
+        {
+            if (sapi == null || entity == null) return 0;
+            if (string.IsNullOrWhiteSpace(entityCode)) return 0;
+            if (range <= 0f) return 0;
+
+            try
+            {
+                int dim = entity.ServerPos.Dimension;
+                var center = new Vec3d(entity.ServerPos.X, entity.ServerPos.Y + dim * 32768.0, entity.ServerPos.Z);
+                var entities = sapi.World.GetEntitiesAround(center, range, range, e => e != null && e.Alive);
+                if (entities == null) return 0;
+
+                int alive = 0;
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    var e = entities[i];
+                    var code = e?.Code?.ToString();
+                    if (string.IsNullOrWhiteSpace(code)) continue;
+
+                    if (string.Equals(code, entityCode, StringComparison.OrdinalIgnoreCase))
+                    {
+                        alive++;
+                    }
+                }
+
+                return alive;
+            }
+            catch
+            {
+                return 0;
             }
         }
 

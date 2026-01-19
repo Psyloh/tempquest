@@ -163,20 +163,16 @@ namespace VsQuest
             {
                 try
                 {
-                    // Only show "respawn in X" if this entity actually uses bossrespawn.
-                    // Phase transitions (bossrebirth) may temporarily set other block-timers and should not be displayed.
-                    if (entity.GetBehavior<EntityBehaviorBossRespawn>() != null)
+                    double respawnAt = entity.WatchedAttributes.GetDouble("alegacyvsquest:bossrespawnAtTotalHours", double.NaN);
+                    if (double.IsNaN(respawnAt))
                     {
-                        double respawnAt = entity.WatchedAttributes.GetDouble("alegacyvsquest:bossrespawnAtTotalHours", double.NaN);
-                        if (double.IsNaN(respawnAt))
-                        {
-                            respawnAt = entity.WatchedAttributes.GetDouble("vsquest:bossrespawnAtTotalHours", double.NaN);
-                        }
-                        if (!double.IsNaN(respawnAt))
-                        {
-                            double hoursLeft = Math.Max(0, respawnAt - capi.World.Calendar.TotalHours);
-                            text = Lang.Get("alegacyvsquest:boss-respawn-suffix", text, hoursLeft);
-                        }
+                        respawnAt = entity.WatchedAttributes.GetDouble("vsquest:bossrespawnAtTotalHours", double.NaN);
+                    }
+
+                    if (!double.IsNaN(respawnAt) && respawnAt > capi.World.Calendar.TotalHours)
+                    {
+                        double hoursLeft = Math.Max(0, respawnAt - capi.World.Calendar.TotalHours);
+                        text = Lang.Get("alegacyvsquest:boss-respawn-suffix", text, hoursLeft);
                     }
                 }
                 catch

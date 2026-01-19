@@ -46,6 +46,8 @@ namespace VsQuest
 
         private long suppressVanillaMusicListenerId;
 
+        private const float BossMusicVolumeMul = 0.22f;
+
         private const float FadeOutSeconds = 2f;
 
         public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
@@ -419,7 +421,7 @@ namespace VsQuest
             lastSoundLevel = soundLevel;
 
             // Boss music depends only on master sound volume
-            float gain = Math.Clamp((soundLevel / 100f) * baseGain, 0f, 1f);
+            float gain = Math.Clamp((soundLevel / 100f) * baseGain * BossMusicVolumeMul, 0f, 1f);
             try
             {
                 lock (alLock)
