@@ -88,10 +88,21 @@
     {
       "id": "reachwaypoint",
       "objectiveId": "ordertower",
-      "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step2; questitem alstory-armor-helm",
+      "onCompleteActions": "spawnentitiesatplayer alstory:alstory-eidolon-guardian",
       "args": [
         "1426,250,-4965",
         "30"
+      ]
+    },
+    {
+      "id": "killactiontarget",
+      "objectiveId": "ordertowerboss",
+      "onCompleteActions": "addjournalentry alstory:echo-proklyatiya alstory:echo-proklyatiya-journal-title alstory:echo-proklyatiya-journal-step2; questitem alstory-armor-helm",
+      "args": [
+        "alstory:echo-proklyatiya",
+        "ordertowerboss",
+        "alstory:echo-proklyatiya:eidolon",
+        "1"
       ]
     },
     {

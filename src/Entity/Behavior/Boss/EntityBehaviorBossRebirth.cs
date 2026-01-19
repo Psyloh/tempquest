@@ -20,6 +20,7 @@ namespace VsQuest
         private bool isFinalStage;
         private bool rebirthTriggered;
         private int spawnDelayMs;
+        private bool spawnLightning;
 
         private string sound;
         private float soundRange;
@@ -62,6 +63,7 @@ namespace VsQuest
             rebirthEntityCode = attributes["rebirthEntityCode"].AsString(null);
             isFinalStage = attributes["isFinalStage"].AsBool(false);
             spawnDelayMs = attributes["spawnDelayMs"].AsInt(600);
+            spawnLightning = attributes["spawnLightning"].AsBool(true);
 
             sound = attributes["sound"].AsString(null);
             soundRange = attributes["soundRange"].AsFloat(24f);
@@ -246,12 +248,15 @@ namespace VsQuest
         {
             try
             {
-                try
+                if (spawnLightning)
                 {
-                    weatherSystem?.SpawnLightningFlash(pos);
-                }
-                catch
-                {
+                    try
+                    {
+                        weatherSystem?.SpawnLightningFlash(pos);
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 var type = sapi.World.GetEntityType(new AssetLocation(rebirthEntityCode));

@@ -32,7 +32,7 @@
       "code": "judgement",
       "owner": "npc",
       "type": "talk",
-      "trigger": "markentityinteraction alstory:fallen-magister alstory:loran loran; addplayerint alstory:loranmet 1 1 alstory:loranmetonce; closedialogue; despawnquestgiver 50; spawnentities alstory:loran-boss",
+      "trigger": "markentityinteraction alstory:fallen-magister alstory:loran loran; addplayerint alstory:loranmet 1 1 alstory:loranmetonce; closedialogue",
       "text": [
         { "value": "alstory:dialogue-loran-judgement-answer" }
       ],

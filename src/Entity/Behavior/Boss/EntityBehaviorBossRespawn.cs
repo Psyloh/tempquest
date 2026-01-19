@@ -19,6 +19,7 @@ namespace VsQuest
         private ICoreServerAPI sapi;
         private double respawnInGameHours;
         private bool spawnNewBoss;
+        private string respawnEntityCode;
         private long tickListenerId;
         private bool scheduled;
 
@@ -35,9 +36,10 @@ namespace VsQuest
             if (sapi == null) return;
 
             respawnInGameHours = attributes["respawnInGameHours"].AsDouble(24);
-            if (respawnInGameHours <= 0) respawnInGameHours = 24;
+            if (respawnInGameHours < 0) respawnInGameHours = 24;
 
             spawnNewBoss = attributes["spawnNewBoss"].AsBool(false);
+            respawnEntityCode = attributes["respawnEntityCode"].AsString(null);
 
             tickListenerId = sapi.Event.RegisterGameTickListener(OnTick, 1000);
         }
@@ -79,7 +81,14 @@ namespace VsQuest
             double respawnAt = entity.WatchedAttributes.GetDouble(AttrRespawnAtHours, double.NaN);
             if (double.IsNaN(respawnAt))
             {
-                respawnAt = sapi.World.Calendar.TotalHours + respawnInGameHours;
+                if (respawnInGameHours == 0)
+                {
+                    respawnAt = sapi.World.Calendar.TotalHours;
+                }
+                else
+                {
+                    respawnAt = sapi.World.Calendar.TotalHours + respawnInGameHours;
+                }
                 entity.WatchedAttributes.SetDouble(AttrRespawnAtHours, respawnAt);
 
                 entity.WatchedAttributes.SetDouble(AttrRespawnX, entity.ServerPos.X);
@@ -101,7 +110,9 @@ namespace VsQuest
         {
             if (sapi == null || entity == null) return;
 
-            string code = entity.Code?.ToShortString();
+            string code = string.IsNullOrWhiteSpace(respawnEntityCode)
+                ? entity.Code?.ToShortString()
+                : respawnEntityCode;
             if (string.IsNullOrWhiteSpace(code)) return;
 
             var type = sapi.World.GetEntityType(new AssetLocation(code));

@@ -1,16 +1,28 @@
 {
   "canClimb": true,
-  "class": "EntityAgent",
+  "class": "EntityPlayerBot",
   "client": {
     "renderer": "Shape",
-    "shape": { "base": "game:entity/humanoid/trader" },
-    "texture": { "base": "game:entity/humanoid/trader" },
+    "size": 1.05,
+    "shape": { "base": "game:entity/humanoid/seraph-faceless" },
+    "texture": { "base": "game:entity/humanoid/seraph-naked-hairless" },
     "behaviors": [
       { "code": "nametag", "showtagonlywhentargeted": true },
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.01 },
       { "code": "interpolateposition" },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
       { "code": "conversable", "dialogue": "config/dialogue/loran" }
+    ]
+  },
+  "attributes": {
+    "skinnableParts": [],
+    "inventory": [
+      { "type": "item", "code": "game:armor-head-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:armor-body-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:armor-legs-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:shield-woodmetal", "attributes": { "wood": "oak", "metal": "iron", "deco": "none" } }
     ]
   },
   "code": "loran",
@@ -23,10 +35,17 @@
         "selectFromRandomName": ["Лорэн"]
       },
       { "code": "controlledphysics", "stepHeight": 1.01 },
-      { "code": "health", "currenthealth": 1000000, "maxhealth": 1000000 },
+      { "code": "health", "currenthealth": 5, "maxhealth": 5 },
+      { "code": "bossrebirth", "rebirthEntityCode": "alstory:loran-boss", "isFinalStage": false, "spawnDelayMs": 0, "spawnLightning": false },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
       { "code": "conversable", "dialogue": "config/dialogue/loran" },
       { "code": "repulseagents" }
     ]
   },
-  "sounds": {}
+  "sounds": {
+    "hurt": "creature/drifter-hurt",
+    "death": "creature/drifter-death",
+    "idle": "creature/drifter-idle"
+  }
 }

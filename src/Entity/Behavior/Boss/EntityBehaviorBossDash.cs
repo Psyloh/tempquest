@@ -26,6 +26,8 @@ namespace VsQuest
             public int dashMs;
             public float dashSpeed;
 
+            public string dashDirection;
+
             public string windupAnimation;
             public string dashAnimation;
 
@@ -33,6 +35,53 @@ namespace VsQuest
             public float soundRange;
             public int soundStartMs;
             public float soundVolume;
+        }
+
+        private Vec3d ApplyDashDirection(Vec3d baseDir, string dashDirection)
+        {
+            if (baseDir == null) return new Vec3d(0, 0, 1);
+            string dir = dashDirection?.Trim()?.ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(dir) || dir == "towards" || dir == "forward") return baseDir;
+
+            Vec3d forward = null;
+            try
+            {
+                float yaw = entity?.ServerPos?.Yaw ?? 0f;
+                forward = new Vec3d(Math.Sin(yaw), 0, Math.Cos(yaw));
+                if (forward.Length() < 0.001) forward = null;
+            }
+            catch
+            {
+                forward = null;
+            }
+
+            forward ??= baseDir;
+
+            if (dir == "away" || dir == "back" || dir == "backwards")
+            {
+                return new Vec3d(-forward.X, 0, -forward.Z);
+            }
+
+            if (dir == "left")
+            {
+                return new Vec3d(-forward.Z, 0, forward.X);
+            }
+
+            if (dir == "right")
+            {
+                return new Vec3d(forward.Z, 0, -forward.X);
+            }
+
+            if (dir == "side")
+            {
+                var rng = sapi?.World?.Rand ?? entity?.World?.Rand;
+                bool left = (rng?.NextDouble() ?? 0.0) < 0.5;
+                return left
+                    ? new Vec3d(-forward.Z, 0, forward.X)
+                    : new Vec3d(forward.Z, 0, -forward.X);
+            }
+
+            return baseDir;
         }
 
         private ICoreServerAPI sapi;
@@ -80,6 +129,8 @@ namespace VsQuest
                         windupMs = stageObj["windupMs"].AsInt(350),
                         dashMs = stageObj["dashMs"].AsInt(650),
                         dashSpeed = stageObj["dashSpeed"].AsFloat(0.18f),
+
+                        dashDirection = stageObj["dashDirection"].AsString("towards"),
 
                         windupAnimation = stageObj["windupAnimation"].AsString(null),
                         dashAnimation = stageObj["dashAnimation"].AsString(null),
@@ -217,6 +268,7 @@ namespace VsQuest
 
             dashDir = new Vec3d(target.ServerPos.X - entity.ServerPos.X, 0, target.ServerPos.Z - entity.ServerPos.Z);
             if (dashDir.Length() < 0.001) dashDir.Set(0, 0, 1);
+            dashDir = ApplyDashDirection(dashDir, stage?.dashDirection);
             dashDir.Normalize();
 
             lockedYaw = (float)Math.Atan2(dashDir.X, dashDir.Z);

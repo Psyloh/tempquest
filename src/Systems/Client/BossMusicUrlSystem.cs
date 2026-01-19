@@ -23,6 +23,7 @@ namespace VsQuest
         private string currentKey;
         private string currentUrl;
         private float currentStartAtSeconds;
+        private volatile float desiredLoopStartAtSeconds;
 
         private int sourceId = -1;
         private CancellationTokenSource cts;
@@ -144,14 +145,27 @@ namespace VsQuest
             bool sameKey = string.Equals(currentKey ?? "", resolvedKey ?? "", StringComparison.OrdinalIgnoreCase);
             bool sameUrl = string.Equals(currentUrl ?? "", resolvedUrl ?? "", StringComparison.OrdinalIgnoreCase);
             bool sameStart = Math.Abs(currentStartAtSeconds - startAtSeconds) < 0.01f;
-            if (sameKey && sameUrl && sameStart)
+            if (sameKey && sameUrl)
             {
-                return;
+                currentStartAtSeconds = startAtSeconds;
+                desiredLoopStartAtSeconds = startAtSeconds;
+
+                if (sameStart)
+                {
+                    return;
+                }
+
+                if (playTask != null && !playTask.IsCompleted)
+                {
+                    // Offset change while playing: apply on next loop without restarting.
+                    return;
+                }
             }
 
             currentKey = resolvedKey;
             currentUrl = resolvedUrl;
             currentStartAtSeconds = startAtSeconds;
+            desiredLoopStartAtSeconds = startAtSeconds;
 
             try
             {
@@ -743,8 +757,8 @@ namespace VsQuest
                         }
                     }
 
-                    // Next loop iteration should start at 0
-                    loopStartAtSeconds = 0f;
+                    // Next loop iteration uses the latest requested phase offset.
+                    loopStartAtSeconds = Math.Max(0f, desiredLoopStartAtSeconds);
 
                     if (!reachedEnd)
                     {

@@ -31,6 +31,7 @@ namespace VsQuest
 
             actionRegistry.Add("spawnentities", new SpawnEntitiesAction());
             actionRegistry.Add("spawnany", new SpawnAnyOfEntitiesAction());
+            actionRegistry.Add("spawnentitiesatplayer", new SpawnEntitiesAtPlayerAction());
             actionRegistry.Add("spawnsmoke", new SpawnSmokeAction());
             actionRegistry.Add("recruitentity", new RecruitEntityAction());
 

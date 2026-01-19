@@ -1,32 +1,108 @@
 {
   "canClimb": true,
-  "class": "EntityDrifter",
+  "class": "EntityPlayerBot",
   "client": {
     "renderer": "Shape",
-    "shape": { "base": "game:entity/humanoid/trader" },
-    "texture": { "base": "game:entity/humanoid/trader" },
+    "size": 1.1,
+    "shape": { "base": "game:entity/humanoid/seraph-faceless" },
+    "texture": { "base": "game:entity/humanoid/seraph-naked-hairless" },
     "behaviors": [
       { "code": "nametag", "showtagonlywhentargeted": true },
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.01 },
       { "code": "interpolateposition" },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
       { "code": "boss", "bossHpBarRange": 60 },
-      { "code": "bossnametag", "name": "Лорэн", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
+      { "code": "bossnametag", "nameLangKey": "alstory:item-creature-loran-boss", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
+    ],
+    "animations": [
+      { "code": "walk", "animation": "walk", "blendMode": "Average", "mulWithWalkSpeed": true, "animationSpeed": 1.1 },
+      { "code": "run", "animation": "run", "blendMode": "Average", "mulWithWalkSpeed": true, "animationSpeed": 1.2 },
+      { "code": "attack", "animation": "attack", "blendMode": "Average", "animationSpeed": 1.1 },
+      { "code": "sneakidle", "animation": "sneakidle", "blendMode": "Average" },
+      { "code": "die", "animation": "die", "animationSpeed": 1.75, "weight": 10, "blendMode": "AddAverage" },
+      { "code": "hurt", "animation": "hurt", "animationSpeed": 2, "blendMode": "AddAverage" },
+      { "code": "idle", "animation": "idle", "blendMode": "AddAverage", "triggeredBy": { "defaultAnim": true } }
+    ]
+  },
+  "attributes": {
+    "skinnableParts": [],
+    "inventory": [
+      { "type": "item", "code": "game:armor-head-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:armor-body-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:armor-legs-antique-forlorn-damaged" },
+      { "type": "item", "code": "game:spear-fork-ruined" },
+      { "type": "item", "code": "game:shield-woodmetal", "attributes": { "wood": "oak", "metal": "iron", "deco": "none" } }
     ]
   },
   "code": "loran-boss",
   "hitboxSize": { "x": 0.6, "y": 1.75 },
   "server": {
     "behaviors": [
-      {
-        "code": "nametag",
-        "showtagonlywhentargeted": true,
-        "selectFromRandomName": ["Лорэн"]
-      },
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.01 },
-      { "code": "health", "currenthealth": 750, "maxhealth": 750 },
+      { "code": "health", "currenthealth": 220, "maxhealth": 220 },
+      { "code": "bossrebirth", "isFinalStage": true },
       { "code": "bosscombatmarker" },
+      {
+        "code": "bossdamageshield",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.6,
+            "shieldMs": 2000,
+            "windupMs": 150,
+            "cooldownSeconds": 18,
+            "incomingDamageMultiplier": 0.2,
+            "animation": "sneakidle",
+            "sound": "game:effect/translocate-active",
+            "soundRange": 24,
+            "soundStartMs": 0,
+            "loopSound": "game:effect/translocate-idle",
+            "loopSoundRange": 18,
+            "loopSoundIntervalMs": 250
+          }
+        ]
+      },
+      {
+        "code": "bossdash",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.9,
+            "cooldownSeconds": 7,
+            "minTargetRange": 4,
+            "maxTargetRange": 18,
+            "windupMs": 250,
+            "dashMs": 240,
+            "dashSpeed": 1.3,
+            "dashDirection": "side",
+            "windupAnimation": "attack",
+            "dashAnimation": "run",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 20,
+            "soundStartMs": 120,
+            "soundVolume": 0.18
+          },
+          {
+            "whenHealthRelBelow": 0.5,
+            "cooldownSeconds": 6,
+            "minTargetRange": 5,
+            "maxTargetRange": 22,
+            "windupMs": 200,
+            "dashMs": 280,
+            "dashSpeed": 1.4,
+            "dashDirection": "back",
+            "windupAnimation": "attack",
+            "dashAnimation": "run",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 22,
+            "soundStartMs": 120,
+            "soundVolume": 0.18
+          }
+        ]
+      },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
       {
         "code": "taskai",
         "aitasks": [
@@ -34,39 +110,58 @@
             "code": "meleeattack",
             "entityCodes": ["player"],
             "priority": 2,
-            "damage": 18,
-            "damageTier": 4,
-            "minDist": 2.4,
-            "minVerDist": 2.6,
+            "damage": 10,
+            "damageTier": 3,
+            "minDist": 2.8,
+            "minVerDist": 2.8,
             "attackAngleRangeDeg": 120,
-            "mincooldown": 500,
-            "maxcooldown": 1200,
-            "damagePlayerAtMs": 300,
-            "attackDurationMs": 700,
+            "mincooldown": 1200,
+            "maxcooldown": 2200,
+            "damagePlayerAtMs": 450,
+            "attackDurationMs": 1000,
             "animation": "attack",
-            "animationSpeed": 1
+            "animationSpeed": 0.9,
+            "sound": "game:creature/drifter-hit",
+            "soundStartMs": 350
           },
           {
             "code": "seekentity",
             "entityCodes": ["player"],
-            "priority": 1.5,
+            "priority": 1.6,
             "mincooldown": 200,
             "maxcooldown": 400,
-            "movespeed": 0.12,
+            "movespeed": 0.02,
             "seekingRange": 45,
             "maxFollowTime": 300,
             "searchWaitMs": 500,
             "executionChance": 1,
-            "animationSpeed": 1.3,
+            "animationSpeed": 1.15,
             "animation": "walk"
+          },
+          {
+            "code": "seekentity",
+            "entityCodes": ["player"],
+            "priority": 1.4,
+            "mincooldown": 200,
+            "maxcooldown": 400,
+            "movespeed": 0.05,
+            "seekingRange": 25,
+            "maxFollowTime": 200,
+            "searchWaitMs": 250,
+            "executionChance": 0.75,
+            "animationSpeed": 1.35,
+            "animation": "run"
           },
           { "code": "lookaround", "priority": 0.5 }
         ]
       },
-      { "code": "questtarget", "targetId": "alstory:fallen-magister:loran", "leashRange": 60, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
-      { "code": "bossrespawn", "respawnInGameHours": 0.02, "spawnNewBoss": false },
-      { "code": "bossrebirth", "rebirthEntityCode": "alstory:loran", "isFinalStage": false, "spawnDelayMs": 2000 }
+      { "code": "questtarget", "targetId": "alstory:fallen-magister:loran", "leashRange": 60, "returnMoveSpeed": 0.03, "leashCheckMs": 1000 },
+      { "code": "bossrespawn", "respawnInGameHours": 24, "spawnNewBoss": true, "respawnEntityCode": "alstory:loran" }
     ]
   },
-  "sounds": {}
+  "sounds": {
+    "hurt": "creature/drifter-hurt",
+    "death": "creature/drifter-death",
+    "idle": "creature/drifter-idle"
+  }
 }

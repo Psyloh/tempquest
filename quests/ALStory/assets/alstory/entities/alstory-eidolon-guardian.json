@@ -1,0 +1,155 @@
+{
+  "inheritFrom": "game:entities/lore/boss/eidolon-immobilized",
+  "code": "alstory-eidolon-guardian",
+  "class": "EntityEidolon",
+  "tags": ["mechanical", "boss", "habitat-land"],
+  "attributes": {
+    "isMechanical": true,
+    "spawnDamageParticles": true,
+    "vsquestSoundPitchMul": 0.55,
+    "alegacyvsquestHideInfoText": true
+  },
+  "drops": [],
+  "client": {
+    "renderer": "Shape",
+    "shape": { "base": "game:entity/lore/eidolon/immobilized" },
+    "behaviors": [
+      { "code": "repulseagents", "movable": false },
+      { "code": "controlledphysics", "stepHeight": 1.1251 },
+      { "code": "interpolateposition" },
+      { "code": "boss", "bossHpBarRange": 45, "musicTrack": "theresonancearchives-eidolon" },
+      { "code": "bossnametag", "nameLangKey": "alstory:item-creature-eidolon-guardian", "color": "#ff4d4d", "backgroundColor": "#120b0b", "backgroundOpacity": 0.45, "renderRange": 90 }
+    ],
+    "animations": [
+      { "code": "inactive", "animation": "inactive", "blendMode": "Average" },
+      { "code": "idle", "animation": "idle", "blendMode": "Average", "triggeredBy": { "defaultAnim": true } },
+      { "code": "die", "animation": "die", "animationSpeed": 0.5, "weight": 10, "blendMode": "Average", "triggeredBy": { "onControls": ["dead"] } }
+    ]
+  },
+  "server": {
+    "behaviors": [
+      { "code": "repulseagents", "movable": false },
+      { "code": "controlledphysics", "stepHeight": 1.1251 },
+      { "code": "reviveondeath", "minHours": 168, "maxHours": 192 },
+      { "code": "health", "currenthealth": 650, "maxhealth": 650 },
+      { "code": "bosscombatmarker" },
+      { "code": "questtarget", "targetId": "alstory:echo-proklyatiya:eidolon", "leashRange": 70, "returnMoveSpeed": 0.04, "leashCheckMs": 1000 },
+      {
+        "code": "bossdamageshield",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.7,
+            "shieldMs": 3000,
+            "windupMs": 0,
+            "cooldownSeconds": 18,
+            "incomingDamageMultiplier": 0.15,
+            "animation": "idle",
+            "animationStopMs": 1200,
+            "sound": "game:creature/eidolon/rockfallslam",
+            "soundRange": 28,
+            "soundStartMs": 0,
+            "loopSound": "game:creature/eidolon/awake",
+            "loopSoundRange": 20,
+            "loopSoundIntervalMs": 900
+          }
+        ]
+      },
+      {
+        "code": "taskai",
+        "aitasks": [
+          {
+            "code": "eidolonmeleeattack",
+            "entityCodes": ["player"],
+            "priority": 2,
+            "damage": 14,
+            "damageTier": 3,
+            "damageType": "SlashingAttack",
+            "knockbackStrength": 3,
+            "mincooldown": 350,
+            "maxcooldown": 1200,
+            "damagePlayerAtMs": 1100,
+            "attackDurationMs": 1750,
+            "attackAngleRangeDeg": 360,
+            "animation": "slash",
+            "animationSpeed": 1,
+            "sound": "creature/drifter-hit",
+            "soundStartMs": 350,
+            "minDist": 4,
+            "minVerDist": 4
+          },
+          {
+            "code": "throwatentity",
+            "entityCodes": ["player"],
+            "projectileCode": "thrownboulder-granite",
+            "projectileDamage": 9,
+            "projectileDamageTier": 2,
+            "priority": 1.6,
+            "priorityForCancel": 9,
+            "mincooldown": 1100,
+            "maxcooldown": 2100,
+            "durationMs": 2100,
+            "releaseAtMs": 1300,
+            "seekingRange": 16,
+            "sound": "creature/eidolon/throw",
+            "soundStartMs": 200,
+            "soundRange": 32,
+            "animationSpeed": 1.25,
+            "animation": "throw",
+            "immobile": true,
+            "maxTurnAngleDeg": 35,
+            "maxOffAngleThrowDeg": 85
+          },
+          {
+            "code": "eidolonslam",
+            "entityCodes": ["player"],
+            "projectileCode": "thrownboulder-granite",
+            "creatureCode": "locust-bronze",
+            "projectileDamage": 8,
+            "projectileDamageTier": 1,
+            "priority": 1.4,
+            "priorityForCancel": 9,
+            "mincooldown": 1200,
+            "maxcooldown": 2800,
+            "durationMs": 1400,
+            "releaseAtMs": 1200,
+            "seekingRange": 15,
+            "animationSpeed": 1,
+            "animation": "slam",
+            "sound": "creature/eidolon/rockfallslam",
+            "soundStartMs": 1000
+          },
+          {
+            "priority": 1.2,
+            "maxTurnAngleDeg": 35,
+            "code": "lookatentity",
+            "entityCodes": ["player"]
+          },
+          {
+            "code": "idle",
+            "id": "idle",
+            "animation": "idle",
+            "priority": 1,
+            "maxduration": -1
+          },
+          {
+            "code": "idle",
+            "id": "inactive",
+            "animation": "inactive",
+            "priority": 0.1,
+            "priorityForCancel": 0.1,
+            "maxduration": 2000,
+            "finishSound": "creature/eidolon/awaken",
+            "soundRange": 32
+          }
+        ]
+      },
+      { "code": "bossrespawn", "respawnInGameHours": 24, "spawnNewBoss": false },
+      { "code": "entitystatetags" }
+    ]
+  },
+  "idleSoundRange": 14,
+  "sounds": {
+    "hurt": "creature/eidolon/hit",
+    "death": "creature/eidolon/death"
+  }
+}
