@@ -68,17 +68,16 @@
       {
         "code": "bosscloning",
         "stages": [
-          { "whenHealthRelBelow": 0.8, "cloneCount": 2, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 6, "cloneDamageMult": 0.4, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.7, "cloneCount": 3, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 6, "cloneDamageMult": 0.4, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.5, "cloneCount": 5, "durationMs": 10000, "cooldownSeconds": 14, "spawnRange": 7, "cloneDamageMult": 0.45, "cloneWalkSpeedMult": 0.9, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.2, "cloneCount": 7, "durationMs": 11000, "cooldownSeconds": 12, "spawnRange": 8, "cloneDamageMult": 0.5, "cloneWalkSpeedMult": 0.95, "cloneInvulnerable": true }
+          { "whenHealthRelBelow": 0.8, "cloneCount": 1, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 6, "cloneDamageMult": 0.6, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.65, "cloneCount": 3, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 7, "cloneDamageMult": 0.55, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.33, "cloneCount": 5, "durationMs": 11000, "cooldownSeconds": 12, "spawnRange": 7, "cloneDamageMult": 0.5, "cloneWalkSpeedMult": 0.95, "cloneInvulnerable": true }
         ]
       },
       {
         "code": "bossteleport",
         "stages": [
-          { "whenHealthRelBelow": 0.65, "cooldownSeconds": 12, "minTargetRange": 10, "maxTargetRange": 38, "minRadius": 6, "maxRadius": 12, "tries": 12, "windupMs": 250, "windupAnimation": "turret", "arriveAnimation": "stab", "sound": "albase:dark-magic-charge-up", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true },
-          { "whenHealthRelBelow": 0.35, "cooldownSeconds": 9, "minTargetRange": 8, "maxTargetRange": 36, "minRadius": 5, "maxRadius": 10, "tries": 12, "windupMs": 220, "windupAnimation": "load", "arriveAnimation": "stab", "sound": "albase:shock-sound-effect-horror", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true }
+          { "whenHealthRelBelow": 0.6, "cooldownSeconds": 20, "minTargetRange": 10, "maxTargetRange": 38, "minRadius": 3, "maxRadius": 8, "tries": 12, "windupMs": 250, "windupAnimation": "turret", "arriveAnimation": "stab", "sound": "albase:dark-magic-charge-up", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true },
+          { "whenHealthRelBelow": 0.3, "cooldownSeconds": 20, "minTargetRange": 8, "maxTargetRange": 36, "minRadius": 5, "maxRadius": 8, "tries": 12, "windupMs": 220, "windupAnimation": "load", "arriveAnimation": "stab", "sound": "albase:shock-sound-effect-horror", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true }
         ]
       },
       {

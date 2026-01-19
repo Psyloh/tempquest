@@ -56,11 +56,62 @@ namespace VsQuest.Harmony
 
                 if (damage <= 0f) return;
 
-                if (damageSource?.SourceEntity?.WatchedAttributes != null)
+                if (damageSource != null)
                 {
                     try
                     {
-                        float mult = damageSource.SourceEntity.WatchedAttributes.GetFloat("alegacyvsquest:bossclone:damagemult", 0f);
+                        var sourceEntity = damageSource.SourceEntity;
+                        var causeEntity = damageSource.GetCauseEntity() ?? sourceEntity;
+                        var sourceAttrs = sourceEntity?.WatchedAttributes ?? causeEntity?.WatchedAttributes;
+                        if (sourceAttrs != null && sourceAttrs.GetBool("alegacyvsquest:bossclone", false))
+                        {
+                            long ownerId = sourceAttrs.GetLong("alegacyvsquest:bossclone:ownerid", 0);
+                            if (ownerId > 0 && __instance != null && __instance.EntityId == ownerId)
+                            {
+                                damage = 0f;
+                                if (damageSource != null)
+                                {
+                                    damageSource.KnockbackStrength = 0f;
+                                }
+                                return;
+                            }
+                        }
+
+                        if (sourceEntity?.WatchedAttributes != null)
+                        {
+                            long firedById = sourceEntity.WatchedAttributes.GetLong("firedBy", 0);
+                            if (firedById > 0 && __instance?.World != null)
+                            {
+                                var firedByEntity = __instance.World.GetEntityById(firedById);
+                                var firedByAttrs = firedByEntity?.WatchedAttributes;
+                                if (firedByAttrs != null && firedByAttrs.GetBool("alegacyvsquest:bossclone", false))
+                                {
+                                    long ownerId = firedByAttrs.GetLong("alegacyvsquest:bossclone:ownerid", 0);
+                                    if (ownerId > 0 && __instance.EntityId == ownerId)
+                                    {
+                                        damage = 0f;
+                                        if (damageSource != null)
+                                        {
+                                            damageSource.KnockbackStrength = 0f;
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        var sourceEntity = damageSource.SourceEntity;
+                        var causeEntity = damageSource.GetCauseEntity() ?? sourceEntity;
+                        var sourceAttrs = sourceEntity?.WatchedAttributes ?? causeEntity?.WatchedAttributes;
+                        if (sourceAttrs == null) return;
+
+                        float mult = sourceAttrs.GetFloat("alegacyvsquest:bossclone:damagemult", 0f);
                         if (mult > 0f && mult < 0.999f)
                         {
                             damage *= mult;
