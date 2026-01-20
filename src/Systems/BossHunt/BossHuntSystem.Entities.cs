@@ -22,21 +22,6 @@ namespace VsQuest
                 return;
             }
 
-            // If this boss has multi-phase rebirth behavior, we must ensure no leftover phase remains when the
-            // active boss rotates away, otherwise two bosses can coexist.
-            if (bossEntity.GetBehavior<EntityBehaviorBossRebirth>() != null)
-            {
-                try
-                {
-                    sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
-                }
-                catch
-                {
-                }
-
-                return;
-            }
-
             try
             {
                 sapi.World.DespawnEntity(bossEntity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
@@ -351,35 +336,6 @@ namespace VsQuest
 
             var qt = entity.GetBehavior<EntityBehaviorQuestTarget>();
             if (qt == null) return;
-
-            var rebirth = entity.GetBehavior<EntityBehaviorBossRebirth>();
-            if (rebirth != null && !rebirth.IsFinalStage)
-            {
-                // Prevent duplicate spawns during the short transition where the reborn entity is not yet present.
-                for (int i = 0; i < configs.Count; i++)
-                {
-                    var cfg = configs[i];
-                    if (cfg == null) continue;
-                    if (!string.Equals(qt.TargetId, cfg.bossKey, StringComparison.OrdinalIgnoreCase)) continue;
-
-                    var st = GetOrCreateState(cfg.bossKey);
-                    double nowHours = sapi.World.Calendar.TotalHours;
-
-                    // ~36 seconds grace (0.01h) - enough for rebirth spawnDelayMs, prevents re-spawn loop.
-                    double graceUntil = nowHours + 0.01;
-                    if (st.deadUntilTotalHours < graceUntil)
-                    {
-                        st.deadUntilTotalHours = graceUntil;
-                        stateDirty = true;
-                    }
-
-                    cachedBossEntity = null;
-                    nextBossEntityScanTotalHours = 0;
-                    return;
-                }
-
-                return;
-            }
 
             for (int i = 0; i < configs.Count; i++)
             {

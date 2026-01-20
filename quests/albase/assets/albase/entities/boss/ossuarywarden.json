@@ -54,7 +54,7 @@
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "health", "currenthealth": 360, "maxhealth": 360 },
-      { "code": "bossrebirth", "rebirthEntityCode": "albase:ossuarywarden-reborn", "isFinalStage": false, "spawnDelayMs": 5500, "sound": "effect/translocate-active", "soundRange": 32, "soundStartMs": 0, "spawnSound": "weather/lightning-verynear", "spawnSoundRange": 48, "spawnSoundStartMs": 0, "loopSound": "effect/translocate-idle", "loopSoundRange": 24, "loopSoundIntervalMs": 250 },
+      { "code": "bossrebirth2", "nextEntityCode": "albase:ossuarywarden-reborn", "isFinalStage": false, "spawnDelayMs": 5500, "spawnLightning": true, "sound": "effect/translocate-active", "soundRange": 32, "soundStartMs": 0, "spawnSound": "weather/lightning-verynear", "spawnSoundRange": 48, "spawnSoundStartMs": 0, "loopSound": "effect/translocate-idle", "loopSoundRange": 24, "loopSoundIntervalMs": 250 },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
       {

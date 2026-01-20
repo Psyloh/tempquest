@@ -53,7 +53,7 @@
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "health", "currenthealth": 270, "maxhealth": 270 },
-      { "code": "bossrebirth", "isFinalStage": true },
+      { "code": "bossrebirth2", "isFinalStage": true },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
       {

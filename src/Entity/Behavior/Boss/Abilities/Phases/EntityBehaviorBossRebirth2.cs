@@ -9,16 +9,15 @@ using Vintagestory.GameContent;
 
 namespace VsQuest
 {
-    public class EntityBehaviorBossRebirth : EntityBehavior
+    public class EntityBehaviorBossRebirth2 : EntityBehavior
     {
         private const string AnchorKeyPrefix = "alegacyvsquest:spawner:";
         private const string TargetIdKey = "alegacyvsquest:killaction:targetid";
-        private const string RespawnBlockAtHoursKey = "alegacyvsquest:bossrebirthBlockSpawnUntilTotalHours";
 
         private ICoreServerAPI sapi;
-        private string rebirthEntityCode;
+        private string nextEntityCode;
         private bool isFinalStage;
-        private bool rebirthTriggered;
+        private bool phaseTriggered;
         private int spawnDelayMs;
         private bool spawnLightning;
 
@@ -40,11 +39,11 @@ namespace VsQuest
 
         public bool IsFinalStage => isFinalStage;
 
-        public EntityBehaviorBossRebirth(Entity entity) : base(entity)
+        public EntityBehaviorBossRebirth2(Entity entity) : base(entity)
         {
         }
 
-        public override string PropertyName() => "bossrebirth";
+        public override string PropertyName() => "bossrebirth2";
 
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
@@ -60,9 +59,9 @@ namespace VsQuest
                 weatherSystem = null;
             }
 
-            rebirthEntityCode = attributes["rebirthEntityCode"].AsString(null);
+            nextEntityCode = attributes["nextEntityCode"].AsString(null);
             isFinalStage = attributes["isFinalStage"].AsBool(false);
-            spawnDelayMs = attributes["spawnDelayMs"].AsInt(600);
+            spawnDelayMs = attributes["spawnDelayMs"].AsInt(2000);
             spawnLightning = attributes["spawnLightning"].AsBool(true);
 
             sound = attributes["sound"].AsString(null);
@@ -107,44 +106,20 @@ namespace VsQuest
 
             if (sapi == null || entity == null) return;
             if (isFinalStage) return;
-            if (rebirthTriggered) return;
-            if (string.IsNullOrWhiteSpace(rebirthEntityCode)) return;
+            if (phaseTriggered) return;
+            if (string.IsNullOrWhiteSpace(nextEntityCode)) return;
 
-            try
-            {
-                if (entity is EntityAgent agent)
-                {
-                    agent.AllowDespawn = false;
-                }
-            }
-            catch
-            {
-            }
-
-            rebirthTriggered = true;
-            TriggerRebirth();
+            phaseTriggered = true;
+            TriggerNextPhase();
         }
 
-        private void TriggerRebirth()
+        private void TriggerNextPhase()
         {
             try
             {
                 Vec3d pos = new Vec3d(entity.ServerPos.X, entity.ServerPos.Y, entity.ServerPos.Z);
                 int dim = entity.ServerPos.Dimension;
                 float yaw = entity.ServerPos.Yaw;
-
-                try
-                {
-                    // Block quest spawners during phase transition to prevent a duplicate spawn on servers.
-                    // The spawner checks for a corpse with bossrespawnAtTotalHours and will not spawn additional copies.
-                    double nowHours = sapi.World.Calendar.TotalHours;
-                    double blockHours = Math.Max(0, spawnDelayMs) / 3600000.0;
-                    entity.WatchedAttributes.SetDouble(RespawnBlockAtHoursKey, nowHours + Math.Max(0.01, blockHours));
-                    entity.WatchedAttributes.MarkPathDirty(RespawnBlockAtHoursKey);
-                }
-                catch
-                {
-                }
 
                 TryPlaySound(pos);
                 StartLoopSound();
@@ -155,13 +130,13 @@ namespace VsQuest
                     sapi.Event.RegisterCallback(_ =>
                     {
                         StopLoopSound();
-                        TrySpawnRebirth(pos, dim, yaw);
+                        TrySpawnNextPhase(pos, dim, yaw);
                     }, delay);
                 }
                 else
                 {
                     StopLoopSound();
-                    TrySpawnRebirth(pos, dim, yaw);
+                    TrySpawnNextPhase(pos, dim, yaw);
                 }
             }
             catch
@@ -244,7 +219,7 @@ namespace VsQuest
             loopSoundPlayer.Stop();
         }
 
-        private void TrySpawnRebirth(Vec3d pos, int dim, float yaw)
+        private void TrySpawnNextPhase(Vec3d pos, int dim, float yaw)
         {
             try
             {
@@ -259,7 +234,7 @@ namespace VsQuest
                     }
                 }
 
-                var type = sapi.World.GetEntityType(new AssetLocation(rebirthEntityCode));
+                var type = sapi.World.GetEntityType(new AssetLocation(nextEntityCode));
                 if (type == null) return;
 
                 Entity newEntity = sapi.World.ClassRegistry.CreateEntity(type);

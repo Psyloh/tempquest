@@ -12,8 +12,8 @@ namespace VsQuest
         {
             if (sapi == null || player == null || quests == null) return;
 
-            var rebirth = killedEntity?.GetBehavior<EntityBehaviorBossRebirth>();
-            if (rebirth != null && !rebirth.IsFinalStage) return;
+            var rebirth2 = killedEntity?.GetBehavior<EntityBehaviorBossRebirth2>();
+            if (rebirth2 != null && !rebirth2.IsFinalStage) return;
 
             string killedCode = killedEntity?.Code?.Path;
             var serverPlayer = player.Player as IServerPlayer;

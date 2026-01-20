@@ -478,11 +478,6 @@ namespace VsQuest
                             blockSpawn = true;
                         }
 
-                        double rebirthBlockUntil = wa.GetDouble("alegacyvsquest:bossrebirthBlockSpawnUntilTotalHours", double.NaN);
-                        if (!double.IsNaN(rebirthBlockUntil) && Api.World.Calendar.TotalHours < rebirthBlockUntil)
-                        {
-                            blockSpawn = true;
-                        }
                     }
                 }
 
@@ -525,11 +520,6 @@ namespace VsQuest
                         blockSpawnRadius = true;
                     }
 
-                    double rebirthBlockUntil = wa.GetDouble("alegacyvsquest:bossrebirthBlockSpawnUntilTotalHours", double.NaN);
-                    if (!double.IsNaN(rebirthBlockUntil) && Api.World.Calendar.TotalHours < rebirthBlockUntil)
-                    {
-                        blockSpawnRadius = true;
-                    }
                 }
             }
 

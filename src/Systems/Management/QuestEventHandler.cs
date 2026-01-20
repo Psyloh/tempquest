@@ -284,8 +284,8 @@ namespace VsQuest
         {
             if (entity == null) return false;
 
-            var rebirth = entity.GetBehavior<EntityBehaviorBossRebirth>();
-            return rebirth == null || rebirth.IsFinalStage;
+            var rebirth2 = entity.GetBehavior<EntityBehaviorBossRebirth2>();
+            return rebirth2 == null || rebirth2.IsFinalStage;
         }
 
         private void OnBlockBroken(IServerPlayer byPlayer, int blockId, BlockSelection blockSel)

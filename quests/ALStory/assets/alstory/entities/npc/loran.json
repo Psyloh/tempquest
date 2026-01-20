@@ -37,7 +37,7 @@
       },
       { "code": "controlledphysics", "stepHeight": 1.01 },
       { "code": "health", "currenthealth": 5, "maxhealth": 5 },
-      { "code": "bossrebirth", "rebirthEntityCode": "alstory:loran-boss", "isFinalStage": false, "spawnDelayMs": 0, "spawnLightning": false },
+      { "code": "bossrebirth2", "nextEntityCode": "alstory:loran-boss", "isFinalStage": false, "spawnDelayMs": 0, "spawnLightning": false },
       { "code": "extraskinnable" },
       { "code": "seraphinventory" },
       { "code": "conversable", "dialogue": "config/dialogue/loran" },
