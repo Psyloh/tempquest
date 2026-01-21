@@ -349,7 +349,7 @@ namespace VsQuest.Gui.Journal
 
         private void InitDetailGui()
         {
-            ElementBounds textBounds = ElementBounds.Fixed(9.0, 45.0, ListWidth, 30.0 + ListHeight + 17.0);
+            ElementBounds textBounds = ElementBounds.Fixed(11.5, 45.0, ListWidth - 3.5, 30.0 + ListHeight + 17.0);
             ElementBounds clipBounds = textBounds.ForkBoundingParent();
             ElementBounds insetBounds = textBounds.FlatCopy().FixedGrow(6.0).WithFixedOffset(-3.0, -3.0);
             ElementBounds scrollbarBounds = clipBounds.CopyOffsetedSibling(textBounds.fixedWidth + 7.0, -6.0, 0.0, 6.0).WithFixedWidth(20.0);

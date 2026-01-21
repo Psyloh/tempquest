@@ -61,7 +61,9 @@ namespace VsQuest.Gui.Journal
                 string text = GetFormattedText();
                 components = VtmlUtil.Richtextify(capi, text, CairoFont.WhiteSmallText().WithLineHeightMultiplier(1.2));
             }
-            composer.AddRichtext(components, textBounds, "richtext");
+            ElementBounds contentBounds = textBounds.FlatCopy().WithFixedOffset(4.0, 0.0);
+            contentBounds.fixedWidth = Math.Max(0.0, contentBounds.fixedWidth - 4.0);
+            composer.AddRichtext(components, contentBounds, "richtext");
         }
 
         private string GetFormattedText()

@@ -25,69 +25,69 @@
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-1'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512000"
+        "512174,191,512056"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-2'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512001"
+        "512135,199,512046"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-3'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512002"
+        "512208,227,511982"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-4'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512003"
+        "512213,188,512029"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-5'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512004"
+        "512172,171,511985"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-6'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512005"
+        "512138,180,511977"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-7'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512006"
+        "512226,172,512008"
       ]
     },
     {
       "id": "interactat",
       "onCompleteActions": "notify 'newyear2026:gift-found-8'; playsound 'newyear2026:sounds/giftfound' 0.25",
       "args": [
-        "512000,3,512007"
+        "512216,182,511982"
       ]
     },
     {
       "id": "interactcount",
       "args": [
-        "512000,3,512000",
-        "512000,3,512001",
-        "512000,3,512002",
-        "512000,3,512003",
-        "512000,3,512004",
-        "512000,3,512005",
-        "512000,3,512006",
-        "512000,3,512007",
+        "512174,191,512056",
+        "512135,199,512046",
+        "512208,227,511982",
+        "512213,188,512029",
+        "512172,171,511985",
+        "512138,180,511977",
+        "512226,172,512008",
+        "512216,182,511982",
         ""
       ]
     }
