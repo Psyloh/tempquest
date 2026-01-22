@@ -11,6 +11,7 @@ namespace VsQuest
     public class EntityBehaviorQuestTarget : EntityBehavior
     {
         protected const string AnchorKeyPrefix = "alegacyvsquest:spawner:";
+        protected const string ReturningToAnchorKey = "alegacyvsquest:spawner:returningToAnchor";
 
         protected const double LeashNoDamageGraceHours = 2.0 / 60.0;
         protected const float BossRegenHpPerSecond = 3f;
@@ -132,9 +133,6 @@ namespace VsQuest
                 }
             }
 
-            // If boss took damage recently, do not leash yet.
-            if (noDamageGraceActive) return;
-
             long nowMs = agent.World.ElapsedMilliseconds;
             if (nowMs - lastLeashCheckMs < leashCheckMs) return;
             lastLeashCheckMs = nowMs;
@@ -148,13 +146,66 @@ namespace VsQuest
             }
 
             double dx = agent.ServerPos.X - anchor.X;
-            double dy = agent.ServerPos.Y - anchor.Y;
             double dz = agent.ServerPos.Z - anchor.Z;
-            if ((dx * dx + dy * dy + dz * dz) <= effectiveLeashRange * effectiveLeashRange) return;
+            bool inRange = (dx * dx + dz * dz) <= effectiveLeashRange * effectiveLeashRange;
+            if (inRange)
+            {
+                try
+                {
+                    var wa = agent.WatchedAttributes;
+                    if (wa != null && wa.GetBool(ReturningToAnchorKey, false))
+                    {
+                        var taskAiLocal = agent.GetBehavior<EntityBehaviorTaskAI>();
+                        try
+                        {
+                            taskAiLocal?.PathTraverser?.Stop();
+                        }
+                        catch
+                        {
+                        }
+
+                        try
+                        {
+                            taskAiLocal?.TaskManager?.StopTasks();
+                        }
+                        catch
+                        {
+                        }
+
+                        agent.ServerPos?.Motion?.Set(0, 0, 0);
+                        agent.Controls.StopAllMovement();
+
+                        wa.SetBool(ReturningToAnchorKey, false);
+                        wa.MarkPathDirty(ReturningToAnchorKey);
+                    }
+                }
+                catch
+                {
+                }
+
+                return;
+            }
+
+            // If boss took damage recently, do not start/refresh a leash return yet.
+            // Note: we still allow the inRange/stop logic above to run so a previously started return can be cleared.
+            if (noDamageGraceActive) return;
 
             var taskAi = agent.GetBehavior<EntityBehaviorTaskAI>();
             if (taskAi?.PathTraverser != null && taskAi.PathTraverser.Ready)
             {
+                try
+                {
+                    var wa = agent.WatchedAttributes;
+                    if (wa != null)
+                    {
+                        wa.SetBool(ReturningToAnchorKey, true);
+                        wa.MarkPathDirty(ReturningToAnchorKey);
+                    }
+                }
+                catch
+                {
+                }
+
                 float stopDistance = Math.Min(LeashReturnStopDistance, effectiveLeashRange);
                 taskAi.PathTraverser.NavigateTo_Async(anchor, returnMoveSpeed, stopDistance, null, null, null, 1000, 1, null);
             }
@@ -175,7 +226,7 @@ namespace VsQuest
             int z = wa.GetInt(AnchorKeyPrefix + "z", int.MinValue);
             if (x == int.MinValue || y == int.MinValue || z == int.MinValue) return false;
 
-            anchor = new Vec3d(x + 0.5, y, z + 0.5);
+            anchor = new Vec3d(x + 0.5, y + 1, z + 0.5);
             return true;
         }
 

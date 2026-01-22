@@ -15,6 +15,7 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("bosscombatmarker", typeof(EntityBehaviorBossCombatMarker));
             api.RegisterEntityBehaviorClass("bosshuntcombatmarker", typeof(EntityBehaviorBossHuntCombatMarker));
             api.RegisterEntityBehaviorClass("bossmusicurl", typeof(EntityBehaviorBossMusicUrlController));
+            api.RegisterEntityBehaviorClass("bosshastargetsync", typeof(EntityBehaviorBossHasTargetSync));
             api.RegisterEntityBehaviorClass("bosssummonritual", typeof(EntityBehaviorBossSummonRitual));
             api.RegisterEntityBehaviorClass("bossgrowthritual", typeof(EntityBehaviorBossGrowthRitual));
             api.RegisterEntityBehaviorClass("bossrebirth2", typeof(EntityBehaviorBossRebirth2));

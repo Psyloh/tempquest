@@ -25,6 +25,8 @@ namespace VsQuest
         private float currentStartAtSeconds;
         private volatile float desiredLoopStartAtSeconds;
 
+        private volatile bool stopPending;
+
         private int sourceId = -1;
         private CancellationTokenSource cts;
         private Task playTask;
@@ -169,6 +171,7 @@ namespace VsQuest
             currentUrl = resolvedUrl;
             currentStartAtSeconds = startAtSeconds;
             desiredLoopStartAtSeconds = startAtSeconds;
+            stopPending = false;
 
             try
             {
@@ -195,21 +198,21 @@ namespace VsQuest
             {
             }
 
-            currentKey = null;
-            currentUrl = null;
-            currentStartAtSeconds = 0f;
-
             float fadeSeconds = fadeOutSeconds > 0f ? fadeOutSeconds : DefaultFadeOutSeconds;
             if (fadeSeconds <= 0f)
             {
+                currentKey = null;
+                currentUrl = null;
+                currentStartAtSeconds = 0f;
+                stopPending = false;
                 StopPlayback(immediate: true);
+                StopSuppressVanillaMusic();
             }
             else
             {
+                stopPending = true;
                 FadeOutAndStop(fadeSeconds);
             }
-
-            StopSuppressVanillaMusic();
         }
 
         public bool IsActive => !string.IsNullOrWhiteSpace(currentKey) || !string.IsNullOrWhiteSpace(currentUrl);
@@ -384,7 +387,7 @@ namespace VsQuest
                     {
                         token.ThrowIfCancellationRequested();
                         float t = (i + 1) / (float)steps;
-                        float g = Math.Clamp(fromGain * (1f - t), 0f, 1f);
+                        float g = Math.Clamp(fromGain * (float)Math.Sqrt(1f - t), 0f, 1f);
                         try
                         {
                             lock (alLock)
@@ -410,7 +413,12 @@ namespace VsQuest
                 }
                 finally
                 {
+                    currentKey = null;
+                    currentUrl = null;
+                    currentStartAtSeconds = 0f;
+                    stopPending = false;
                     StopPlayback(immediate: true);
+                    StopSuppressVanillaMusic();
                 }
             }, token);
         }
@@ -486,6 +494,72 @@ namespace VsQuest
             }
 
             UpdateGainFromSettings(force: true);
+        }
+
+        private void RecreateSourceForRecovery()
+        {
+            // No cancellation here: recovery is best-effort and should keep looping.
+            try
+            {
+                lock (alLock)
+                {
+                    if (sourceId >= 0)
+                    {
+                        try
+                        {
+                            AL.SourceStop(sourceId);
+                        }
+                        catch
+                        {
+                        }
+
+                        try
+                        {
+                            int queued;
+                            AL.GetSource(sourceId, ALGetSourcei.BuffersQueued, out queued);
+                            if (queued > 0)
+                            {
+                                var unqueued = AL.SourceUnqueueBuffers(sourceId, queued);
+                                if (unqueued != null && unqueued.Length > 0)
+                                {
+                                    AL.DeleteBuffers(unqueued);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        try
+                        {
+                            AL.DeleteSource(sourceId);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    sourceId = -1;
+                }
+            }
+            catch
+            {
+                try
+                {
+                    sourceId = -1;
+                }
+                catch
+                {
+                }
+            }
+
+            try
+            {
+                EnsureSource();
+            }
+            catch
+            {
+            }
         }
 
         private void UpdateGainFromSettings(bool force = false)
@@ -594,7 +668,7 @@ namespace VsQuest
                 while (!token.IsCancellationRequested)
                 {
                     // If the requested track has changed, stop looping
-                    if (!string.Equals(currentUrl ?? "", url ?? "", StringComparison.OrdinalIgnoreCase))
+                    if (!stopPending && !string.Equals(currentUrl ?? "", url ?? "", StringComparison.OrdinalIgnoreCase))
                     {
                         break;
                     }
@@ -680,31 +754,49 @@ namespace VsQuest
                         }
                     }
 
-                    lock (alLock)
+                    bool reachedEnd = false;
+
+                    try
                     {
-                        if (sourceId >= 0)
+                        lock (alLock)
                         {
-                            AL.SourcePlay(sourceId);
+                            if (sourceId >= 0)
+                            {
+                                AL.SourcePlay(sourceId);
+                            }
                         }
                     }
-
-                    bool reachedEnd = false;
+                    catch
+                    {
+                        RecreateSourceForRecovery();
+                        reachedEnd = false;
+                        continue;
+                    }
                     while (!token.IsCancellationRequested)
                     {
                         // If the requested track has changed, stop looping
-                        if (!string.Equals(currentUrl ?? "", url ?? "", StringComparison.OrdinalIgnoreCase))
+                        if (!stopPending && !string.Equals(currentUrl ?? "", url ?? "", StringComparison.OrdinalIgnoreCase))
                         {
                             return;
                         }
 
                         int processed;
-                        lock (alLock)
+                        try
                         {
-                            processed = 0;
-                            if (sourceId >= 0)
+                            lock (alLock)
                             {
-                                AL.GetSource(sourceId, ALGetSourcei.BuffersProcessed, out processed);
+                                processed = 0;
+                                if (sourceId >= 0)
+                                {
+                                    AL.GetSource(sourceId, ALGetSourcei.BuffersProcessed, out processed);
+                                }
                             }
+                        }
+                        catch
+                        {
+                            RecreateSourceForRecovery();
+                            reachedEnd = false;
+                            break;
                         }
 
                         if (processed > 0)
@@ -760,35 +852,62 @@ namespace VsQuest
 
                         // keep playing if starved
                         int state;
-                        lock (alLock)
+                        try
                         {
-                            state = (int)ALSourceState.Stopped;
-                            if (sourceId >= 0)
+                            lock (alLock)
                             {
-                                AL.GetSource(sourceId, ALGetSourcei.SourceState, out state);
+                                state = (int)ALSourceState.Stopped;
+                                if (sourceId >= 0)
+                                {
+                                    AL.GetSource(sourceId, ALGetSourcei.SourceState, out state);
+                                }
                             }
+                        }
+                        catch
+                        {
+                            RecreateSourceForRecovery();
+                            reachedEnd = false;
+                            break;
                         }
 
                         if ((ALSourceState)state != ALSourceState.Playing)
                         {
                             int queued;
-                            lock (alLock)
+                            try
                             {
-                                queued = 0;
-                                if (sourceId >= 0)
+                                lock (alLock)
                                 {
-                                    AL.GetSource(sourceId, ALGetSourcei.BuffersQueued, out queued);
+                                    queued = 0;
+                                    if (sourceId >= 0)
+                                    {
+                                        AL.GetSource(sourceId, ALGetSourcei.BuffersQueued, out queued);
+                                    }
                                 }
+                            }
+                            catch
+                            {
+                                RecreateSourceForRecovery();
+                                reachedEnd = false;
+                                break;
                             }
 
                             if (queued > 0)
                             {
-                                lock (alLock)
+                                try
                                 {
-                                    if (sourceId >= 0)
+                                    lock (alLock)
                                     {
-                                        AL.SourcePlay(sourceId);
+                                        if (sourceId >= 0)
+                                        {
+                                            AL.SourcePlay(sourceId);
+                                        }
                                     }
+                                }
+                                catch
+                                {
+                                    RecreateSourceForRecovery();
+                                    reachedEnd = false;
+                                    break;
                                 }
                             }
                             else

@@ -32,7 +32,7 @@
       { "code": "floatupwhenstuck", "onlyWhenDead": true },
       { "code": "interpolateposition" },
       { "code": "boss", "bossHpBarRange": 60 },
-      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2_reborn", "range": 80, "combatTimeoutMs": 12000, "requireRecentDamage": false, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2_reborn", "range": 80, "startRange": 35, "combatTimeoutMs": 12000, "requireRecentDamage": true, "startOnTarget": true, "playInIdle": false, "fadeOutSeconds": 2, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
       { "code": "bossnametag", "nameLangKey": "item-creature-ossuarywarden-reborn", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
     ],
     "animations": [
@@ -55,6 +55,7 @@
       { "code": "health", "currenthealth": 270, "maxhealth": 270 },
       { "code": "bossrebirth2", "isFinalStage": true },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
+      { "code": "bosshastargetsync" },
       { "code": "questtarget", "targetId": "albase:bosshunt:ossuarywarden", "leashRange": 80, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
       {
         "code": "emotionstates",

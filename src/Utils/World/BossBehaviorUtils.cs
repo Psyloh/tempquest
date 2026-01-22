@@ -9,6 +9,26 @@ namespace VsQuest
 {
     public static class BossBehaviorUtils
     {
+        public const string HasTargetKey = "alegacyvsquest:boss:hasTarget";
+
+        public static void SetWatchedBoolDirty(Entity entity, string key, bool value)
+        {
+            try
+            {
+                var wa = entity?.WatchedAttributes;
+                if (wa == null) return;
+
+                bool prev = wa.GetBool(key, false);
+                if (prev == value) return;
+
+                wa.SetBool(key, value);
+                wa.MarkPathDirty(key);
+            }
+            catch
+            {
+            }
+        }
+
         public static bool TryGetHealthFraction(Entity entity, out float fraction)
         {
             fraction = 1f;

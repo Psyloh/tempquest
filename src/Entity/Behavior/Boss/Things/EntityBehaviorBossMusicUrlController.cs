@@ -13,8 +13,12 @@ namespace VsQuest
         private float startRange;
         private int combatTimeoutMs;
         private bool requireRecentDamage;
+        private bool playInIdle;
+        private bool startOnTarget;
         private bool usePhases;
         private bool phaseSwitching;
+
+        private float fadeOutSeconds;
 
         private float startAtSeconds;
 
@@ -57,8 +61,13 @@ namespace VsQuest
             startRange = attributes?["startRange"].AsFloat(0f) ?? 0f;
             combatTimeoutMs = attributes?["combatTimeoutMs"].AsInt(12000) ?? 12000;
             requireRecentDamage = attributes?["requireRecentDamage"].AsBool(true) ?? true;
+            playInIdle = attributes?["playInIdle"].AsBool(false) ?? false;
+            startOnTarget = attributes?["startOnTarget"].AsBool(false) ?? false;
             usePhases = attributes?["usePhases"].AsBool(true) ?? true;
             phaseSwitching = attributes?["phaseSwitching"].AsBool(true) ?? true;
+
+            fadeOutSeconds = attributes?["fadeOutSeconds"].AsFloat(4f) ?? 4f;
+            if (fadeOutSeconds < 0f) fadeOutSeconds = 0f;
 
             startAtSeconds = attributes?["startAtSeconds"].AsFloat(0f) ?? 0f;
             if (startAtSeconds < 0f) startAtSeconds = 0f;
@@ -94,7 +103,7 @@ namespace VsQuest
             if (combatTimeoutMs < 0) combatTimeoutMs = 0;
         }
 
-        private const float DeathFadeOutSeconds = 4f;
+        private const float DeathFadeOutSeconds = 2f;
 
         public override void OnGameTick(float dt)
         {
@@ -102,14 +111,14 @@ namespace VsQuest
 
             if (capi == null || entity == null || !entity.Alive)
             {
-                ApplyShouldPlay(false, DeathFadeOutSeconds);
+                ApplyShouldPlay(false, fadeOutSeconds > 0f ? fadeOutSeconds : DeathFadeOutSeconds);
                 return;
             }
 
             var player = capi.World?.Player?.Entity;
             if (player == null || !player.Alive)
             {
-                ApplyShouldPlay(false);
+                ApplyShouldPlay(false, fadeOutSeconds);
                 return;
             }
 
@@ -133,7 +142,7 @@ namespace VsQuest
 
                 if (now - outOfRangeSinceMs >= OutOfRangeStopDelayMs)
                 {
-                    ApplyShouldPlay(false);
+                    ApplyShouldPlay(false, fadeOutSeconds);
                 }
                 return;
             }
@@ -160,15 +169,28 @@ namespace VsQuest
 
             bool hasTrigger = lastDamageMs > 0;
             bool inStartRange = startRange > 0f ? distanceToPlayer <= startRange : inRange;
-            bool startTrigger = hasTrigger || !requireRecentDamage || inStartRange;
+
+            bool aiHasTarget = false;
+            try
+            {
+                aiHasTarget = entity?.WatchedAttributes?.GetBool(BossBehaviorUtils.HasTargetKey, false) ?? false;
+            }
+            catch
+            {
+                aiHasTarget = false;
+            }
+
+            bool targetTrigger = startOnTarget && (aiHasTarget || (startRange > 0f && inStartRange));
+
+            bool startTrigger = hasTrigger || !requireRecentDamage || (playInIdle && inStartRange) || targetTrigger;
             if (!hasPlayedOnce && !startTrigger)
             {
-                ApplyShouldPlay(false);
+                ApplyShouldPlay(false, fadeOutSeconds);
                 return;
             }
 
             bool inCombat = true;
-            if (requireRecentDamage)
+            if (!playInIdle && requireRecentDamage && !targetTrigger)
             {
                 if (!hasTrigger)
                 {
@@ -182,12 +204,22 @@ namespace VsQuest
                 }
             }
 
+            if (playInIdle)
+            {
+                inCombat = true;
+            }
+
+            if (targetTrigger)
+            {
+                inCombat = true;
+            }
+
             ApplyShouldPlay(inCombat);
         }
 
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
-            ApplyShouldPlay(false);
+            ApplyShouldPlay(false, fadeOutSeconds);
             base.OnEntityDespawn(despawn);
         }
 
@@ -208,8 +240,10 @@ namespace VsQuest
                         hasPlayedOnce = true;
                     }
 
+                    bool playbackStopped = sys.IsActive && !sys.IsPlaybackRunning;
+
                     long now = Environment.TickCount64;
-                    bool allowResolve = !lastShouldPlay || phaseSwitching;
+                    bool allowResolve = !lastShouldPlay || phaseSwitching || playbackStopped;
                     if (allowResolve && (!lastShouldPlay || now - lastResolveMs >= ResolveThrottleMs))
                     {
                         lastResolveMs = now;
@@ -219,8 +253,6 @@ namespace VsQuest
 
                         bool changed = !string.Equals(lastResolvedUrl ?? "", url ?? "", StringComparison.OrdinalIgnoreCase)
                                        || Math.Abs(lastResolvedOffset - offset) > 0.01f;
-
-                        bool playbackStopped = sys.IsActive && !sys.IsPlaybackRunning;
 
                         if (!lastShouldPlay || changed || playbackStopped)
                         {

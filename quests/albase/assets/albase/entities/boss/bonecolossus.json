@@ -40,7 +40,7 @@
         ]
       },
       { "code": "boss", "bossHpBarRange": 70 },
-      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_1", "range": 80, "combatTimeoutMs": 12000, "requireRecentDamage": false, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_1", "range": 80, "startRange": 35, "combatTimeoutMs": 12000, "requireRecentDamage": true, "startOnTarget": true, "playInIdle": false, "fadeOutSeconds": 2, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
       { "code": "bossnametag", "nameLangKey": "item-creature-bonecolossus", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 100 }
     ],
     "animations": [
@@ -58,6 +58,7 @@
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "health", "currenthealth": 370, "maxhealth": 370 },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
+      { "code": "bosshastargetsync" },
       { "code": "questtarget", "targetId": "albase:bosshunt:bonecolossus", "leashRange": 120, "returnMoveSpeed": 0.075, "leashCheckMs": 1000 },
       {
         "code": "emotionstates",

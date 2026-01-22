@@ -16,6 +16,7 @@ namespace VsQuest
         private ICoreServerAPI sapi;
         private ICoreClientAPI capi;
         private QuestSystem questSystem;
+
         private IClientNetworkChannel clientChannel;
         private IServerNetworkChannel serverChannel;
 
