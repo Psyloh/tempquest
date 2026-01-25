@@ -102,13 +102,7 @@ namespace VsQuest
 
             if (attributeName == AttrHungerRate) return value;
 
-            // Debuffs should not scale with item condition/durability.
-            // Only positive bonuses are reduced when the item is in poor condition.
-            if (value < 0f) return value;
-
-            float mult = GetConditionMultiplier(stack);
-            mult = GameMath.Clamp(mult, 0.3f, 1f);
-            return value * mult;
+            return value;
         }
 
         public static string GetDisplayName(string shortKey)
@@ -291,29 +285,6 @@ namespace VsQuest
                 foreach (var attr in actionItem.attributes)
                 {
                     stack.Attributes.SetFloat(GetKey(attr.Key), attr.Value);
-                }
-            }
-
-            // Vanilla wearables often spawn with a randomized condition. Action items are created via new ItemStack(),
-            // so we initialize a reasonable condition value once to keep vanilla tooltip lines consistent.
-            if (stack.Collectible != null && stack.Attributes != null && !stack.Attributes.HasAttribute("condition"))
-            {
-                int maxDurability = stack.Collectible.GetMaxDurability(stack);
-                if (maxDurability > 0 || stack.Collectible is Vintagestory.GameContent.ItemWearable)
-                {
-                    // Similar to vanilla: spawn with a non-pristine but usable condition.
-                    uint h = unchecked((uint)stack.Id);
-                    unchecked
-                    {
-                        h ^= (h >> 16);
-                        h *= 0x7feb352d;
-                        h ^= (h >> 15);
-                        h *= 0x846ca68b;
-                        h ^= (h >> 16);
-                    }
-                    float rnd01 = h / (float)uint.MaxValue;
-                    float condition = 0.7f + rnd01 * 0.3f;
-                    stack.Attributes.SetFloat("condition", GameMath.Clamp(condition, 0.7f, 1f));
                 }
             }
 

@@ -62,10 +62,6 @@ namespace VsQuest
                     {
                         foreach (var actionItem in asset.Value.actionItems)
                         {
-                            if (actionItem?.id != null && actionItem.id.StartsWith("albase:", StringComparison.OrdinalIgnoreCase))
-                            {
-                                continue;
-                            }
                             ActionItemRegistry[actionItem.id] = actionItem;
                         }
                     }
