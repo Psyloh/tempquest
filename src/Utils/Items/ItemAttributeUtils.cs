@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.MathTools;
 using Newtonsoft.Json;
+using Vintagestory.API.Datastructures;
 
 namespace VsQuest
 {
@@ -13,6 +15,8 @@ namespace VsQuest
         public const string ActionItemIdKey = "alegacyvsquest:actionitemid";
         public const string ActionItemSourceQuestKey = "alegacyvsquest:sourcequest";
         public const string ActionItemDefaultSourceQuestId = "item-action";
+        public const string ActionItemModesKey = "alegacyvsquest:modes";
+        public const string ActionItemModeIndexKey = "alegacyvsquest:mode";
         public const string ActionItemTriggerOnInvAddKey = "alegacyvsquest:triggerOnInvAdd";
         public const string ActionItemBlockMoveKey = "alegacyvsquest:blockMove";     // restrict movement (hotbar-only)
         public const string ActionItemBlockEquipKey = "alegacyvsquest:blockEquip";   // restrict equipping (character slots)
@@ -34,6 +38,18 @@ namespace VsQuest
         public const string AttrHealingEffectiveness = "healingeffectiveness";
         public const string AttrRangedAccuracy = "rangedaccuracy";
         public const string AttrRangedSpeed = "rangedchargspeed";
+        public const string AttrMiningSpeedMult = "miningspeedmult";
+        public const string AttrFallDamageMult = "falldamagemult";
+        public const string AttrTemporalDrainMult = "temporaldrainmult";
+        public const string AttrJumpHeightMul = "jumpheightmul";
+        public const string AttrKnockbackMult = "knockbackmult";
+        public const string AttrMeleeAttackSpeed = "meleeattackspeed";
+        public const string AttrMaxHealthFlat = "maxhealthflat";
+        public const string AttrMaxOxygen = "maxoxygen";
+        public const string AttrStealth = "stealth";
+        public const string AttrSecondChanceCharges = "secondchancecharges";
+        public const string AttrWeightLimit = "weightlimit";
+        public const string AttrViewDistance = "viewdistance";
 
         public static string GetKey(string attributeName)
         {
@@ -51,6 +67,39 @@ namespace VsQuest
             }
 
             return defaultValue;
+        }
+
+        public static float GetConditionMultiplier(ItemStack stack)
+        {
+            if (stack?.Collectible == null) return 1f;
+
+            const float FullEffectUntil = 0.6f;
+
+            if (stack.Attributes != null && stack.Attributes.HasAttribute("condition"))
+            {
+                float condition = GameMath.Clamp(stack.Attributes.GetFloat("condition", 1f), 0f, 1f);
+                if (condition >= FullEffectUntil) return 1f;
+                return FullEffectUntil <= 0f ? 0f : GameMath.Clamp(condition / FullEffectUntil, 0f, 1f);
+            }
+
+            int maxDurability = stack.Collectible.GetMaxDurability(stack);
+            if (maxDurability > 0)
+            {
+                int remaining = stack.Collectible.GetRemainingDurability(stack);
+                float condition = GameMath.Clamp(remaining / (float)maxDurability, 0f, 1f);
+                if (condition >= FullEffectUntil) return 1f;
+                return FullEffectUntil <= 0f ? 0f : GameMath.Clamp(condition / FullEffectUntil, 0f, 1f);
+            }
+
+            return 1f;
+        }
+
+        public static float GetAttributeFloatScaled(ItemStack stack, string attributeName, float defaultValue = 0f)
+        {
+            float value = GetAttributeFloat(stack, attributeName, defaultValue);
+            if (value == 0f || stack == null) return value;
+
+            return value * GetConditionMultiplier(stack);
         }
 
         public static string GetDisplayName(string shortKey)
@@ -74,7 +123,11 @@ namespace VsQuest
 
             if (shortKey == AttrProtectionPerc || shortKey == AttrWalkSpeed ||
                 shortKey == AttrHungerRate || shortKey == AttrHealingEffectiveness ||
-                shortKey == AttrRangedAccuracy || shortKey == AttrRangedSpeed)
+                shortKey == AttrRangedAccuracy || shortKey == AttrRangedSpeed ||
+                shortKey == AttrMiningSpeedMult || shortKey == AttrFallDamageMult ||
+                shortKey == AttrTemporalDrainMult || shortKey == AttrJumpHeightMul ||
+                shortKey == AttrKnockbackMult || shortKey == AttrMeleeAttackSpeed || shortKey == AttrWeightLimit ||
+                shortKey == AttrViewDistance)
             {
                 return $"{displayName}: {prefix}{value * 100:0.#}%";
             }
@@ -89,6 +142,18 @@ namespace VsQuest
             else if (shortKey == AttrProtection)
             {
                 return $"{displayName}: {prefix}{value:0.#} dmg";
+            }
+            else if (shortKey == AttrSecondChanceCharges)
+            {
+                return $"{displayName}: {value:0.#}";
+            }
+            else if (shortKey == AttrMaxHealthFlat)
+            {
+                return $"{displayName}: {prefix}{value:0.#} hp";
+            }
+            else if (shortKey == AttrMaxOxygen)
+            {
+                return $"{displayName}: {prefix}{value:0.#}";
             }
 
             return $"{displayName}: {prefix}{value:0.##}";
@@ -150,7 +215,10 @@ namespace VsQuest
         {
             if (stack == null || actionItem == null) return;
 
-            if (stack.Attributes == null) return;
+            if (stack.Attributes == null)
+            {
+                stack.Attributes = new TreeAttribute();
+            }
 
             if (!string.IsNullOrWhiteSpace(actionItem.name))
             {
@@ -166,6 +234,12 @@ namespace VsQuest
             if (!string.IsNullOrWhiteSpace(actionItem.id))
             {
                 stack.Attributes.SetString(ActionItemIdKey, actionItem.id);
+            }
+
+            if (actionItem.modes != null && actionItem.modes.Count > 0)
+            {
+                stack.Attributes.SetString(ActionItemModesKey, JsonConvert.SerializeObject(actionItem.modes));
+                stack.Attributes.SetInt(ActionItemModeIndexKey, 0);
             }
 
             if (!string.IsNullOrWhiteSpace(actionItem.sourceQuestId))

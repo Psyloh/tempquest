@@ -13,9 +13,9 @@
     {
       "id": "randomkill",
       "args": [
-        "5",
-        "5",
-        "9",
+        "6",
+        "3",
+        "7",
         "albase:bosshunt-intro-randomkill-notify",
         "playsound 'albase:sounds/priest_target' 0.25",
         "playsound 'sounds/tutorialstepsuccess' 0.7",
@@ -35,7 +35,7 @@
         "bowtorn-tainted",
         "bowtorn-corrupt",
         "bowtorn-nightmare",
-        "subduction-maw",
+        "bowtorn-gearfoot",
         "locust-bronze",
         "locust-corrupt"
       ]

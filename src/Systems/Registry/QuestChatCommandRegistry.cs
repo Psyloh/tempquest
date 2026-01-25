@@ -47,6 +47,8 @@ namespace VsQuest
             var questForgiveActiveAliasHandler = new QuestForgiveAliasCommandHandler(sapi, questSystem, "active");
             var questForgiveAllAliasHandler = new QuestForgiveAliasCommandHandler(sapi, questSystem, "all");
 
+            var actionItemDurabilityHandler = new ActionItemDurabilityCommandHandler();
+
             sapi.ChatCommands.GetOrCreate("vsq")
                 .WithDescription("Quest administration commands")
                 .RequiresPrivilege(Privilege.give)
@@ -242,6 +244,21 @@ namespace VsQuest
                         .WithDescription("Shows the current bosshunt target and time until rotation.")
                         .RequiresPrivilege(Privilege.give)
                         .HandleWith(bossHuntStatusHandler.Handle)
+                    .EndSubCommand()
+                .EndSubCommand()
+                .BeginSubCommand("ai")
+                    .WithDescription("Action item durability tools")
+                    .RequiresPrivilege(Privilege.give)
+                    .BeginSubCommand("repair")
+                        .WithDescription("Repair held item to max durability.")
+                        .RequiresPrivilege(Privilege.give)
+                        .HandleWith(actionItemDurabilityHandler.Repair)
+                    .EndSubCommand()
+                    .BeginSubCommand("destruct")
+                        .WithDescription("Damage held item by a value.")
+                        .RequiresPrivilege(Privilege.give)
+                        .WithArgs(sapi.ChatCommands.Parsers.Int("amount"))
+                        .HandleWith(actionItemDurabilityHandler.Destruct)
                     .EndSubCommand()
                 .EndSubCommand()
                 ;

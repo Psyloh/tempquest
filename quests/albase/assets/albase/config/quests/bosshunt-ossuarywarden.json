@@ -59,19 +59,13 @@
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-ossuarywarden"
+        "albase:bosshunt-reward-miner-belt"
       ]
     },
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-ossuarywarden-chain"
-      ]
-    },
-    {
-      "id": "questitem",
-      "args": [
-        "albase:bosshunt-reward-ossuarywarden-signet"
+        "albase:bosshunt-reward-bloodthirsty"
       ]
     },
     {

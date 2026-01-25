@@ -17,7 +17,10 @@
 	"dialogue-waystone-humanoid-waveexplained5": "!!!",
 	"dialogue-waystone-humanoid-changeclass": "I want to change my class.",
 	"item-creature-debugger": "Debugger",
-	"vsquestdebugging:test-inventory-title": "Test: Inventory",
+	"item-creature-breathbreaker": "Breathbreaker",
+	"item-creature-breathbreaker-shiver": "Breathbreaker",
+	
+    "vsquestdebugging:test-inventory-title": "Test: Inventory",
 	"vsquestdebugging:test-inventory-desc": "Combined test: plantflowers + hasitem + wearing + hasattribute + checkvariable + inland.",
 	"vsquestdebugging:test-inventory-obj-flowers": "Place a flower nearby: {0}/{1}",
 	"vsquestdebugging:test-inventory-obj-inland": "Enter land claim TestClaim: {0}",
@@ -28,6 +31,12 @@
 	"vsquestdebugging:test-movement-gates-desc": "Combined test: reachwaypoint + walkdistance + timeofday gate + sequence.",
 	"vsquestdebugging:test-movement-gates-obj-seq": "Sequence (stick + walk): {0}/{1}",
 	"vsquestdebugging:test-movement-gates-obj-walk": "Run during day: {0}/{1} m",
+	
+	"vsquestdebugging:bosshunt-breathbreaker-title": "Debug: Breathbreaker",
+	"vsquestdebugging:bosshunt-breathbreaker-journal-text": "Target: Breathbreaker.\n\nIt reels you in and chokes your breath. When it shifts forms it gets faster.\n\nDebug objective — verify the fight and form swap.",
+	"vsquestdebugging:bosshunt-breathbreaker-reward-journal-text": "Breathbreaker defeated. Debug complete.",
+	"vsquestdebugging:bosshunt-breathbreaker-reward": "Breathbreaker defeated.",
+	
 	"vsquestdebugging:test-walkdistance-title": "Test: WalkDistance",
 	"vsquestdebugging:test-walkdistance-desc": "Objective test: walkdistance.\n\nComplete all steps (separate slots): 10m, 25m, 50m.",
 	"vsquestdebugging:test-walkdistance-obj-walk10": "Walk 10m: {0}/{1} m",

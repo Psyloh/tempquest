@@ -1,0 +1,46 @@
+{
+  "id": "vsquestdebugging:bosshunt-breathbreaker",
+  "cooldown": 0,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "game:sounds/effect/writing",
+        "0.5"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "vsquestdebugging:bosshunt",
+        "vsquestdebugging:bosshunt-breathbreaker",
+        "vsquestdebugging:bosshunt-breathbreaker-title",
+        "vsquestdebugging:bosshunt-breathbreaker-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "killactiontarget",
+      "objectiveId": "breathbreaker",
+      "onCompleteActions": "addjournalentry vsquestdebugging:bosshunt vsquestdebugging:bosshunt-breathbreaker vsquestdebugging:bosshunt-breathbreaker-title overwrite vsquestdebugging:bosshunt-breathbreaker-reward-journal-text",
+      "args": [
+        "vsquestdebugging:bosshunt-breathbreaker",
+        "breathbreaker",
+        "vsquestdebugging:bosshunt:breathbreaker",
+        "1"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [],
+  "actionRewards": [
+    {
+      "id": "notify",
+      "args": [
+        "vsquestdebugging:bosshunt-breathbreaker-reward"
+      ]
+    }
+  ]
+}

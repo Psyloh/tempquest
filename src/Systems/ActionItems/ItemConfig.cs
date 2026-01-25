@@ -15,6 +15,7 @@ namespace VsQuest
         public string name { get; set; }
         public string description { get; set; }
         public List<ItemAction> actions { get; set; } = new List<ItemAction>();
+        public List<ActionItemMode> modes { get; set; } = new List<ActionItemMode>();
         public string sourceQuestId { get; set; }
         public bool triggerOnInventoryAdd { get; set; } = false;
         // blockMove: restrict movement (hotbar-only). blockEquip: forbid equipping into character slots.
@@ -44,6 +45,14 @@ namespace VsQuest
         /// - "modsource" : Hides which mod the item is from
         /// If empty, ALL vanilla tooltips are shown (re-implemented logic).
         public List<string> hideVanillaTooltips { get; set; } = new List<string>();
+    }
+
+    public class ActionItemMode
+    {
+        public string id { get; set; }
+        public string name { get; set; }
+        public string icon { get; set; }
+        public List<ItemAction> actions { get; set; } = new List<ItemAction>();
     }
 
     public class ItemAction

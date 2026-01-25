@@ -1,5 +1,5 @@
 {
-  "id": "albase:bosshunt-bonecolossus",
+  "id": "albase:bosshunt-breathbreaker",
   "cooldown": 90,
   "perPlayer": true,
   "predecessor": "albase:bosshunt-intro",
@@ -14,16 +14,16 @@
     {
       "id": "preloadbossmusic",
       "args": [
-        "https://drive.google.com/uc?export=download&id=1SbLjPIKI4hIDmilOupbbha2iyesbhTRy"
+        "https://drive.google.com/uc?export=download&id=1Swpv0Jqsed7VFyCRefr7eglVLM1mfyKG"
       ]
     },
     {
       "id": "addjournalentry",
       "args": [
         "albase:bosshunt",
-        "albase:bosshunt-bonecolossus",
-        "albase:bosshunt-bonecolossus-title",
-        "albase:bosshunt-bonecolossus-journal-text"
+        "albase:bosshunt-breathbreaker",
+        "albase:bosshunt-breathbreaker-title",
+        "albase:bosshunt-breathbreaker-journal-text"
       ]
     },
     {
@@ -42,12 +42,12 @@
   "actionObjectives": [
     {
       "id": "killactiontarget",
-      "objectiveId": "bonecolossus",
-      "onCompleteActions": "addjournalentry albase:bosshunt albase:bosshunt-bonecolossus albase:bosshunt-bonecolossus-title overwrite albase:bosshunt-bonecolossus-reward-journal-text",
+      "objectiveId": "breathbreaker",
+      "onCompleteActions": "addjournalentry albase:bosshunt albase:bosshunt-breathbreaker albase:bosshunt-breathbreaker-title overwrite albase:bosshunt-breathbreaker-reward-journal-text",
       "args": [
-        "albase:bosshunt-bonecolossus",
-        "bonecolossus",
-        "albase:bosshunt:bonecolossus",
+        "albase:bosshunt-breathbreaker",
+        "breathbreaker",
+        "albase:bosshunt:breathbreaker",
         "1"
       ]
     }
@@ -58,13 +58,13 @@
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-sea-spirit"
+        "albase:bosshunt-reward-miner-belt"
       ]
     },
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-life-amulet"
+        "albase:bosshunt-reward-fox-boots"
       ]
     },
     {
@@ -78,7 +78,7 @@
     {
       "id": "notify",
       "args": [
-        "albase:bosshunt-bonecolossus-reward"
+        "albase:bosshunt-breathbreaker-reward"
       ]
     }
   ]

@@ -1,6 +1,8 @@
 {
   "item-creature-questgiver": "Questgiver",
   "item-creature-debugger": "Отладчик",
+  "item-creature-breathbreaker": "Пожиратель Дыхания",
+  "item-creature-breathbreaker-shiver": "Пожиратель Дыхания",
 
   "vsquestdebugging:test-title": "Test",
   "vsquestdebugging:test-desc": "Сборный тест",
@@ -18,6 +20,11 @@
   "vsquestdebugging:test-movement-gates-desc": "Сборный тест: reachwaypoint + walkdistance + timeofday (гейт на walkdistance) + sequence.",
   "vsquestdebugging:test-movement-gates-obj-seq": "Последовательность (палка + пробежка): {0}/{1}",
   "vsquestdebugging:test-movement-gates-obj-walk": "Пробежать днём: {0}/{1} м",
+
+  "vsquestdebugging:bosshunt-breathbreaker-title": "Debug: Пожиратель Дыхания",
+  "vsquestdebugging:bosshunt-breathbreaker-journal-text": "Цель: Пожиратель Дыхания.\n\nОн тянет к себе и сбивает дыхание. При смене формы становится быстрее.\n\nЗадача отладочная — проверь бой и смену форм.",
+  "vsquestdebugging:bosshunt-breathbreaker-reward-journal-text": "Пожиратель Дыхания повержен. Отладка завершена.",
+  "vsquestdebugging:bosshunt-breathbreaker-reward": "Пожиратель Дыхания повержен.",
 
   "vsquestdebugging:test-walkdistance-title": "Test: WalkDistance",
   "vsquestdebugging:test-walkdistance-desc": "Проверка цели walkdistance.\n\nСделай все шаги (разные слоты): 10м, 25м, 50м.",

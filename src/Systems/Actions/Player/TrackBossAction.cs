@@ -10,7 +10,6 @@ namespace VsQuest
 {
     public class TrackBossAction : IQuestAction
     {
-        private const double CooldownHours = 1.0 / 60.0; // 1 minute
         private const float HpCost = 3f;
 
         public void Execute(ICoreServerAPI sapi, QuestMessage message, IServerPlayer byPlayer, string[] args)
@@ -27,14 +26,20 @@ namespace VsQuest
             var healthBh = playerEntity.GetBehavior<EntityBehaviorHealth>();
             if (healthBh != null && healthBh.Health <= HpCost)
             {
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-not-enough-health"), EnumChatType.Notification);
+                sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                {
+                    Notification = Lang.Get("alegacyvsquest:trackboss-not-enough-health")
+                }, byPlayer);
                 return;
             }
 
             var bossSystem = sapi.ModLoader.GetModSystem<BossHuntSystem>();
             if (bossSystem == null)
             {
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-system-unavailable"), EnumChatType.Notification);
+                sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                {
+                    Notification = Lang.Get("alegacyvsquest:trackboss-system-unavailable")
+                }, byPlayer);
                 return;
             }
 
@@ -45,16 +50,10 @@ namespace VsQuest
 
             if (string.IsNullOrWhiteSpace(bossKey))
             {
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-no-active-target"), EnumChatType.Notification);
-                return;
-            }
-
-            string cooldownKey = $"alegacyvsquest:trackboss:cooldownUntil:{bossKey}";
-            double cooldownUntil = playerEntity.WatchedAttributes.GetDouble(cooldownKey, 0);
-            if (cooldownUntil > nowHours)
-            {
-                double remainingMinutes = Math.Max(1, Math.Ceiling((cooldownUntil - nowHours) * 60.0));
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-cooldown", remainingMinutes), EnumChatType.Notification);
+                sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                {
+                    Notification = Lang.Get("alegacyvsquest:trackboss-no-active-target")
+                }, byPlayer);
                 return;
             }
 
@@ -65,21 +64,30 @@ namespace VsQuest
                 bool isActive = active != null && active.Exists(q => q != null && string.Equals(q.questId, activeQuestId, StringComparison.OrdinalIgnoreCase));
                 if (!isActive)
                 {
-                    sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-only-during-hunt"), EnumChatType.Notification);
+                    sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                    {
+                        Notification = Lang.Get("alegacyvsquest:trackboss-only-during-hunt")
+                    }, byPlayer);
                     return;
                 }
             }
 
             if (!bossSystem.TryGetBossPosition(bossKey, out Vec3d bossPos, out int bossDim, out bool isLiveEntity))
             {
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-trail-not-found"), EnumChatType.Notification);
+                sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                {
+                    Notification = Lang.Get("alegacyvsquest:trackboss-trail-not-found")
+                }, byPlayer);
                 return;
             }
 
             int playerDim = playerEntity.ServerPos?.Dimension ?? 0;
             if (playerDim != bossDim)
             {
-                sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-different-dimension"), EnumChatType.Notification);
+                sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+                {
+                    Notification = Lang.Get("alegacyvsquest:trackboss-different-dimension")
+                }, byPlayer);
                 return;
             }
 
@@ -98,11 +106,11 @@ namespace VsQuest
                 IgnoreInvFrames = true
             }, HpCost);
 
-            playerEntity.WatchedAttributes.SetDouble(cooldownKey, nowHours + CooldownHours);
-            playerEntity.WatchedAttributes.MarkPathDirty(cooldownKey);
-
             string liveSuffix = isLiveEntity ? "" : Lang.Get("alegacyvsquest:trackboss-trail-suffix");
-            sapi.SendMessage(byPlayer, GlobalConstants.GeneralChatGroup, Lang.Get("alegacyvsquest:trackboss-distance", liveSuffix, dist), EnumChatType.Notification);
+            sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
+            {
+                Notification = Lang.Get("alegacyvsquest:trackboss-distance", liveSuffix, dist)
+            }, byPlayer);
         }
     }
 }

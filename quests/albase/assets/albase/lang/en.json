@@ -50,6 +50,8 @@
   "albase:no-quest-available-witness": "The witness has no work right now.",
 
   "albase:bosshunt-intro-title": "Wanderer: Prologue",
+  "albase:questland-bosshunt-enter": "Ossuary Grounds",
+  "albase:questland-bosshunt-exit": "You leave the Ossuary Grounds",
   "albase:bosshunt-intro-desc": "A grim wanderer offers you a path into the crypts. Prove you can follow a trail without flinching when the dark answers back.\n\nThe tracker crystal will not guide you—only whisper distance. Every whisper costs blood.",
   "albase:bosshunt-intro-journal-text": "A wanderer in the tavern spoke of ancient wardens and their shifting trails. He promised a crystal that can reveal the distance to the target—at a price.\n\nHe speaks calmly, but his stare feels like he has already watched you die—he is only measuring how long it will take.",
   "albase:bosshunt-intro-complete-journal": "The wanderer handed over the tracker crystal. It will reveal the distance to the target, but it takes a sliver of blood every time you demand an answer.\n\nFollow the marks and keep your head: you will find the prey. Make a mistake, and the crypts will find you.",

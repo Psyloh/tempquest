@@ -7,6 +7,7 @@ namespace VsQuest
 {
     public class EntityBehaviorBossMusicUrlController : EntityBehavior
     {
+        private const string QuestlandMusicAttributeKey = "alegacyvsquest:questlandmusic";
         private ICoreClientAPI capi;
 
         private float range;
@@ -137,6 +138,21 @@ namespace VsQuest
 
             if (!inRange)
             {
+                bool inQuestland = false;
+                try
+                {
+                    inQuestland = player?.WatchedAttributes?.HasAttribute(QuestlandMusicAttributeKey) == true;
+                }
+                catch
+                {
+                    inQuestland = false;
+                }
+
+                if (inQuestland)
+                {
+                    return;
+                }
+
                 long now = Environment.TickCount64;
                 if (outOfRangeSinceMs <= 0) outOfRangeSinceMs = now;
 

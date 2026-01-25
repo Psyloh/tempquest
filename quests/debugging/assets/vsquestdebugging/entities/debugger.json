@@ -61,6 +61,7 @@
           "vsquestdebugging:test-combat-events",
           "vsquestdebugging:debug-actions",
           "vsquestdebugging:test-walkdistance",
+          "vsquestdebugging:bosshunt-breathbreaker",
           "vsquestdebugging:debug-cooldownblock",
           "vsquestdebugging:quest-freeghost"
         ],

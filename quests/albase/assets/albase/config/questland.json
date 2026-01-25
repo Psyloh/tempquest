@@ -1,0 +1,9 @@
+{
+  "allowedQuestPrefixes": ["albase:bosshunt"],
+  "enterAction": "discover '{message}'; playsound sounds/effect/tempstab-drain 0.55; addplayerattribute alegacyvsquest:questlandmusic 1",
+  "exitAction": "discover '{message}'; playsound sounds/effect/tempstab-drain 0.35; removeplayerattribute alegacyvsquest:questlandmusic",
+  "defaultExitMessage": "albase:questland-bosshunt-exit",
+  "enterMessages": {
+    "BossHunt": "albase:questland-bosshunt-enter"
+  }
+}

@@ -58,19 +58,13 @@
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-ashenlurker"
+        "albase:bosshunt-reward-archer-gloves"
       ]
     },
     {
       "id": "questitem",
       "args": [
-        "albase:bosshunt-reward-ashenlurker-veil"
-      ]
-    },
-    {
-      "id": "questitem",
-      "args": [
-        "albase:bosshunt-reward-ashenlurker-lens"
+        "albase:bosshunt-reward-fox-boots"
       ]
     },
     {

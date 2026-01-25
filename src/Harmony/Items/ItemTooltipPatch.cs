@@ -196,7 +196,8 @@ namespace VsQuest.Harmony
                     if (!showAttrs.Contains(shortKey)) continue;
 
                     float value = attrs.GetFloat(kvp.Key, 0f);
-                    if (value != 0f)
+                    bool showZero = shortKey == ItemAttributeUtils.AttrSecondChanceCharges;
+                    if (value != 0f || showZero)
                     {
                         string lineToAdd = ItemAttributeUtils.FormatAttributeForTooltip(kvp.Key, value);
                         if (!currentDsc.Contains(lineToAdd))

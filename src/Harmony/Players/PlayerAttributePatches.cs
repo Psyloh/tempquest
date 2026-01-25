@@ -2,12 +2,21 @@ using System;
 using HarmonyLib;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using VsQuest;
 
 namespace VsQuest.Harmony
 {
     public class PlayerAttributePatches
     {
+        private const string SecondChanceDebuffUntilKey = "alegacyvsquest:secondchance:debuffuntil";
+        private const string SecondChanceDebuffStatKey = "alegacyvsquest:secondchance:debuff";
+
+        private const float SecondChanceDebuffWalkspeed = -0.2f;
+        private const float SecondChanceDebuffHungerRate = 0.4f;
+        private const float SecondChanceDebuffHealing = -0.3f;
+
         [HarmonyPatch(typeof(ModSystemWearableStats), "handleDamaged")]
         public class ModSystemWearableStats_handleDamaged_PlayerAttributes_Patch
         {
@@ -30,6 +39,138 @@ namespace VsQuest.Harmony
             }
         }
 
+        [HarmonyPatch(typeof(EntityBehaviorHealth), "OnEntityReceiveDamage")]
+        public class EntityBehaviorHealth_OnEntityReceiveDamage_SecondChance_Patch
+        {
+            public static void Prefix(EntityBehaviorHealth __instance, DamageSource damageSource, ref float damage)
+            {
+                if (damageSource?.Type == EnumDamageType.Heal) return;
+                if (__instance?.entity is not EntityPlayer player) return;
+                if (player.World?.Side == EnumAppSide.Client) return;
+                if (player.Player?.InventoryManager == null) return;
+                if (damage <= 0f) return;
+
+                float health = __instance.Health;
+                if (health - damage > 0f) return;
+
+                if (!TryGetSecondChanceSlot(player, out var slot)) return;
+
+                float charges = GetSecondChanceCharges(slot.Itemstack);
+                if (charges < 1f) return;
+
+                float targetHealth = Math.Max(0.1f, __instance.MaxHealth * 0.7f);
+                __instance.Health = Math.Max(targetHealth, __instance.Health);
+                damage = 0f;
+
+                SetSecondChanceCharges(slot.Itemstack, charges - 1f);
+                slot.MarkDirty();
+
+                ApplySecondChanceDebuff(player);
+            }
+        }
+
+        [HarmonyPatch(typeof(EntityBehaviorHealth), "OnEntityDeath")]
+        public class EntityBehaviorHealth_OnEntityDeath_SecondChanceReset_Patch
+        {
+            public static void Prefix(EntityBehaviorHealth __instance, DamageSource damageSourceForDeath)
+            {
+                if (__instance?.entity is not EntityPlayer player) return;
+                if (player.Player?.InventoryManager == null) return;
+
+                if (!TryGetSecondChanceSlot(player, out var slot)) return;
+                SetSecondChanceCharges(slot.Itemstack, 0f);
+                slot.MarkDirty();
+            }
+        }
+
+        [HarmonyPatch(typeof(EntityAgent), "OnGameTick")]
+        public class EntityAgent_OnGameTick_SecondChanceDebuff_Patch
+        {
+            public static void Prefix(EntityAgent __instance)
+            {
+                if (__instance is not EntityPlayer player) return;
+                if (player.World.Side == EnumAppSide.Client) return;
+                if (player.Stats == null) return;
+
+                double until = player.WatchedAttributes.GetDouble(SecondChanceDebuffUntilKey, 0);
+                if (until <= 0)
+                {
+                    ClearDebuff(player);
+                    return;
+                }
+
+                double nowHours = player.World.Calendar.TotalHours;
+                if (nowHours >= until)
+                {
+                    player.WatchedAttributes.SetDouble(SecondChanceDebuffUntilKey, 0);
+                    ClearDebuff(player);
+                    return;
+                }
+
+                ApplyDebuffStats(player);
+            }
+        }
+
+        private static bool TryGetSecondChanceSlot(EntityPlayer player, out ItemSlot slot)
+        {
+            slot = null;
+            var inv = player.Player?.InventoryManager?.GetOwnInventory("character");
+            if (inv == null) return false;
+
+            foreach (ItemSlot s in inv)
+            {
+                if (s?.Empty != false) continue;
+                var stack = s.Itemstack;
+                if (!ItemAttributeUtils.IsActionItem(stack)) continue;
+
+                string key = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrSecondChanceCharges);
+                if (stack.Attributes.HasAttribute(key))
+                {
+                    slot = s;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static float GetSecondChanceCharges(ItemStack stack)
+        {
+            if (stack?.Attributes == null) return 0f;
+            string key = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrSecondChanceCharges);
+            return stack.Attributes.GetFloat(key, 0f);
+        }
+
+        private static void SetSecondChanceCharges(ItemStack stack, float value)
+        {
+            if (stack?.Attributes == null) return;
+            string key = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrSecondChanceCharges);
+            stack.Attributes.SetFloat(key, Math.Clamp(value, 0f, 3f));
+        }
+
+        private static void ApplySecondChanceDebuff(EntityPlayer player)
+        {
+            double until = player.World.Calendar.TotalHours + (2d / 60d);
+            player.WatchedAttributes.SetDouble(SecondChanceDebuffUntilKey, until);
+            ApplyDebuffStats(player);
+        }
+
+        private static void ApplyDebuffStats(EntityPlayer player)
+        {
+            player.Stats.Set("walkspeed", SecondChanceDebuffStatKey, SecondChanceDebuffWalkspeed, true);
+            player.Stats.Set("hungerrate", SecondChanceDebuffStatKey, SecondChanceDebuffHungerRate, true);
+            player.Stats.Set("healingeffectivness", SecondChanceDebuffStatKey, SecondChanceDebuffHealing, true);
+            player.walkSpeed = player.Stats.GetBlended("walkspeed");
+        }
+
+        private static void ClearDebuff(EntityPlayer player)
+        {
+            player.Stats.Set("walkspeed", SecondChanceDebuffStatKey, 0f, true);
+            player.Stats.Set("hungerrate", SecondChanceDebuffStatKey, 0f, true);
+            player.Stats.Set("healingeffectivness", SecondChanceDebuffStatKey, 0f, true);
+            player.walkSpeed = player.Stats.GetBlended("walkspeed");
+        }
+
         [HarmonyPatch(typeof(EntityAgent), "ReceiveDamage")]
         public class EntityAgent_ReceiveDamage_PlayerAttackPower_Patch
         {
@@ -47,6 +188,36 @@ namespace VsQuest.Harmony
                                 damageSource.KnockbackStrength = 0f;
                             }
                             return;
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        var sourceEntity = damageSource.SourceEntity;
+                        var causeEntity = damageSource.GetCauseEntity() ?? sourceEntity;
+                        if (causeEntity is EntityPlayer attacker && attacker.Player?.InventoryManager != null)
+                        {
+                            var inv = attacker.Player.InventoryManager.GetOwnInventory("character");
+                            if (inv != null)
+                            {
+                                float knockbackBonus = 0f;
+                                foreach (ItemSlot slot in inv)
+                                {
+                                    if (!slot.Empty && slot.Itemstack?.Item is ItemWearable)
+                                    {
+                                        knockbackBonus += ItemAttributeUtils.GetAttributeFloatScaled(slot.Itemstack, ItemAttributeUtils.AttrKnockbackMult);
+                                    }
+                                }
+
+                                if (knockbackBonus != 0f && damageSource.KnockbackStrength > 0f)
+                                {
+                                    float mult = GameMath.Clamp(1f + knockbackBonus, 0f, 5f);
+                                    damageSource.KnockbackStrength *= mult;
+                                }
+                            }
                         }
                     }
                     catch

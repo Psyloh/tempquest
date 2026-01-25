@@ -1,6 +1,6 @@
 # Alegacy VS Quest Action Items
 
-> **Documentation Version:** v1.2.0
+> **Documentation Version:** v1.3.0
 
 ---
 
@@ -37,6 +37,7 @@ Action Items are defined in `config/itemconfig.json`:
       "name": "Custom Display Name",
       "description": "Custom item description",
       "actions": [],
+      "modes": [],
       "attributes": {},
       "showAttributes": [],
       "hideVanillaTooltips": []
@@ -56,6 +57,7 @@ Action Items are defined in `config/itemconfig.json`:
 | `name` | string | Custom display name, supports rich text formatting |
 | `description` | string | Custom description, supports rich text and `\n` |
 | `actions` | array | List of actions to execute on right-click |
+| `modes` | array | Optional tool modes that override `actions` based on selected mode |
 | `sourceQuestId` | string | Optional quest id used as action execution context. If omitted, defaults to `item-action`. |
 | `triggerOnInventoryAdd` | bool | If true, actions auto-trigger once when the item enters the player inventory. Manual right-click triggering is disabled. |
 | `blockMove` | bool | If true, prevents moving the item outside the hotbar (hotbar + mouse cursor only). This blocks moving into backpacks, chests, etc. |
@@ -87,6 +89,36 @@ Any action from the [Actions](actions.md) documentation can be used here.
 
 ---
 
+## Modes (Tool Mode UI)
+
+Action items can define **tool modes** that show the vanilla F-mode selector. If modes are present, the selected mode determines which actions are executed.
+
+```json
+"modes": [
+  {
+    "id": "track",
+    "name": "Track",
+    "icon": "search",
+    "actions": [
+      { "id": "trackboss", "args": [] }
+    ]
+  },
+  {
+    "id": "silent",
+    "name": "Silent",
+    "icon": "mute",
+    "actions": [
+      { "id": "notify", "args": ["albase:tracker-silent"] }
+    ]
+  }
+]
+```
+
+- `icon` uses vanilla icon codes (same set as other tool mode UIs). If omitted, the first letter of `name` is used.
+- Mode index is stored on the item stack and synced via vanilla tool mode UI.
+
+---
+
 ## Available Attributes
 
 Custom attributes that can be applied to items via the `attributes` object. These attributes add actual stat bonuses to the item.
@@ -102,6 +134,18 @@ Custom attributes that can be applied to items via the `attributes` object. Thes
 | `healingeffectiveness` | Modifies healing received | +X% |
 | `rangedaccuracy` | Modifies ranged weapon accuracy | +X% |
 | `rangedchargspeed` | Modifies ranged weapon charge speed | +X% |
+| `miningspeedmult` | Modifies mining speed | +X% |
+| `falldamagemult` | Modifies fall damage taken | +X% |
+| `temporaldrainmult` | Modifies temporal stability drain | +X% |
+| `jumpheightmul` | Modifies jump height | +X% |
+| `knockbackmult` | Modifies knockback dealt | +X% |
+| `meleeattackspeed` | Modifies melee attack speed | +X% |
+| `maxhealthflat` | Adds max health | +X hp |
+| `maxoxygen` | Adds max oxygen | +X |
+| `stealth` | Reduces detection (AI aggro) | +X |
+| `secondchancecharges` | Second chance charges | +X |
+| `weightlimit` | Modifies weight limit | +X% |
+| `viewdistance` | Modifies fog/view distance | +X% |
 
 > [!NOTE]
 > Percentage-based attributes use decimal values (e.g., `0.1` = 10%, `0.25` = 25%)
