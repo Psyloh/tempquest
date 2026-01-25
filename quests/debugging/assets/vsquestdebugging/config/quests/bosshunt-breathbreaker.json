@@ -6,8 +6,14 @@
     {
       "id": "playsound",
       "args": [
-        "game:sounds/effect/writing",
-        "0.5"
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "preloadbossmusic",
+      "args": [
+        "https://drive.google.com/uc?export=download&id=1Swpv0Jqsed7VFyCRefr7eglVLM1mfyKG"
       ]
     },
     {
@@ -17,6 +23,18 @@
         "vsquestdebugging:bosshunt-breathbreaker",
         "vsquestdebugging:bosshunt-breathbreaker-title",
         "vsquestdebugging:bosshunt-breathbreaker-journal-text"
+      ]
+    },
+    {
+      "id": "notify",
+      "args": [
+        "vsquestdebugging:bosshunt-use-tracker"
+      ]
+    },
+    {
+      "id": "notify",
+      "args": [
+        "vsquestdebugging:bosshunt-rotation-info"
       ]
     }
   ],
@@ -36,6 +54,14 @@
   "killObjectives": [],
   "itemRewards": [],
   "actionRewards": [
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "vsquestdebugging:dialogue-bosshunter-final-title",
+        "vsquestdebugging:dialogue-bosshunter-final-text",
+        "vsquestdebugging:dialogue-bosshunter-final-option"
+      ]
+    },
     {
       "id": "notify",
       "args": [
