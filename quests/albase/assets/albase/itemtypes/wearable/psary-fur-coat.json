@@ -1,0 +1,91 @@
+{
+  "code": "psary-fur-coat",
+  "class": "ItemWearable",
+  "maxstacksize": 1,
+  "storageFlags": 128,
+  "attributes": {
+    "clothescategory": "upperbodyover",
+    "wearableAttachment": true,
+    "warmth": 0.01
+  },
+  "shape": {
+    "base": "game:entity/humanoid/seraph/clothing/upperbodyover/longsleeve-hood",
+    "overlays": [
+      {
+        "base": "game:entity/humanoid/seraph/clothing/upperbodyover/collar-longsleeve-fur"
+      }
+    ]
+  },
+  "textures": {
+    "seraph": {
+      "base": "game:block/transparent"
+    },
+    "coat": {
+      "base": "albase:fur-coat"
+    }
+  },
+  "renderAlphaTest": 0.25,
+  "fpHandTransform": {
+    "translation": {
+      "x": 0.05,
+      "y": -0.6,
+      "z": 0.3
+    },
+    "rotation": {
+      "x": 180,
+      "y": 150,
+      "z": 180
+    },
+    "scale": 2
+  },
+  "tpHandTransform": {
+    "translation": {
+      "x": -0.3,
+      "y": -0.9,
+      "z": -0.7
+    },
+    "rotation": {
+      "x": -71,
+      "y": 180,
+      "z": 83
+    },
+    "scale": 0.55
+  },
+  "guiTransform": {
+    "rotate": false,
+    "translation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": -180,
+      "y": -66,
+      "z": 18
+    },
+    "origin": {
+      "x": 0.2,
+      "y": 1.36,
+      "z": 0.4
+    },
+    "scale": 1.35
+  },
+  "groundTransform": {
+    "translation": {
+      "x": 0.05,
+      "y": 0.05,
+      "z": 0
+    },
+    "rotation": {
+      "x": 0,
+      "y": 0,
+      "z": -87
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.5299
+    },
+    "scale": 2.19
+  }
+}

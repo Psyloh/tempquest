@@ -1,0 +1,52 @@
+{
+  "code": "gear-bosshunt",
+  "class": "ItemTemporalGear",
+  "maxstacksize": 1,
+  "storageFlags": 257,
+  "materialDensity": 4000,
+  "attributes": {
+    "riftwardFuel": true,
+    "corpseReturnFuel": true,
+    "nightVisionFuelHours": 24,
+    "attachableToEntity": {
+      "categoryCode": "gear",
+      "attachedShapeBySlotCode": {
+        "gearleft": { "base": "game:item/wearable/hooved/elk/tempgear1" },
+        "gearback": { "base": "game:item/wearable/hooved/elk/tempgear2" },
+        "gearright": { "base": "game:item/wearable/hooved/elk/tempgear3" }
+      }
+    }
+  },
+  "shape": {
+    "base": "game:item/gear-temporal"
+  },
+  "textures": {
+    "temporal": {
+      "base": "albase:bosshunt"
+    }
+  },
+  "guiTransform": {
+    "translation": { "x": 3, "y": 1, "z": 0 },
+    "rotation": { "x": 145, "y": -12, "z": 0 },
+    "origin": { "x": 0.5, "y": 0.0625, "z": 0.5 },
+    "scale": 2.5
+  },
+  "fpHandTransform": {
+    "translation": { "x": 0, "y": 0.2, "z": 0 },
+    "rotation": { "x": 15, "y": 0, "z": 0 },
+    "origin": { "x": 0.5, "y": 0, "z": 0.5 },
+    "scale": 1.8
+  },
+  "tpHandTransform": {
+    "translation": { "x": -0.95, "y": -0.11, "z": -0.85 },
+    "rotation": { "x": 0, "y": -89, "z": 5 },
+    "origin": { "x": 0.5, "y": 0.0625, "z": 0.5 },
+    "scale": 0.61
+  },
+  "groundTransform": {
+    "translation": { "x": 0, "y": 0, "z": 0 },
+    "rotation": { "x": 0, "y": 0, "z": 0 },
+    "origin": { "x": 0.39, "y": 0, "z": 0.47 },
+    "scale": 3.76
+  }
+}

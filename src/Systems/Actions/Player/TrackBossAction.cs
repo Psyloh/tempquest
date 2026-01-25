@@ -12,6 +12,18 @@ namespace VsQuest
     {
         private const float HpCost = 3f;
 
+        private static string GetLorePrefixKey(string bossKey)
+        {
+            if (string.IsNullOrWhiteSpace(bossKey)) return "alegacyvsquest:trackboss-prefix-default";
+
+            if (bossKey.IndexOf("ossuarywarden", StringComparison.OrdinalIgnoreCase) >= 0) return "alegacyvsquest:trackboss-prefix-ossuarywarden";
+            if (bossKey.IndexOf("ashenlurker", StringComparison.OrdinalIgnoreCase) >= 0) return "alegacyvsquest:trackboss-prefix-ashenlurker";
+            if (bossKey.IndexOf("bonecolossus", StringComparison.OrdinalIgnoreCase) >= 0) return "alegacyvsquest:trackboss-prefix-bonecolossus";
+            if (bossKey.IndexOf("subduction-maw", StringComparison.OrdinalIgnoreCase) >= 0) return "alegacyvsquest:trackboss-prefix-subductionmaw";
+
+            return "alegacyvsquest:trackboss-prefix-default";
+        }
+
         public void Execute(ICoreServerAPI sapi, QuestMessage message, IServerPlayer byPlayer, string[] args)
         {
             if (sapi == null || byPlayer == null) return;
@@ -107,9 +119,10 @@ namespace VsQuest
             }, HpCost);
 
             string liveSuffix = isLiveEntity ? "" : Lang.Get("alegacyvsquest:trackboss-trail-suffix");
+            string prefix = Lang.Get(GetLorePrefixKey(bossKey));
             sapi.Network.GetChannel("alegacyvsquest").SendPacket(new ShowDiscoveryMessage
             {
-                Notification = Lang.Get("alegacyvsquest:trackboss-distance", liveSuffix, dist)
+                Notification = Lang.Get("alegacyvsquest:trackboss-distance-lore", prefix, liveSuffix, dist)
             }, byPlayer);
         }
     }

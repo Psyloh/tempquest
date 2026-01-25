@@ -286,7 +286,15 @@ namespace VsQuest.Harmony
                     float baseOxygen = oxygenBehavior.MaxOxygen - lastAppliedBonus;
                     if (baseOxygen < 1f) baseOxygen = 1f;
 
-                    oxygenBehavior.MaxOxygen = Math.Max(1f, baseOxygen + maxOxygenBonus);
+                    float newMaxOxygen = Math.Max(1f, baseOxygen + maxOxygenBonus);
+                    oxygenBehavior.MaxOxygen = newMaxOxygen;
+
+                    // If max oxygen decreased (e.g. accessory removed), ensure current oxygen cannot exceed the new max.
+                    float currentOxygen = oxygenBehavior.Oxygen;
+                    if (currentOxygen > newMaxOxygen)
+                    {
+                        oxygenBehavior.Oxygen = newMaxOxygen;
+                    }
                     player.Entity.WatchedAttributes.SetFloat(AppliedBonusKey, maxOxygenBonus);
                 }
 

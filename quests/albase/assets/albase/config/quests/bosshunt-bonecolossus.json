@@ -68,6 +68,12 @@
       ]
     },
     {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-reward-ultrawarm-coat"
+      ]
+    },
+    {
       "id": "showquestfinaldialog",
       "args": [
         "albase:dialogue-bosshunter-final-title",

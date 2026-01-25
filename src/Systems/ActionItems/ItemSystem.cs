@@ -62,6 +62,10 @@ namespace VsQuest
                     {
                         foreach (var actionItem in asset.Value.actionItems)
                         {
+                            if (actionItem?.id != null && actionItem.id.StartsWith("albase:", StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
                             ActionItemRegistry[actionItem.id] = actionItem;
                         }
                     }
@@ -73,6 +77,7 @@ namespace VsQuest
         {
             // Must run on both sides: creative tab list is synced/validated server-side when moving items.
             if (api == null) return;
+            if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
             if (creativeTabInjector == null)
             {
                 creativeTabInjector = new ActionItemCreativeTabInjector(ActionItemRegistry, questSystem);
@@ -84,10 +89,12 @@ namespace VsQuest
         public override void StartServerSide(ICoreServerAPI api)
         {
             sapi = api;
+            if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
 
             attributeResolver = new ActionItemAttributeResolver(ActionItemRegistry);
             actionExecutor = new ActionItemActionExecutor(questSystem, sapi);
             packetHandler = new ActionItemPacketHandler(questSystem, attributeResolver, actionExecutor);
+
             serverChannel = api.Network.RegisterChannel("alegacyvsquest-itemaction")
                 .RegisterMessageType<ExecuteActionItemPacket>()
                 .SetMessageHandler<ExecuteActionItemPacket>(packetHandler.HandlePacket);
@@ -110,6 +117,7 @@ namespace VsQuest
         public override void StartClientSide(ICoreClientAPI api)
         {
             capi = api;
+            if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
             clientChannel = api.Network.RegisterChannel("alegacyvsquest-itemaction")
                 .RegisterMessageType<ExecuteActionItemPacket>();
 

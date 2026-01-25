@@ -2,7 +2,7 @@
   "actionItems": [
     {
       "id": "albase:bosshunt-tracker",
-      "itemCode": "game:gear-temporal",
+      "itemCode": "albase:gear-bosshunt",
       "name": "<font color=\"#D97706\">Кровемер</font>",
       "description": "<font color=\"#F59E0B\">Кровемер — тусклый осколок, что откликается на след древнего стража. Он не укажет дорогу — лишь назовёт расстояние. За каждый ответ он берёт плату кровью.</font>",
       "actions": [
@@ -24,15 +24,16 @@
     },
     {
       "id": "albase:bosshunt-reward-miner-belt",
-      "itemCode": "game:clothes-waist-jailor-belt",
-      "name": "<font color=\"#F59E0B\">Шахтёрский пояс</font>",
-      "description": "<font color=\"#FBBF24\">Тяжёлый пояс, держащий осанку в штольнях. Даёт стойкость и ускоряет добычу, но тянет силы, гасит время и делает шаг тяжелее.</font>",
+      "itemCode": "game:clothes-waist-heavy-tool-belt",
+      "name": "<font color=\"#F59E0B\">Пояс Оссуария</font>",
+      "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой, обсыпанной костяной крошкой. На коже — следы когтей и каменной пыли, будто кто-то цеплялся за своды в темноте.</font>",
       "actions": [],
       "attributes": {
         "protection": 0.6,
         "protectionperc": 0.06,
         "walkspeed": -0.08,
-        "hungerrate": 0.2,
+        "weightlimit": 0.2,
+        "hungerrate": 0.4,
         "miningspeedmult": 0.15,
         "temporaldrainmult": 0.1
       },
@@ -54,22 +55,25 @@
     },
     {
       "id": "albase:bosshunt-reward-sea-spirit",
-      "itemCode": "game:clothes-face-survivor",
-      "name": "<font color=\"#38BDF8\">Морской дух</font>",
-      "description": "<font color=\"#7DD3FC\">Соль и водоросли впитались в ткань. Дыхание становится глубже, но тело быстрее расходует силы.</font>",
+      "itemCode": "albase:psary-sheepskull",
+      "name": "<font color=\"#F8FAFC\">Череп Псаря</font>",
+      "description": "<font color=\"#E2E8F0\">Кость легла на лицо, и дыхание становится чужим — глубоким, звериным. Иногда кажется, что раны стягиваются сами, но вместе с этим приходит голод стаи.</font>",
       "actions": [],
       "attributes": {
-        "healingeffectiveness": 0.05,
-        "hungerrate": 0.12,
-        "maxoxygen": 8000
+        "healingeffectiveness": 0.15,
+        "hungerrate": 0.22,
+        "attackpower": 2.5,
+        "maxhealthflat": -4.0
       },
       "showAttributes": [
         "healingeffectiveness",
         "hungerrate",
-        "maxoxygen"
+        "attackpower",
+        "maxhealthflat"
       ],
       "hideVanillaTooltips": [
         "armor",
+        "attackpower",
         "protection",
         "warmth",
         "walkspeed",
@@ -78,15 +82,15 @@
     },
     {
       "id": "albase:bosshunt-reward-bloodthirsty",
-      "itemCode": "game:clothes-neck-gear-amulet-temporal",
-      "name": "<font color=\"#DC2626\">Кольцо кровожадности</font>",
-      "description": "<font color=\"#FCA5A5\">Камень в кольце пульсирует, будто пьёт кровь. Делает удар тяжелее и толкает сильнее, но открывает тебя для боли.</font>",
+      "itemCode": "albase:bosshunt-bloodthirsty-bracelet",
+      "name": "<font color=\"#DC2626\">Браслет костяной ярости</font>",
+      "description": "<font color=\"#FCA5A5\">Холодный металл с зазубринами, будто приспособленными для хватки. Если сжать кулак, кажется, что браслет сжимается в ответ — голодно и зло.</font>",
       "actions": [],
       "attributes": {
         "attackpower": 1.2,
         "healingeffectiveness": 0.05,
-        "protectionperc": -0.06,
-        "hungerrate": 0.1,
+        "protectionperc": -0.1,
+        "hungerrate": 0.2,
         "knockbackmult": 0.15
       },
       "showAttributes": [
@@ -98,6 +102,7 @@
       ],
       "hideVanillaTooltips": [
         "armor",
+        "attackpower",
         "protection",
         "warmth",
         "walkspeed",
@@ -106,16 +111,16 @@
     },
     {
       "id": "albase:bosshunt-reward-life-amulet",
-      "itemCode": "game:clothes-neck-jade-amulet",
-      "name": "<font color=\"#34D399\">Амулет жизни</font>",
-      "description": "<font color=\"#6EE7B7\">Амулет хранит жар жизни, но требует платы за каждую искру. Тело крепче, восстанавливается быстрее, однако усталость приходит раньше.</font>",
+      "itemCode": "albase:bosshunt-life-amulet",
+      "name": "<font color=\"#34D399\">Талисман стаи</font>",
+      "description": "<font color=\"#6EE7B7\">Клык, перевитый нитью и посаженный на цепочку. Он тёплый, как живой, и будто шепчет о бегущих рядом тенях.</font>",
       "actions": [],
       "attributes": {
-        "healingeffectiveness": 0.12,
+        "healingeffectiveness": 0.1,
         "hungerrate": 0.12,
         "walkspeed": -0.03,
         "protectionperc": -0.05,
-        "maxhealthflat": 1.5
+        "maxhealthflat": 2.0
       },
       "showAttributes": [
         "healingeffectiveness",
@@ -134,9 +139,9 @@
     },
     {
       "id": "albase:bosshunt-reward-ultrawarm-coat",
-      "itemCode": "game:clothes-upperbodyover-fur-coat",
-      "name": "<font color=\"#F8FAFC\">Сверхтёплая шуба</font>",
-      "description": "<font color=\"#E2E8F0\">Толстый меховой покров удерживает жар, но сковывает движения и быстро расходует силы.</font>",
+      "itemCode": "albase:psary-fur-coat",
+      "name": "<font color=\"#F8FAFC\">Шкура Псаря</font>",
+      "description": "<font color=\"#E2E8F0\">Тяжёлая меховая накидка, пропахшая зверем и железом. В ворсе забилась тёмная пыль, и на ветру мерещится движение — будто кто-то крадётся сбоку.</font>",
       "actions": [],
       "attributes": {
         "warmth": 10,
@@ -144,7 +149,7 @@
         "walkspeed": -0.2,
         "hungerrate": 0.3,
         "weightlimit": 0.15,
-        "viewdistance": -0.15
+        "viewdistance": -0.35
       },
       "showAttributes": [
         "warmth",
@@ -164,12 +169,12 @@
     },
     {
       "id": "albase:bosshunt-reward-archer-gloves",
-      "itemCode": "game:clothes-hand-hunter-gloves",
-      "name": "<font color=\"#F59E0B\">Перчатки лучника</font>",
-      "description": "<font color=\"#FDE68A\">Ладони сидят плотно, натяжение тетивы слушается лучше. Но в ближнем бою удар выходит слабее, а броня ощущается тоньше.</font>",
+      "itemCode": "albase:bosshunt-archer-gloves",
+      "name": "<font color=\"#F59E0B\">Наручи Преследователя</font>",
+      "description": "<font color=\"#FDE68A\">Латунные пластины с мелкими насечками, как у зубчатых колёс. В тишине от них идёт слабый скрежет, будто где-то рядом шевелится рой пил.</font>",
       "actions": [],
       "attributes": {
-        "rangedaccuracy": 0.08,
+        "rangedaccuracy": 0.09,
         "rangedchargspeed": 0.1,
         "attackpower": -1,
         "protectionperc": -0.06
@@ -182,6 +187,7 @@
       ],
       "hideVanillaTooltips": [
         "armor",
+        "attackpower",
         "protection",
         "warmth",
         "walkspeed",
@@ -190,17 +196,16 @@
     },
     {
       "id": "albase:bosshunt-reward-fox-boots",
-      "itemCode": "game:clothes-foot-survivor",
-      "name": "<font color=\"#F97316\">Лисьи ботинки</font>",
-      "description": "<font color=\"#FDBA74\">Мягкая подошва прячет шаг, даёт высокий прыжок и смягчает падение. Но защита слабее, а голод приходит быстрее.</font>",
+      "itemCode": "albase:flashboots",
+      "name": "<font color=\"#F97316\">Сапоги искры</font>",
+      "description": "<font color=\"#FDBA74\">Лёгкие сапоги с пружинящей подошвой; внутри — запах масла и тонкой стружки. Шаг выходит резким и коротким, словно тебя подталкивает невидимая передача.</font>",
       "actions": [],
       "triggerOnInventoryAdd": true,
       "attributes": {
         "walkspeed": 0.15,
         "hungerrate": 0.3,
-        "protectionperc": -0.05,
-        "stealth": 1,
-        "jumpheightmul": 0.1,
+        "protectionperc": -0.09,
+        "jumpheightmul": 0.35,
         "falldamagemult": 0.2
       },
       "showAttributes": [
@@ -221,9 +226,9 @@
     },
     {
       "id": "albase:bosshunt-reward-duelist",
-      "itemCode": "game:clothes-shoulder-aristocrat-mantle",
-      "name": "<font color=\"#EF4444\">Печать дуэлянта</font>",
-      "description": "<font color=\"#FCA5A5\">Печать, что зовёт к бою и заставляет рубить сильнее и быстрее. Но тело быстрее устает, а удар по тебе ощущается больнее.</font>",
+      "itemCode": "albase:malefactor-cloak",
+      "name": "<font color=\"#EF4444\">Плащ субдукции</font>",
+      "description": "<font color=\"#FCA5A5\">Ткань пропитана маслом и ядовитой гарью. Если долго смотреть на складки, на краю зрения вспыхивают силуэты — призрачные двойники, как в криптовом тумане.</font>",
       "actions": [],
       "attributes": {
         "attackpower": 1.2,
@@ -241,6 +246,7 @@
       ],
       "hideVanillaTooltips": [
         "armor",
+        "attackpower",
         "protection",
         "warmth",
         "walkspeed",
@@ -249,16 +255,75 @@
     },
     {
       "id": "albase:bosshunt-reward-secondchance-mask",
-      "itemCode": "game:clothes-head-hunter-cape",
-      "name": "<font color=\"#A7F3D0\">Маска второго шанса</font>",
-      "description": "<font color=\"#D1FAE5\">Холодный металл держит дыхание на грани. Питается ураном и спасает от смерти один раз, но оставляет долг крови.</font>",
+      "itemCode": "albase:2cnah-mask",
+      "name": "<font color=\"#A7F3D0\">Маска последнего вдоха</font>",
+      "description": "<font color=\"#D1FAE5\">Ржавая фильтрующая маска; фильтры шипят, будто в них живёт металл. Внутри — едва заметная урановая метка и сухой привкус чужого воздуха.</font>",
       "actions": [],
       "triggerOnInventoryAdd": true,
       "attributes": {
-        "secondchancecharges": 0
+        "secondchancecharges": 0,
+        "maxhealthflat": -3.0,
+        "hungerrate": 0.1,
+        "protectionperc": -0.1
       },
       "showAttributes": [
-        "secondchancecharges"
+        "secondchancecharges",
+        "maxhealthflat",
+        "hungerrate",
+        "protectionperc"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "albase:bosshunt-reward-ashen-sigil",
+      "itemCode": "albase:bosshunt-ashen-sigil",
+      "name": "<font color=\"#F59E0B\">Печать роя</font>",
+      "description": "<font color=\"#FDE68A\">Тонкая застёжка с зубчатым узором. Стоит приколоть её ближе к сердцу — и под тканью появляется зуд, как от близкого роя.</font>",
+      "actions": [],
+      "attributes": {
+        "rangedaccuracy": 0.05,
+        "rangedchargspeed": 0.05,
+        "hungerrate": 0.15,
+        "protectionperc": -0.03
+      },
+      "showAttributes": [
+        "rangedaccuracy",
+        "rangedchargspeed",
+        "hungerrate",
+        "protectionperc"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
+      "id": "albase:bosshunt-reward-subduction-filter",
+      "itemCode": "albase:bosshunt-subduction-filter",
+      "name": "<font color=\"#22C55E\">Фильтр субдукции</font>",
+      "description": "<font color=\"#86EFAC\">Грубый фильтр на цепи, покрытый ржавчиной и зелёной гарью. Если поднести к лицу, слышно, как внутри оседает криптовый туман.</font>",
+      "actions": [],
+      "attributes": {
+        "maxoxygen": 14000,
+        "temporaldrainmult": 0.15,
+        "hungerrate": 0.15,
+        "walkspeed": -0.03,
+        "maxhealthflat": -1.0
+      },
+      "showAttributes": [
+        "maxoxygen",
+        "temporaldrainmult",
+        "hungerrate",
+        "walkspeed"
       ],
       "hideVanillaTooltips": [
         "armor",

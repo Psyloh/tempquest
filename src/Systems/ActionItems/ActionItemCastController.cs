@@ -219,6 +219,8 @@ namespace VsQuest
 
         private void CompleteActionItemCast()
         {
+            string completedActionItemId = actionItemCastId;
+
             isCastingActionItem = false;
             actionItemCastStartMs = 0;
             actionItemCastId = null;
@@ -227,7 +229,9 @@ namespace VsQuest
             StopActionItemCastSound();
             StopActionItemCastProgress();
 
+            actionItemCastId = completedActionItemId;
             PlayActionItemCastCompleteSound();
+            actionItemCastId = null;
 
             clientChannel.SendPacket(new ExecuteActionItemPacket());
         }

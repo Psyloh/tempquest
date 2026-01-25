@@ -68,6 +68,12 @@
       ]
     },
     {
+      "id": "questitem",
+      "args": [
+        "albase:bosshunt-reward-ashen-sigil"
+      ]
+    },
+    {
       "id": "showquestfinaldialog",
       "args": [
         "albase:dialogue-bosshunter-final-title",

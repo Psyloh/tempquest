@@ -41,10 +41,10 @@ namespace VsQuest
                 }
             }
 
-            return Math.Max(0f, total);
+            return total;
         }
 
-        private void ApplyFog(float strength)
+        private void ApplyFog(float viewDistance)
         {
             var modifiers = capi?.Ambient?.CurrentModifiers;
             if (modifiers == null) return;
@@ -55,6 +55,7 @@ namespace VsQuest
                 modifiers[ModifierKey] = modifier;
             }
 
+            float strength = Math.Abs(viewDistance);
             if (strength <= 0f)
             {
                 modifier.FogDensity.Weight = 0f;
@@ -65,11 +66,24 @@ namespace VsQuest
             strength = GameMath.Clamp(strength, 0f, 1f);
 
             const float baseDensity = 0.00125f;
-            modifier.FogDensity.Value = baseDensity + strength * 0.004f;
-            modifier.FogDensity.Weight = strength * 0.6f;
 
-            modifier.FogMin.Value = strength * 0.02f;
-            modifier.FogMin.Weight = strength * 0.6f;
+            // FogMin controls how close the fog starts.
+            // Positive viewDistance => allow the fog to start further away.
+            // Negative viewDistance => push the fog closer (do not increase FogMin).
+            modifier.FogMin.Value = viewDistance > 0f ? strength * 0.03f : 0f;
+            modifier.FogMin.Weight = strength;
+
+            // Negative viewDistance => worse visibility (more fog)
+            if (viewDistance < 0f)
+            {
+                modifier.FogDensity.Value = baseDensity + strength * 0.006f;
+                modifier.FogDensity.Weight = strength;
+                return;
+            }
+
+            // Positive viewDistance => better visibility (less fog)
+            modifier.FogDensity.Value = Math.Max(0f, baseDensity - strength * 0.0009f);
+            modifier.FogDensity.Weight = strength;
         }
     }
 }
