@@ -20,6 +20,18 @@ namespace VsQuest.Harmony
         private const float SecondChanceDebuffHungerRate = 0.4f;
         private const float SecondChanceDebuffHealing = -0.3f;
 
+        private static bool IsBossTarget(EntityAgent target)
+        {
+            if (target == null) return false;
+
+            return target.HasBehavior<EntityBehaviorBossHuntCombatMarker>()
+                || target.HasBehavior<EntityBehaviorBossCombatMarker>()
+                || target.HasBehavior<EntityBehaviorBossRespawn>()
+                || target.HasBehavior<EntityBehaviorBossDespair>()
+                || target.HasBehavior<EntityBehaviorQuestBoss>()
+                || target.HasBehavior<EntityBehaviorBoss>();
+        }
+
         [HarmonyPatch(typeof(ModSystemWearableStats), "handleDamaged")]
         public class ModSystemWearableStats_handleDamaged_PlayerAttributes_Patch
         {
@@ -199,6 +211,11 @@ namespace VsQuest.Harmony
                 {
                     try
                     {
+                        if (damageSource != null && IsBossTarget(__instance))
+                        {
+                            damageSource.KnockbackStrength = 0f;
+                        }
+
                         if (__instance.WatchedAttributes.GetBool("alegacyvsquest:bossclone:invulnerable", false))
                         {
                             damage = 0f;

@@ -94,6 +94,13 @@ namespace VsQuest.Harmony
                 string trimmed = line.Trim();
                 bool isLineEmpty = string.IsNullOrWhiteSpace(trimmed);
 
+                if (trimmed.StartsWith("Максимальное тепло:", StringComparison.OrdinalIgnoreCase)
+                    || trimmed.StartsWith("Maximum warmth:", StringComparison.OrdinalIgnoreCase)
+                    || trimmed.StartsWith("Max warmth:", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 // If the action item provides its own description, drop the leading vanilla description block
                 // (first paragraph). Do not drop if the tooltip begins with durability/condition lines.
                 if (!skippedLeadingDescBlock)
@@ -243,70 +250,6 @@ namespace VsQuest.Harmony
 
             string currentDsc = dsc.ToString();
             bool startedAttrBlock = false;
-
-            bool TooltipHasConditionLine(string tooltip)
-            {
-                if (string.IsNullOrEmpty(tooltip)) return false;
-                if (tooltip.Contains(Lang.Get("Condition:"))) return true;
-                if (tooltip.Contains("Condition:")) return true;
-                if (tooltip.Contains("Состояние:")) return true;
-                return false;
-            }
-
-            string GetWearableConditionText(float condition01)
-            {
-                int pct = (int)(GameMath.Clamp(condition01, 0f, 1f) * 100f);
-
-                if (condition01 > 0.5f) return Lang.Get("clothingcondition-good", pct);
-                if (condition01 > 0.4f) return Lang.Get("clothingcondition-worn", pct);
-                if (condition01 > 0.3f) return Lang.Get("clothingcondition-heavilyworn", pct);
-                if (condition01 > 0.2f) return Lang.Get("clothingcondition-tattered", pct);
-                if (condition01 > 0.1f) return Lang.Get("clothingcondition-heavilytattered", pct);
-                return Lang.Get("clothingcondition-terrible", pct);
-            }
-
-            bool wantsConditionLine = !hideVanilla.Contains("durability");
-
-            if (wantsConditionLine && !TooltipHasConditionLine(currentDsc))
-            {
-                float condition01 = 1f;
-                bool canShow = false;
-
-                if (inSlot.Itemstack.Attributes != null && inSlot.Itemstack.Attributes.HasAttribute("condition"))
-                {
-                    condition01 = GameMath.Clamp(inSlot.Itemstack.Attributes.GetFloat("condition", 1f), 0f, 1f);
-                    canShow = true;
-                }
-                else if (inSlot.Itemstack.Collectible != null)
-                {
-                    int maxDurability = inSlot.Itemstack.Collectible.GetMaxDurability(inSlot.Itemstack);
-                    if (maxDurability > 0)
-                    {
-                        int remaining = inSlot.Itemstack.Collectible.GetRemainingDurability(inSlot.Itemstack);
-                        condition01 = GameMath.Clamp(remaining / (float)maxDurability, 0f, 1f);
-                        canShow = true;
-                    }
-                }
-
-                if (canShow)
-                {
-                    string condStr = GetWearableConditionText(condition01);
-                    string lineToAdd = $"{Lang.Get("Condition:")} {condStr}";
-                    if (!string.IsNullOrWhiteSpace(lineToAdd) && !currentDsc.Contains(lineToAdd))
-                    {
-                        if (!startedAttrBlock)
-                        {
-                            TrimEndNewlines(dsc);
-                            if (dsc.Length > 0) dsc.AppendLine();
-                            startedAttrBlock = true;
-                            currentDsc = dsc.ToString();
-                        }
-
-                        dsc.AppendLine(lineToAdd);
-                        currentDsc += "\n" + lineToAdd;
-                    }
-                }
-            }
 
             foreach (var kvp in attrs)
             {

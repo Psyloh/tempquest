@@ -26,14 +26,30 @@ namespace VsQuest
         private string noAvailableQuestCooldownDescLangKey;
         private int noAvailableQuestCooldownDaysLeft;
         private int noAvailableQuestRotationDaysLeft;
+        private string reputationNpcId;
+        private string reputationFactionId;
+        private int reputationNpcValue;
+        private int reputationFactionValue;
+        private string reputationNpcRankLangKey;
+        private string reputationFactionRankLangKey;
+        private string reputationNpcTitleLangKey;
+        private string reputationFactionTitleLangKey;
+        private bool reputationNpcHasRewards;
+        private bool reputationFactionHasRewards;
+        private int reputationNpcRewardsCount;
+        private int reputationFactionRewardsCount;
+        private List<QuestCompletionRewardStatus> completionRewards;
+        private List<ReputationRankRewardStatus> reputationNpcRankRewards;
+        private List<ReputationRankRewardStatus> reputationFactionRankRewards;
 
         private int curTab = 0;
         private bool closeGuiAfterAcceptingAndCompleting;
-        public QuestSelectGui(ICoreClientAPI capi, long questGiverId, List<string> availableQuestIds, List<ActiveQuest> activeQuests, QuestConfig questConfig, string noAvailableQuestDescLangKey = null, string noAvailableQuestCooldownDescLangKey = null, int noAvailableQuestCooldownDaysLeft = 0, int noAvailableQuestRotationDaysLeft = 0) : base(capi)
+
+        public QuestSelectGui(ICoreClientAPI capi, QuestInfoMessage message, QuestConfig questConfig) : base(capi)
         {
             player = capi.World.Player;
             closeGuiAfterAcceptingAndCompleting = questConfig.CloseGuiAfterAcceptingAndCompleting;
-            ApplyData(questGiverId, availableQuestIds, activeQuests, noAvailableQuestDescLangKey, noAvailableQuestCooldownDescLangKey, noAvailableQuestCooldownDaysLeft, noAvailableQuestRotationDaysLeft);
+            ApplyData(message);
             RequestRecompose();
         }
 
@@ -97,6 +113,9 @@ namespace VsQuest
             // Only switch tabs if the current tab has no content.
             bool hasAvailable = availableQuestIds != null && availableQuestIds.Count > 0;
             bool hasActive = activeQuests != null && activeQuests.Count > 0;
+            bool hasReputation = (completionRewards != null && completionRewards.Count > 0)
+                || !string.IsNullOrWhiteSpace(reputationNpcId)
+                || !string.IsNullOrWhiteSpace(reputationFactionId);
 
             if (curTab == 0 && !hasAvailable && hasActive)
             {
@@ -106,11 +125,37 @@ namespace VsQuest
             {
                 curTab = 0;
             }
-            else if (curTab != 0 && curTab != 1)
+            else if (curTab == 2 && !hasReputation)
             {
-                // Initial state fallback
                 curTab = hasAvailable ? 0 : (hasActive ? 1 : 0);
             }
+            else if (curTab != 0 && curTab != 1 && curTab != 2)
+            {
+                // Initial state fallback
+                curTab = hasAvailable ? 0 : (hasActive ? 1 : (hasReputation ? 2 : 0));
+            }
+        }
+
+        private void ApplyData(QuestInfoMessage message)
+        {
+            if (message == null) return;
+
+            ApplyData(message.questGiverId, message.availableQestIds, message.activeQuests, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft, message.noAvailableQuestRotationDaysLeft);
+            reputationNpcId = message.reputationNpcId;
+            reputationFactionId = message.reputationFactionId;
+            reputationNpcValue = message.reputationNpcValue;
+            reputationFactionValue = message.reputationFactionValue;
+            reputationNpcRankLangKey = message.reputationNpcRankLangKey;
+            reputationFactionRankLangKey = message.reputationFactionRankLangKey;
+            reputationNpcTitleLangKey = message.reputationNpcTitleLangKey;
+            reputationFactionTitleLangKey = message.reputationFactionTitleLangKey;
+            reputationNpcHasRewards = message.reputationNpcHasRewards;
+            reputationFactionHasRewards = message.reputationFactionHasRewards;
+            reputationNpcRewardsCount = message.reputationNpcRewardsCount;
+            reputationFactionRewardsCount = message.reputationFactionRewardsCount;
+            completionRewards = message.completionRewards ?? new List<QuestCompletionRewardStatus>();
+            reputationNpcRankRewards = message.reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>();
+            reputationFactionRankRewards = message.reputationFactionRankRewards ?? new List<ReputationRankRewardStatus>();
         }
 
         private void recompose()
@@ -131,10 +176,20 @@ namespace VsQuest
             ElementBounds bottomLeftButtonBounds = ElementBounds.Fixed(10, 570, 200, 20);
             ElementBounds bottomRightButtonBounds = ElementBounds.Fixed(220, 570, 200, 20);
 
-            GuiTab[] tabs = new GuiTab[] {
+            var tabsList = new List<GuiTab>
+            {
                 new GuiTab() { Name = Lang.Get("alegacyvsquest:tab-available-quests"), DataInt = 0 },
                 new GuiTab() { Name = Lang.Get("alegacyvsquest:tab-active-quests"), DataInt = 1 }
             };
+
+            if ((completionRewards != null && completionRewards.Count > 0)
+                || !string.IsNullOrWhiteSpace(reputationNpcId)
+                || !string.IsNullOrWhiteSpace(reputationFactionId))
+            {
+                tabsList.Add(new GuiTab() { Name = Lang.Get("alegacyvsquest:tab-reputation"), DataInt = 2 });
+            }
+
+            GuiTab[] tabs = tabsList.ToArray();
 
             bgBounds.BothSizing = ElementSizing.FitToChildren;
             SingleComposer = capi.Gui.CreateCompo("QuestSelectDialog-", dialogBounds)
@@ -176,7 +231,7 @@ namespace VsQuest
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
-            else
+            else if (curTab == 1)
             {
                 if (activeQuests != null && activeQuests.Count > 0)
                 {
@@ -195,7 +250,6 @@ namespace VsQuest
                         .AddIf(selectedActiveQuest.IsCompletableOnClient)
                             .AddButton(Lang.Get("alegacyvsquest:button-complete"), completeQuest, bottomRightButtonBounds)
                         .EndIf()
-
                         .BeginClip(clippingBounds)
                             .AddRichtext(activeQuestText(selectedActiveQuest), CairoFont.WhiteSmallishText(), questTextBounds, "questtext")
                         .EndClip()
@@ -207,17 +261,51 @@ namespace VsQuest
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
-            ;
+            else
+            {
+                var nodes = BuildRewardNodes();
+                var levelBounds = ElementBounds.Fixed(0, 20, 400, 25);
+                var mapBounds = ElementBounds.Fixed(0, 60, 400, 500);
+                mapBounds.WithParent(bgBounds);
+
+                int repValue = !string.IsNullOrWhiteSpace(reputationNpcId)
+                    ? reputationNpcValue
+                    : reputationFactionValue;
+
+                string rankKey = !string.IsNullOrWhiteSpace(reputationNpcId)
+                    ? reputationNpcRankLangKey
+                    : reputationFactionRankLangKey;
+                string rankText = !string.IsNullOrWhiteSpace(rankKey)
+                    ? Lang.Get(rankKey)
+                    : string.Empty;
+
+                string levelText = string.IsNullOrWhiteSpace(rankText)
+                    ? repValue.ToString()
+                    : string.Format("{0}: {1}", rankText, repValue);
+
+                var closeCenteredBounds = ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20);
+
+                SingleComposer.AddStaticText(levelText, CairoFont.WhiteSmallishText(), levelBounds)
+                    .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, closeCenteredBounds)
+                    .AddInteractiveElement(new ReputationTreeElement(capi, mapBounds, nodes, OnRewardNodeClicked), "reputationtree");
+            }
+
             SingleComposer.GetScrollbar("scrollbar")?.SetHeights((float)questTextBounds.fixedHeight, (float)questTextBounds.fixedHeight);
             SingleComposer.EndChildElements()
                     .Compose();
-            SingleComposer.GetScrollbar("scrollbar")?.SetNewTotalHeight((float)SingleComposer.GetRichtext("questtext").TotalHeight);
-            SingleComposer.GetScrollbar("scrollbar")?.SetScrollbarPosition(0);
+
+            var questTextElement = SingleComposer.GetRichtext("questtext");
+            if (questTextElement != null)
+            {
+                SingleComposer.GetScrollbar("scrollbar")?.SetNewTotalHeight((float)questTextElement.TotalHeight);
+                SingleComposer.GetScrollbar("scrollbar")?.SetScrollbarPosition(0);
+            }
         }
 
         private void OnNewScrollbarvalue(float value)
         {
             var textArea = SingleComposer.GetRichtext("questtext");
+            if (textArea == null) return;
 
             textArea.Bounds.fixedY = -value;
             textArea.Bounds.CalcWorldBounds();
@@ -228,6 +316,159 @@ namespace VsQuest
             CloseOpenedDropDown();
             curTab = id;
             RequestRecompose();
+        }
+
+        private List<ReputationTreeNode> BuildRewardNodes()
+        {
+            var nodes = new List<ReputationTreeNode>();
+            if (completionRewards == null) completionRewards = new List<QuestCompletionRewardStatus>();
+
+            foreach (var reward in completionRewards)
+            {
+                if (reward == null || string.IsNullOrWhiteSpace(reward.id)) continue;
+
+                string reqText = reward.requirementText;
+                if (reward.status == "claimed")
+                {
+                    string line = Lang.Get("alegacyvsquest:reputation-received");
+                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
+                }
+                else if (reward.status == "available")
+                {
+                    string line = Lang.Get("alegacyvsquest:reputation-lmb-claim");
+                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
+                }
+
+                var status = reward.status == "claimed"
+                    ? ReputationNodeStatus.Claimed
+                    : (reward.status == "available" ? ReputationNodeStatus.Available : ReputationNodeStatus.Locked);
+
+                nodes.Add(new ReputationTreeNode
+                {
+                    Id = reward.id,
+                    Title = reward.title,
+                    RequirementText = reqText,
+                    X = reward.x,
+                    Y = reward.y,
+                    Status = status,
+                    IconItemCode = reward.iconItemCode
+                });
+            }
+
+            // Add rank-based rewards (e.g. innkeeper uranium at 2000 rep) as additional nodes.
+            var rankRewards = !string.IsNullOrWhiteSpace(reputationNpcId)
+                ? (reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>())
+                : (reputationFactionRankRewards ?? new List<ReputationRankRewardStatus>());
+
+            if (rankRewards != null && rankRewards.Count > 0)
+            {
+                // Filter out null entries first so layout spacing is deterministic.
+                rankRewards.RemoveAll(r => r == null);
+                if (rankRewards.Count == 0) return nodes;
+
+                rankRewards.Sort((a, b) => (a?.min ?? 0).CompareTo(b?.min ?? 0));
+                for (int i = 0; i < rankRewards.Count; i++)
+                {
+                    var rr = rankRewards[i];
+
+                    var status = rr.status == "claimed"
+                        ? ReputationNodeStatus.Claimed
+                        : (rr.status == "available" ? ReputationNodeStatus.Available : ReputationNodeStatus.Locked);
+
+                    // Position is assigned later by ApplyReputationGridLayout(nodes).
+                    float x = 0.5f;
+                    float y = 0.5f;
+
+                    string title = rr.min.ToString();
+                    string req = Lang.Get("alegacyvsquest:reputation-value-template", rr.min);
+                    if (!string.IsNullOrWhiteSpace(rr.rankLangKey))
+                    {
+                        title = Lang.Get(rr.rankLangKey);
+                    }
+
+                    if (rr.status == "claimed")
+                    {
+                        string line = Lang.Get("alegacyvsquest:reputation-received");
+                        req = string.IsNullOrWhiteSpace(req) ? line : (req + "\n" + line);
+                    }
+                    else if (rr.status == "available")
+                    {
+                        string line = Lang.Get("alegacyvsquest:reputation-lmb-claim");
+                        req = string.IsNullOrWhiteSpace(req) ? line : (req + "\n" + line);
+                    }
+
+                    nodes.Add(new ReputationTreeNode
+                    {
+                        Id = "rank:" + rr.min,
+                        Title = title,
+                        RequirementText = req,
+                        X = x,
+                        Y = y,
+                        Status = status,
+                        IconItemCode = rr.iconItemCode
+                    });
+                }
+            }
+
+            ApplyReputationGridLayout(nodes);
+            return nodes;
+        }
+
+        private void ApplyReputationGridLayout(List<ReputationTreeNode> nodes)
+        {
+            if (nodes == null || nodes.Count == 0) return;
+
+            const int columns = 3;
+            const int maxRows = 4;
+
+            float xStart = 0.2f;
+            float xEnd = 0.8f;
+            float yStart = 0.18f;
+            float yStep = 0.24f;
+
+            float xStep = columns <= 1 ? 0f : (xEnd - xStart) / (columns - 1);
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var node = nodes[i];
+                if (node == null) continue;
+
+                int row = i / columns;
+                int col = i % columns;
+
+                if (row >= maxRows) row = maxRows - 1;
+
+                node.X = columns <= 1 ? 0.5f : (xStart + xStep * col);
+                node.Y = yStart + yStep * row;
+                if (node.Y > 0.95f) node.Y = 0.95f;
+            }
+        }
+
+        private void OnRewardNodeClicked(string rewardId)
+        {
+            if (string.IsNullOrWhiteSpace(rewardId)) return;
+
+            // Rank reward nodes: claim pending reputation rewards for this quest giver.
+            if (rewardId.StartsWith("rank:", StringComparison.OrdinalIgnoreCase))
+            {
+                string scope = !string.IsNullOrWhiteSpace(reputationNpcId) ? "npc" : "faction";
+                capi.Network.GetChannel("alegacyvsquest").SendPacket(new ClaimReputationRewardsMessage
+                {
+                    questGiverId = questGiverId,
+                    scope = scope
+                });
+                return;
+            }
+
+            var status = completionRewards?.Find(r => r != null && r.id == rewardId);
+            if (status == null || status.status != "available") return;
+
+            var message = new ClaimQuestCompletionRewardMessage
+            {
+                rewardId = rewardId,
+                questGiverId = questGiverId
+            };
+            capi.Network.GetChannel("alegacyvsquest").SendPacket(message);
         }
 
         private string questText(string questId)
@@ -329,7 +570,7 @@ namespace VsQuest
             if (message == null) return;
 
             CloseOpenedDropDown();
-            ApplyData(message.questGiverId, message.availableQestIds, message.activeQuests, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft, message.noAvailableQuestRotationDaysLeft);
+            ApplyData(message);
 
             RequestRecompose();
         }

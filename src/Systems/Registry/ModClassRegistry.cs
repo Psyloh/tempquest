@@ -28,7 +28,10 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("bossintoxaura", typeof(EntityBehaviorBossIntoxicationAura));
             api.RegisterEntityBehaviorClass("bossoxygendrainaura", typeof(EntityBehaviorBossOxygenDrainAura));
             api.RegisterEntityBehaviorClass("bosscloning", typeof(EntityBehaviorBossCloning));
+            api.RegisterEntityBehaviorClass("bossrandomlightning", typeof(EntityBehaviorBossRandomLightning));
+            api.RegisterEntityBehaviorClass("bossplayerclone", typeof(EntityBehaviorBossPlayerClone));
             api.RegisterEntityBehaviorClass("bossformswap", typeof(EntityBehaviorBossFormSwap));
+            api.RegisterEntityBehaviorClass("bossformswaplist", typeof(EntityBehaviorBossFormSwapList));
             api.RegisterEntityBehaviorClass("shiverdebug", typeof(EntityBehaviorShiverDebug));
 
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));

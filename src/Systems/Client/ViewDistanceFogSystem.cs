@@ -69,7 +69,7 @@ namespace VsQuest
 
             // FogMin controls how close the fog starts.
             // Positive viewDistance => allow the fog to start further away.
-            // Negative viewDistance => push the fog closer (do not increase FogMin).
+            // Negative viewDistance => do not increase FogMin (avoid improving visibility).
             modifier.FogMin.Value = viewDistance > 0f ? strength * 0.03f : 0f;
             modifier.FogMin.Weight = strength;
 

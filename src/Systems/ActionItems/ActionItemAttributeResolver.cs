@@ -75,7 +75,11 @@ namespace VsQuest
 
             if (ItemAttributeUtils.IsActionItem(slot.Itemstack)) return true;
 
-            if (!TryGetActionItemByStack(slot.Itemstack, out var actionItem)) return false;
+            string actionItemId = slot.Itemstack.Attributes.GetString(ItemAttributeUtils.ActionItemIdKey);
+            if (string.IsNullOrWhiteSpace(actionItemId)) return false;
+            if (actionItemRegistry == null || actionItemRegistry.Count == 0) return false;
+
+            if (!actionItemRegistry.TryGetValue(actionItemId, out var actionItem)) return false;
 
             ItemAttributeUtils.ApplyActionItemAttributes(slot.Itemstack, actionItem);
             slot.MarkDirty();

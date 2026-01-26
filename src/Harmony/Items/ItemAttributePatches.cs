@@ -410,18 +410,47 @@ namespace VsQuest.Harmony
             string chargeKey = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrSecondChanceCharges);
             if (!sinkStack.Attributes.HasAttribute(chargeKey)) return false;
 
-            if (!IsUranium(sourceStack.Collectible.Code)) return false;
+            if (!IsDiamondRough(sourceStack.Collectible.Code)) return false;
+            if (!HasHighPotential(sourceStack)) return false;
 
             float charges = ItemAttributeUtils.GetAttributeFloat(sinkStack, ItemAttributeUtils.AttrSecondChanceCharges, 0f);
             return charges < 0.5f;
         }
 
-        private static bool IsUranium(AssetLocation code)
+        private static bool IsDiamondRough(AssetLocation code)
         {
             return code != null
                 && string.Equals(code.Domain, "game", StringComparison.OrdinalIgnoreCase)
                 && code.Path != null
-                && code.Path.IndexOf("uranium", StringComparison.OrdinalIgnoreCase) >= 0;
+                && string.Equals(code.Path, "gem-diamond-rough", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool HasHighPotential(ItemStack stack)
+        {
+            var attrs = stack?.Attributes;
+            if (attrs == null) return false;
+
+            string potentialText = attrs.GetString("potential", null);
+            if (!string.IsNullOrWhiteSpace(potentialText))
+            {
+                return string.Equals(potentialText, "high", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(potentialText, "veryhigh", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(potentialText, "высокий", StringComparison.OrdinalIgnoreCase);
+            }
+
+            int potentialInt = attrs.GetInt("potential", int.MinValue);
+            if (potentialInt != int.MinValue)
+            {
+                return potentialInt >= 3;
+            }
+
+            float potentialFloat = attrs.GetFloat("potential", float.NaN);
+            if (!float.IsNaN(potentialFloat))
+            {
+                return potentialFloat >= 3f;
+            }
+
+            return false;
         }
     }
 }

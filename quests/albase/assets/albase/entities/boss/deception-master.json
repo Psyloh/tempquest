@@ -1,0 +1,281 @@
+{
+  "code": "crypt-mirror",
+  "class": "EntityPlayerBot",
+  "tags": ["humanoid", "habitat-land"],
+  "canClimb": true,
+  "hitboxSize": { "x": 0.6, "y": 1.75 },
+  "eyeHeight": 1.65,
+  "drops": [],
+  "attributes": {
+    "skinnableParts": [],
+    "alegacyvsquestNoUndress": true,
+    "alegacyvsquestHideInfoText": true
+  },
+  "client": {
+    "renderer": "Shape",
+    "size": 1.1,
+    "shape": { "base": "game:entity/humanoid/seraph-faceless" },
+    "texture": { "base": "game:entity/humanoid/seraph-naked-hairless" },
+    "behaviors": [
+      { "code": "nametag", "showtagonlywhentargeted": true },
+      { "code": "repulseagents" },
+      { "code": "controlledphysics", "stepHeight": 1.01 },
+      { "code": "interpolateposition" },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
+      { "code": "boss", "bossHpBarRange": 80 },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_3", "range": 120, "startRange": 40, "combatTimeoutMs": 12000, "requireRecentDamage": true, "startOnTarget": true, "playInIdle": false, "fadeOutSeconds": 2 },
+      { "code": "bossnametag", "nameLangKey": "item-creature-crypt-mirror", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 120 }
+    ],
+    "animations": [
+      { "code": "walk", "animation": "walk", "blendMode": "Average", "mulWithWalkSpeed": true, "animationSpeed": 1.1 },
+      { "code": "run", "animation": "run", "blendMode": "Average", "mulWithWalkSpeed": true, "animationSpeed": 1.2 },
+      { "code": "hit", "animation": "swordhit", "blendMode": "Average", "animationSpeed": 1.1 },
+      { "code": "attack", "animation": "lazy-attack", "blendMode": "Average", "weight": 10, "animationSpeed": 1.2 },
+      { "code": "sneakidle", "animation": "sneakidle", "blendMode": "Average" },
+      { "code": "die", "animation": "die", "animationSpeed": 1.75, "weight": 10, "blendMode": "AddAverage" },
+      { "code": "hurt", "animation": "hurt", "animationSpeed": 2, "blendMode": "AddAverage" },
+      { "code": "idle", "animation": "idle", "blendMode": "AddAverage", "triggeredBy": { "defaultAnim": true } }
+    ]
+  },
+  "server": {
+    "behaviors": [
+      { "code": "repulseagents" },
+      { "code": "controlledphysics", "stepHeight": 1.01 },
+      { "code": "health", "currenthealth": 420, "maxhealth": 420 },
+      { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
+      { "code": "bosshastargetsync" },
+      { "code": "questtarget", "targetId": "albase:bosshunt:crypt-mirror", "leashRange": 120, "returnMoveSpeed": 0.04, "leashCheckMs": 1000 },
+      {
+        "code": "bossplayerclone",
+        "cloneEntityCode": "albase:crypt-mirror-clone",
+        "cloneRange": 50,
+        "checkIntervalMs": 500
+      },
+      {
+        "code": "bossformswaplist",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.85,
+            "entityCode": "albase:ashenlurker",
+            "cooldownSeconds": 0,
+            "requireTarget": true,
+            "keepHealthFraction": true,
+            "sound": "game:effect/translocate-active",
+            "soundRange": 24,
+            "soundStartMs": 0
+          },
+          {
+            "whenHealthRelBelow": 0.6,
+            "entityCode": "albase:bonecolossus",
+            "cooldownSeconds": 0,
+            "requireTarget": true,
+            "keepHealthFraction": true,
+            "sound": "game:effect/translocate-active",
+            "soundRange": 24,
+            "soundStartMs": 0
+          },
+          {
+            "whenHealthRelBelow": 0.35,
+            "entityCode": "albase:ossuarywarden",
+            "cooldownSeconds": 0,
+            "requireTarget": true,
+            "keepHealthFraction": true,
+            "sound": "game:effect/translocate-active",
+            "soundRange": 24,
+            "soundStartMs": 0
+          },
+          {
+            "whenHealthRelBelow": 0.15,
+            "entityCode": "albase:subduction-maw",
+            "cooldownSeconds": 0,
+            "requireTarget": true,
+            "keepHealthFraction": true,
+            "sound": "game:effect/translocate-active",
+            "soundRange": 24,
+            "soundStartMs": 0
+          }
+        ]
+      },
+      {
+        "code": "bosshook",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.85,
+            "cooldownSeconds": 12,
+            "minTargetRange": 3,
+            "maxTargetRange": 22,
+            "windupMs": 250,
+            "pullMs": 850,
+            "pullSpeed": 0.12,
+            "maxPlayerMotion": 0.22,
+            "windupAnimation": "hit",
+            "pullAnimation": "attack",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 24,
+            "soundStartMs": 120,
+            "soundVolume": 0.2
+          },
+          {
+            "whenHealthRelBelow": 0.45,
+            "cooldownSeconds": 9,
+            "minTargetRange": 3,
+            "maxTargetRange": 26,
+            "windupMs": 200,
+            "pullMs": 900,
+            "pullSpeed": 0.14,
+            "maxPlayerMotion": 0.24,
+            "windupAnimation": "hit",
+            "pullAnimation": "attack",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 26,
+            "soundStartMs": 100,
+            "soundVolume": 0.2
+          }
+        ]
+      },
+      {
+        "code": "bossgrab",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.7,
+            "cooldownSeconds": 14,
+            "minTargetRange": 0,
+            "maxTargetRange": 3.0,
+            "windupMs": 200,
+            "grabMs": 2200,
+            "victimWalkSpeedMult": 0.08,
+            "damageIntervalMs": 550,
+            "damage": 2.2,
+            "damageTier": 4,
+            "damageType": "PiercingAttack",
+            "windupAnimation": "hit",
+            "grabAnimation": "attack",
+            "sound": "albase:shock-sound-effect-horror",
+            "soundRange": 24,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          },
+          {
+            "whenHealthRelBelow": 0.35,
+            "cooldownSeconds": 11,
+            "minTargetRange": 0,
+            "maxTargetRange": 3.6,
+            "windupMs": 150,
+            "grabMs": 2600,
+            "victimWalkSpeedMult": 0.05,
+            "damageIntervalMs": 500,
+            "damage": 2.8,
+            "damageTier": 4,
+            "damageType": "PiercingAttack",
+            "windupAnimation": "hit",
+            "grabAnimation": "attack",
+            "sound": "albase:shock-sound-effect-horror",
+            "soundRange": 26,
+            "soundStartMs": 0,
+            "soundVolume": 0.18
+          }
+        ]
+      },
+      {
+        "code": "bossdash",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.75,
+            "cooldownSeconds": 8,
+            "minTargetRange": 4,
+            "maxTargetRange": 20,
+            "windupMs": 250,
+            "dashMs": 240,
+            "dashSpeed": 1.3,
+            "dashDirection": "side",
+            "windupAnimation": "hit",
+            "dashAnimation": "run",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 20,
+            "soundStartMs": 120,
+            "soundVolume": 0.18
+          },
+          {
+            "whenHealthRelBelow": 0.4,
+            "cooldownSeconds": 7,
+            "minTargetRange": 5,
+            "maxTargetRange": 24,
+            "windupMs": 200,
+            "dashMs": 280,
+            "dashSpeed": 1.45,
+            "dashDirection": "back",
+            "windupAnimation": "hit",
+            "dashAnimation": "run",
+            "sound": "game:creature/wolf/attack",
+            "soundRange": 22,
+            "soundStartMs": 120,
+            "soundVolume": 0.18
+          }
+        ]
+      },
+      { "code": "extraskinnable" },
+      { "code": "seraphinventory" },
+      {
+        "code": "taskai",
+        "aitasks": [
+          {
+            "code": "meleeattack",
+            "entityCodes": ["player"],
+            "priority": 2,
+            "damage": 12,
+            "damageTier": 4,
+            "minDist": 2.8,
+            "minVerDist": 2.8,
+            "attackAngleRangeDeg": 120,
+            "mincooldown": 1100,
+            "maxcooldown": 2000,
+            "damagePlayerAtMs": 450,
+            "attackDurationMs": 1000,
+            "animation": "swordhit",
+            "animationSpeed": 0.9,
+            "sound": "game:creature/drifter-hit",
+            "soundStartMs": 350
+          },
+          {
+            "code": "seekentity",
+            "entityCodes": ["player"],
+            "priority": 1.6,
+            "mincooldown": 200,
+            "maxcooldown": 400,
+            "movespeed": 0.03,
+            "seekingRange": 45,
+            "maxFollowTime": 300,
+            "searchWaitMs": 500,
+            "executionChance": 1,
+            "animationSpeed": 1.15,
+            "animation": "walk"
+          },
+          {
+            "code": "seekentity",
+            "entityCodes": ["player"],
+            "priority": 1.4,
+            "mincooldown": 200,
+            "maxcooldown": 400,
+            "movespeed": 0.05,
+            "seekingRange": 30,
+            "maxFollowTime": 200,
+            "searchWaitMs": 250,
+            "executionChance": 0.75,
+            "animationSpeed": 1.35,
+            "animation": "run"
+          },
+          { "code": "lookaround", "priority": 0.5 }
+        ]
+      },
+      { "code": "bossrespawn", "respawnInGameHours": 24, "spawnNewBoss": false }
+    ]
+  },
+  "idleSoundRange": 14,
+  "sounds": {
+    "hurt": "game:creature/drifter-hurt",
+    "death": "game:creature/drifter-death",
+    "idle": "game:creature/drifter-idle",
+    "attack": "game:creature/drifter-hit"
+  }
+}

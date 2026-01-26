@@ -611,6 +611,72 @@ namespace VsQuest
                     ClearActionObjectiveCompletionFlagsForQuest(questSystem, player, questId);
                 }
 
+                // Clear reputation values + any related one-time claim flags.
+                try
+                {
+                    var wa = player.Entity.WatchedAttributes;
+
+                    // Clear rep values deterministically based on loaded definitions.
+                    if (sapi != null)
+                    {
+                        var repSystem = sapi.ModLoader.GetModSystem<ReputationSystem>();
+                        if (repSystem != null)
+                        {
+                            foreach (var npcId in repSystem.GetAllNpcIds())
+                            {
+                                repSystem.SetReputationValue(player as IPlayer, ReputationScope.Npc, npcId, 0);
+                                foreach (var onceKey in repSystem.GetRankRewardOnceKeys(ReputationScope.Npc, npcId))
+                                {
+                                    wa.RemoveAttribute(onceKey);
+                                    wa.MarkPathDirty(onceKey);
+                                }
+                            }
+
+                            foreach (var factionId in repSystem.GetAllFactionIds())
+                            {
+                                repSystem.SetReputationValue(player as IPlayer, ReputationScope.Faction, factionId, 0);
+                                foreach (var onceKey in repSystem.GetRankRewardOnceKeys(ReputationScope.Faction, factionId))
+                                {
+                                    wa.RemoveAttribute(onceKey);
+                                    wa.MarkPathDirty(onceKey);
+                                }
+                            }
+                        }
+
+                        var completionRewardSystem = sapi.ModLoader.GetModSystem<QuestCompletionRewardSystem>();
+                        if (completionRewardSystem != null)
+                        {
+                            foreach (var reward in completionRewardSystem.GetAllRewards())
+                            {
+                                if (reward == null) continue;
+                                string key = completionRewardSystem.BuildOnceKey(reward);
+                                if (string.IsNullOrWhiteSpace(key)) continue;
+                                wa.RemoveAttribute(key);
+                                wa.MarkPathDirty(key);
+                            }
+                        }
+                    }
+
+                    // Clear custom onceKeys used by addreputation actions (tracked per player).
+                    const string onceKeysListKey = "alegacyvsquest:rep:oncekeys";
+                    var onceKeys = wa.GetStringArray(onceKeysListKey, null);
+                    if (onceKeys != null)
+                    {
+                        for (int i = 0; i < onceKeys.Length; i++)
+                        {
+                            var k = onceKeys[i];
+                            if (string.IsNullOrWhiteSpace(k)) continue;
+                            wa.RemoveAttribute(k);
+                            wa.MarkPathDirty(k);
+                        }
+                    }
+                    wa.RemoveAttribute(onceKeysListKey);
+                    wa.MarkPathDirty(onceKeysListKey);
+                }
+                catch
+                {
+                }
+
                 player.Entity.WatchedAttributes.MarkAllDirty();
             }
 

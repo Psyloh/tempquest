@@ -32,8 +32,13 @@ namespace VsQuest
         private string noAvailableQuestDescLangKey;
         private string noAvailableQuestCooldownDescLangKey;
         private bool bossHuntActiveOnly;
+        private string reputationNpcId;
+        private string reputationFactionId;
 
         public static string ChainCooldownLastCompletedKey(long questGiverEntityId) => $"vsquest:questgiver:lastcompleted-{questGiverEntityId}";
+
+        public string ReputationNpcId => reputationNpcId;
+        public string ReputationFactionId => reputationFactionId;
 
         public EntityBehaviorQuestGiver(Entity entity) : base(entity)
         {
@@ -72,6 +77,8 @@ namespace VsQuest
             excludeQuestPrefixes = attributes["excludequestprefixes"].AsArray<string>() ?? Array.Empty<string>();
             noAvailableQuestDescLangKey = attributes["noAvailableQuestDescLangKey"].AsString(null);
             noAvailableQuestCooldownDescLangKey = attributes["noAvailableQuestCooldownDescLangKey"].AsString(null);
+            reputationNpcId = attributes["reputationnpc"].AsString(null);
+            reputationFactionId = attributes["reputationfaction"].AsString(null);
 
             if (selectRandom)
             {
@@ -307,7 +314,9 @@ namespace VsQuest
                     {
                         int left = (int)Math.Ceiling(leftDays);
                         if (left < 0) left = 0;
-                        if (left > chainCooldownDays) left = chainCooldownDays;
+
+                        // Safety clamp: cooldown time remaining cannot exceed configured cooldown.
+                        if (chainCooldownDays > 0 && left > chainCooldownDays) left = chainCooldownDays;
 
                         var msgChainCd = new QuestInfoMessage()
                         {
@@ -319,6 +328,8 @@ namespace VsQuest
                             noAvailableQuestCooldownDaysLeft = left,
                             noAvailableQuestRotationDaysLeft = rotationDaysLeft
                         };
+
+                        PopulateReputationInfo(msgChainCd, sapi, serverPlayer);
 
                         sapi.Network.GetChannel("alegacyvsquest").SendPacket<QuestInfoMessage>(msgChainCd, player.Player as IServerPlayer);
                         return;
@@ -342,6 +353,8 @@ namespace VsQuest
                     noAvailableQuestCooldownDaysLeft = cooldownDaysLeftActive,
                     noAvailableQuestRotationDaysLeft = rotationDaysLeft
                 };
+
+                PopulateReputationInfo(msgActive, sapi, serverPlayer);
 
                 sapi.Network.GetChannel("alegacyvsquest").SendPacket<QuestInfoMessage>(msgActive, player.Player as IServerPlayer);
                 return;
@@ -423,9 +436,11 @@ namespace VsQuest
                 bool completed = completedQuests.Contains(questId);
                 bool oneTimeBlocked = quest.cooldown < 0 && completed;
 
+                bool meetsReputation = MeetsReputationRequirements(quest, player.PlayerUID);
                 bool eligible = !isActive
                     && !oneTimeBlocked
-                    && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID));
+                    && (ignorePredecessors || predecessorsCompleted(quest, player.PlayerUID))
+                    && meetsReputation;
 
                 int offerLimit = maxAvailableQuests > 0 ? maxAvailableQuests : (rotationDays > 0 ? Math.Max(1, rotationCount) : int.MaxValue);
 
@@ -475,7 +490,197 @@ namespace VsQuest
                 noAvailableQuestRotationDaysLeft = rotationDaysLeft
             };
 
+            PopulateReputationInfo(message, sapi, serverPlayer);
+
             sapi.Network.GetChannel("alegacyvsquest").SendPacket<QuestInfoMessage>(message, player.Player as IServerPlayer);
+        }
+
+        private List<QuestCompletionRewardStatus> BuildCompletionRewardStatuses(IServerPlayer serverPlayer, QuestSystem questSystem, QuestCompletionRewardSystem rewardSystem)
+        {
+            var results = new List<QuestCompletionRewardStatus>();
+            if (serverPlayer == null || questSystem == null || rewardSystem == null) return results;
+
+            if (!string.IsNullOrWhiteSpace(reputationNpcId))
+            {
+                var rewards = rewardSystem.GetRewardsForTarget("npc", reputationNpcId);
+                AddRewardStatuses(results, rewards, serverPlayer, questSystem, rewardSystem);
+            }
+
+            if (!string.IsNullOrWhiteSpace(reputationFactionId))
+            {
+                var rewards = rewardSystem.GetRewardsForTarget("faction", reputationFactionId);
+                AddRewardStatuses(results, rewards, serverPlayer, questSystem, rewardSystem);
+            }
+
+            return results;
+        }
+
+        private void AddRewardStatuses(List<QuestCompletionRewardStatus> target, IEnumerable<QuestCompletionReward> rewards, IServerPlayer serverPlayer, QuestSystem questSystem, QuestCompletionRewardSystem rewardSystem)
+        {
+            if (target == null || rewards == null || serverPlayer == null || questSystem == null || rewardSystem == null) return;
+
+            var completed = new HashSet<string>(questSystem.GetNormalizedCompletedQuestIds(serverPlayer as IPlayer), StringComparer.OrdinalIgnoreCase);
+
+            foreach (var reward in rewards)
+            {
+                if (reward == null || string.IsNullOrWhiteSpace(reward.id)) continue;
+
+                bool claimed = rewardSystem.IsClaimed(serverPlayer as IPlayer, reward);
+                bool eligible = !claimed && rewardSystem.RequirementsMet(serverPlayer as IPlayer, reward, questSystem);
+
+                int remainingCount = 0;
+                var remainingTitles = new List<string>();
+                if (reward.requiredQuestIds != null)
+                {
+                    for (int i = 0; i < reward.requiredQuestIds.Count; i++)
+                    {
+                        var requiredId = reward.requiredQuestIds[i];
+                        if (string.IsNullOrWhiteSpace(requiredId)) continue;
+                        if (!completed.Contains(requiredId))
+                        {
+                            remainingCount++;
+                            remainingTitles.Add(Lang.Get(requiredId + "-title"));
+                        }
+                    }
+                }
+
+                string title = string.IsNullOrWhiteSpace(reward.titleLangKey)
+                    ? reward.id
+                    : Lang.Get(reward.titleLangKey);
+
+                string requirementText = string.IsNullOrWhiteSpace(reward.requirementLangKey)
+                    ? string.Empty
+                    : Lang.Get(reward.requirementLangKey);
+
+                if (remainingCount > 0)
+                {
+                    string remainingText = Lang.Get("alegacyvsquest:reputation-remaining-template", remainingCount);
+                    string list = remainingTitles.Count > 0
+                        ? string.Join("\n", remainingTitles)
+                        : string.Empty;
+                    requirementText = string.IsNullOrWhiteSpace(list)
+                        ? remainingText
+                        : string.Format("{0}\n{1}", remainingText, list);
+                }
+                else if (eligible && string.IsNullOrWhiteSpace(requirementText))
+                {
+                    requirementText = Lang.Get("alegacyvsquest:reputation-available");
+                }
+
+                target.Add(new QuestCompletionRewardStatus
+                {
+                    id = reward.id,
+                    title = title,
+                    requirementText = requirementText,
+                    x = reward.x,
+                    y = reward.y,
+                    status = claimed ? "claimed" : (eligible ? "available" : "locked"),
+                    iconItemCode = reward.iconItemCode
+                });
+            }
+        }
+
+        private void PopulateReputationInfo(QuestInfoMessage message, ICoreServerAPI sapi, IServerPlayer serverPlayer)
+        {
+            if (message == null || sapi == null) return;
+
+            message.reputationNpcId = reputationNpcId;
+            message.reputationFactionId = reputationFactionId;
+
+            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+            var rewardSystem = sapi.ModLoader.GetModSystem<QuestCompletionRewardSystem>();
+            if (rewardSystem != null && questSystem != null)
+            {
+                message.completionRewards = BuildCompletionRewardStatuses(serverPlayer, questSystem, rewardSystem);
+            }
+
+            if (serverPlayer != null && (!string.IsNullOrWhiteSpace(reputationNpcId) || !string.IsNullOrWhiteSpace(reputationFactionId)))
+            {
+                var repSystem = sapi.ModLoader.GetModSystem<ReputationSystem>();
+                if (repSystem != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(reputationNpcId))
+                    {
+                        message.reputationNpcValue = repSystem.GetReputationValue(serverPlayer as IPlayer, ReputationScope.Npc, reputationNpcId);
+                        var def = repSystem.GetNpcDefinition(reputationNpcId);
+                        message.reputationNpcRankLangKey = repSystem.GetRankLangKey(def, message.reputationNpcValue);
+                        message.reputationNpcTitleLangKey = def?.titleLangKey;
+                        message.reputationNpcHasRewards = repSystem.HasPendingRewards(serverPlayer, ReputationScope.Npc, reputationNpcId);
+                        message.reputationNpcRewardsCount = repSystem.GetPendingRewardsCount(serverPlayer, ReputationScope.Npc, reputationNpcId);
+
+                        message.reputationNpcRankRewards = BuildRankRewardStatuses(repSystem, serverPlayer, ReputationScope.Npc, reputationNpcId, message.reputationNpcValue);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(reputationFactionId))
+                    {
+                        message.reputationFactionValue = repSystem.GetReputationValue(serverPlayer as IPlayer, ReputationScope.Faction, reputationFactionId);
+                        var def = repSystem.GetFactionDefinition(reputationFactionId);
+                        message.reputationFactionRankLangKey = repSystem.GetRankLangKey(def, message.reputationFactionValue);
+                        message.reputationFactionTitleLangKey = def?.titleLangKey;
+                        message.reputationFactionHasRewards = repSystem.HasPendingRewards(serverPlayer, ReputationScope.Faction, reputationFactionId);
+                        message.reputationFactionRewardsCount = repSystem.GetPendingRewardsCount(serverPlayer, ReputationScope.Faction, reputationFactionId);
+
+                        message.reputationFactionRankRewards = BuildRankRewardStatuses(repSystem, serverPlayer, ReputationScope.Faction, reputationFactionId, message.reputationFactionValue);
+                    }
+                }
+            }
+        }
+
+        private List<ReputationRankRewardStatus> BuildRankRewardStatuses(ReputationSystem repSystem, IServerPlayer serverPlayer, ReputationScope scope, string id, int currentValue)
+        {
+            var results = new List<ReputationRankRewardStatus>();
+            if (repSystem == null || serverPlayer?.Entity?.WatchedAttributes == null) return results;
+            if (string.IsNullOrWhiteSpace(id)) return results;
+
+            var def = scope == ReputationScope.Npc
+                ? repSystem.GetNpcDefinition(id)
+                : repSystem.GetFactionDefinition(id);
+
+            if (def?.ranks == null || def.ranks.Count == 0) return results;
+
+            var wa = serverPlayer.Entity.WatchedAttributes;
+
+            for (int i = 0; i < def.ranks.Count; i++)
+            {
+                var rank = def.ranks[i];
+                if (rank == null) continue;
+                if (string.IsNullOrWhiteSpace(rank.rewardAction)) continue;
+
+                string onceKey = repSystem.GetRewardOnceKeyForRank(scope, id, rank);
+                bool claimed = !string.IsNullOrWhiteSpace(onceKey) && wa.GetBool(onceKey, false);
+                bool meets = currentValue >= rank.min;
+                string status = claimed ? "claimed" : (meets ? "available" : "locked");
+
+                results.Add(new ReputationRankRewardStatus
+                {
+                    min = rank.min,
+                    rankLangKey = rank.rankLangKey,
+                    status = status,
+                    iconItemCode = ReputationSystem.TryGetIconItemCodeFromRewardAction(rank.rewardAction)
+                });
+            }
+
+            return results;
+        }
+
+        private bool MeetsReputationRequirements(Quest quest, string playerUID)
+        {
+            if (quest?.reputationRequirements == null || quest.reputationRequirements.Count == 0) return true;
+
+            var repSystem = entity.Api.ModLoader.GetModSystem<ReputationSystem>();
+            if (repSystem == null) return false;
+
+            var player = entity.World.PlayerByUid(playerUID);
+            if (player == null) return false;
+
+            for (int i = 0; i < quest.reputationRequirements.Count; i++)
+            {
+                var req = quest.reputationRequirements[i];
+                if (req == null) continue;
+                if (!repSystem.MeetsRequirement(player, req)) return false;
+            }
+
+            return true;
         }
 
         public override WorldInteraction[] GetInteractionHelp(IClientWorldAccessor world, EntitySelection es, IClientPlayer player, ref EnumHandling handled)

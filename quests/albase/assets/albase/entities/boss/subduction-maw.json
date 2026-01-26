@@ -54,7 +54,7 @@
     "behaviors": [
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.1251 },
-      { "code": "health", "currenthealth": 420, "maxhealth": 420 },
+      { "code": "health", "currenthealth": 520, "maxhealth": 520 },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "bosshastargetsync" },
       { "code": "questtarget", "targetId": "albase:bosshunt:subduction-maw", "leashRange": 120, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
@@ -69,16 +69,94 @@
       {
         "code": "bosscloning",
         "stages": [
-          { "whenHealthRelBelow": 0.8, "cloneCount": 1, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 6, "cloneDamageMult": 0.6, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.65, "cloneCount": 3, "durationMs": 9000, "cooldownSeconds": 14, "spawnRange": 7, "cloneDamageMult": 0.55, "cloneWalkSpeedMult": 0.85, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.33, "cloneCount": 5, "durationMs": 11000, "cooldownSeconds": 12, "spawnRange": 7, "cloneDamageMult": 0.5, "cloneWalkSpeedMult": 0.95, "cloneInvulnerable": true }
+          { "whenHealthRelBelow": 0.8, "cloneCount": 2, "durationMs": 11000, "cooldownSeconds": 10, "spawnRange": 7, "cloneDamageMult": 0.7, "cloneWalkSpeedMult": 1.1, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.65, "cloneCount": 4, "durationMs": 11000, "cooldownSeconds": 10, "spawnRange": 8, "cloneDamageMult": 0.65, "cloneWalkSpeedMult": 1.15, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.33, "cloneCount": 6, "durationMs": 13000, "cooldownSeconds": 9, "spawnRange": 8, "cloneDamageMult": 0.6, "cloneWalkSpeedMult": 1.2, "cloneInvulnerable": true }
         ]
       },
       {
         "code": "bossteleport",
         "stages": [
-          { "whenHealthRelBelow": 0.6, "cooldownSeconds": 20, "minTargetRange": 10, "maxTargetRange": 38, "minRadius": 3, "maxRadius": 8, "tries": 12, "windupMs": 250, "windupAnimation": "turret", "arriveAnimation": "stab", "sound": "albase:dark-magic-charge-up", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true },
-          { "whenHealthRelBelow": 0.3, "cooldownSeconds": 20, "minTargetRange": 8, "maxTargetRange": 36, "minRadius": 5, "maxRadius": 8, "tries": 12, "windupMs": 220, "windupAnimation": "load", "arriveAnimation": "stab", "sound": "albase:shock-sound-effect-horror", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true }
+          { "whenHealthRelBelow": 0.6, "cooldownSeconds": 12, "minTargetRange": 10, "maxTargetRange": 38, "minRadius": 3, "maxRadius": 8, "tries": 12, "windupMs": 250, "windupAnimation": "turret", "arriveAnimation": "stab", "sound": "albase:dark-magic-charge-up", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true },
+          { "whenHealthRelBelow": 0.3, "cooldownSeconds": 10, "minTargetRange": 8, "maxTargetRange": 36, "minRadius": 5, "maxRadius": 8, "tries": 12, "windupMs": 220, "windupAnimation": "load", "arriveAnimation": "stab", "sound": "albase:shock-sound-effect-horror", "soundRange": 40, "soundStartMs": 0, "soundVolume": 0.25, "requireSolidGround": true, "teleportClones": true, "swapWithClones": true }
+        ]
+      },
+      {
+        "code": "bossrandomlightning",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.8,
+            "minCount": 1,
+            "maxCount": 2,
+            "cooldownSeconds": 10,
+            "minRadius": 4,
+            "maxRadius": 16,
+            "warningSound": "effect/translocate-idle",
+            "warningSoundRange": 32,
+            "warningDelayMs": 3000,
+            "chance": 0.9
+          },
+          {
+            "whenHealthRelBelow": 0.5,
+            "minCount": 2,
+            "maxCount": 3,
+            "cooldownSeconds": 8,
+            "minRadius": 4,
+            "maxRadius": 18,
+            "warningSound": "effect/translocate-idle",
+            "warningSoundRange": 34,
+            "warningDelayMs": 3000,
+            "chance": 1.0
+          },
+          {
+            "whenHealthRelBelow": 0.25,
+            "minCount": 2,
+            "maxCount": 4,
+            "cooldownSeconds": 7,
+            "minRadius": 3,
+            "maxRadius": 20,
+            "warningSound": "effect/translocate-idle",
+            "warningSoundRange": 36,
+            "warningDelayMs": 2500,
+            "chance": 1.0
+          }
+        ]
+      },
+      {
+        "code": "bosssummonritual",
+        "stages": [
+          {
+            "whenHealthRelBelow": 0.75,
+            "cooldownSeconds": 16,
+            "entityCode": "game:shiver",
+            "maxNearby": 6,
+            "nearbyRange": 28,
+            "minCount": 1,
+            "maxCount": 2,
+            "ritualMs": 2200,
+            "spawnRange": 8,
+            "animation": "load",
+            "sound": "weather/lightning-verynear",
+            "soundRange": 36,
+            "soundStartMs": 0,
+            "spawnDelayMs": 350
+          },
+          {
+            "whenHealthRelBelow": 0.4,
+            "cooldownSeconds": 12,
+            "entityCode": "game:shiver",
+            "maxNearby": 8,
+            "nearbyRange": 30,
+            "minCount": 2,
+            "maxCount": 3,
+            "ritualMs": 2200,
+            "spawnRange": 10,
+            "animation": "reload",
+            "sound": "weather/lightning-verynear",
+            "soundRange": 40,
+            "soundStartMs": 0,
+            "spawnDelayMs": 300
+          }
         ]
       },
       {
@@ -88,18 +166,18 @@
             "code": "meleeattack",
             "entityCodes": ["player"],
             "priority": 4,
-            "damage": 22,
+            "damage": 30,
             "damageTier": 4,
-            "mincooldown": 350,
-            "maxcooldown": 900,
-            "maxAttackDistance": 6.5,
-            "maxAttackVerticalDistance": 3.5,
-            "attackAngleRangeDeg": 120,
+            "mincooldown": 250,
+            "maxcooldown": 700,
+            "maxAttackDistance": 9.5,
+            "maxAttackVerticalDistance": 4.8,
+            "attackAngleRangeDeg": 160,
             "retaliateAttacks": false,
-            "damagePlayerAtMs": 400,
+            "damagePlayerAtMs": 320,
             "attackDurationMs": 1000,
             "animation": "stab",
-            "animationSpeed": 1.6,
+            "animationSpeed": 2.1,
             "sound": "game:creature/drifter-hit",
             "soundStartMs": 400
           },
@@ -121,7 +199,7 @@
             "cancelOnHurt": true,
             "retaliateAttacks": false,
             "executionChance": 0.05,
-            "movespeed": 0.04,
+            "movespeed": 0.048,
             "animation": "walk",
             "animationSpeed": 2.8
           },
@@ -153,7 +231,7 @@
           {
             "code": "wander",
             "priority": 1.0,
-            "movespeed": 0.015,
+            "movespeed": 0.018,
             "animation": "walk",
             "animationSpeed": 1.5,
             "preferredLightLevel": 15

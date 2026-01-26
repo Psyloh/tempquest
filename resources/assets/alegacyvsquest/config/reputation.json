@@ -1,0 +1,18 @@
+{
+  "factions": {
+    "alegacyvsquest:default": {
+      "titleLangKey": "alegacyvsquest:reputation-default-title",
+      "ranks": [
+        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" }
+      ]
+    }
+  },
+  "npcs": {
+    "alegacyvsquest:default": {
+      "titleLangKey": "alegacyvsquest:reputation-default-title",
+      "ranks": [
+        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" }
+      ]
+    }
+  }
+}

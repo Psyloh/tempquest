@@ -1,5 +1,5 @@
 {
-  "id": "albase:bosshunt-subduction-maw",
+  "id": "albase:bosshunt-crypt-mirror-disabled",
   "cooldown": 90,
   "perPlayer": true,
   "predecessor": "albase:bosshunt-intro",
@@ -12,18 +12,12 @@
       ]
     },
     {
-      "id": "preloadbossmusic",
-      "args": [
-        "https://drive.google.com/uc?export=download&id=1kR-As-lRZq7zPVuhVAtTKqXTDa0Io3fq"
-      ]
-    },
-    {
       "id": "addjournalentry",
       "args": [
         "albase:bosshunt",
-        "albase:bosshunt-subduction-maw",
-        "albase:bosshunt-subduction-maw-title",
-        "albase:bosshunt-subduction-maw-journal-text"
+        "albase:bosshunt-crypt-mirror",
+        "albase:bosshunt-crypt-mirror-title",
+        "albase:bosshunt-crypt-mirror-journal-text"
       ]
     },
     {
@@ -42,12 +36,12 @@
   "actionObjectives": [
     {
       "id": "killactiontarget",
-      "objectiveId": "subduction-maw",
-      "onCompleteActions": "addjournalentry albase:bosshunt albase:bosshunt-subduction-maw albase:bosshunt-subduction-maw-title overwrite albase:bosshunt-subduction-maw-reward-journal-text",
+      "objectiveId": "crypt-mirror",
+      "onCompleteActions": "addjournalentry albase:bosshunt albase:bosshunt-crypt-mirror albase:bosshunt-crypt-mirror-title overwrite albase:bosshunt-crypt-mirror-reward-journal-text",
       "args": [
-        "albase:bosshunt-subduction-maw",
-        "subduction-maw",
-        "albase:bosshunt:subduction-maw",
+        "albase:bosshunt-crypt-mirror",
+        "crypt-mirror",
+        "albase:bosshunt:crypt-mirror",
         "1"
       ]
     }
@@ -70,19 +64,7 @@
         "albase:bosshunter",
         "50",
         "",
-        "alegacyvsquest:rep-bosshunt-subduction-maw-once"
-      ]
-    },
-    {
-      "id": "questitem",
-      "args": [
-        "albase:bosshunt-reward-duelist"
-      ]
-    },
-    {
-      "id": "questitem",
-      "args": [
-        "albase:bosshunt-reward-subduction-filter"
+        "alegacyvsquest:rep-bosshunt-crypt-mirror-once"
       ]
     },
     {
@@ -96,7 +78,7 @@
     {
       "id": "notify",
       "args": [
-        "albase:bosshunt-subduction-maw-reward"
+        "albase:bosshunt-crypt-mirror-reward"
       ]
     }
   ]

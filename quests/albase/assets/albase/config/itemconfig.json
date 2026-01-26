@@ -11,11 +11,11 @@
           "args": []
         }
       ],
-      "blockMove": true,
+      "blockMove": false,
       "blockEquip": true,
-      "blockDrop": true,
-      "blockDeath": true,
-      "blockGroundStorage": true,
+      "blockDrop": false,
+      "blockDeath": false,
+      "blockGroundStorage": false,
       "showAttributes": [],
       "hideVanillaTooltips": [
         "durability",
@@ -24,7 +24,7 @@
     },
     {
       "id": "albase:bosshunt-reward-miner-belt",
-      "itemCode": "game:clothes-waist-heavy-tool-belt",
+      "itemCode": "game:clothes-nadiya-waist-miner-accessor",
       "name": "<font color=\"#F59E0B\">Пояс Оссуария</font>",
       "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой, обсыпанной костяной крошкой. На коже — следы когтей и каменной пыли, будто кто-то цеплялся за своды в темноте.</font>",
       "actions": [],
@@ -33,8 +33,8 @@
         "protectionperc": 0.06,
         "walkspeed": -0.08,
         "weightlimit": 0.2,
-        "hungerrate": 0.4,
-        "miningspeedmult": 0.15,
+        "hungerrate": 0.5,
+        "miningspeedmult": 0.45,
         "temporaldrainmult": 0.1
       },
       "showAttributes": [
@@ -91,7 +91,7 @@
         "healingeffectiveness": 0.05,
         "protectionperc": -0.1,
         "hungerrate": 0.2,
-        "knockbackmult": 0.15
+        "knockbackmult": 0.3
       },
       "showAttributes": [
         "attackpower",
@@ -145,7 +145,7 @@
       "actions": [],
       "attributes": {
         "warmth": 10,
-        "protection": 2,
+        "protection": 1,
         "walkspeed": -0.2,
         "hungerrate": 0.3,
         "weightlimit": 0.15,
@@ -174,16 +174,16 @@
       "description": "<font color=\"#FDE68A\">Латунные пластины с мелкими насечками, как у зубчатых колёс. В тишине от них идёт слабый скрежет, будто где-то рядом шевелится рой пил.</font>",
       "actions": [],
       "attributes": {
-        "rangedaccuracy": 0.09,
-        "rangedchargspeed": 0.1,
-        "attackpower": -1,
-        "protectionperc": -0.06
+        "rangedaccuracy": 0.15,
+        "rangedchargspeed": 0.35,
+        "protectionperc": -0.15,
+        "hungerrate": 0.4
       },
       "showAttributes": [
         "rangedaccuracy",
         "rangedchargspeed",
-        "attackpower",
-        "protectionperc"
+        "protectionperc",
+        "hungerrate"
       ],
       "hideVanillaTooltips": [
         "armor",
@@ -256,8 +256,8 @@
     {
       "id": "albase:bosshunt-reward-secondchance-mask",
       "itemCode": "albase:2cnah-mask",
-      "name": "<font color=\"#A7F3D0\">Маска последнего вдоха</font>",
-      "description": "<font color=\"#D1FAE5\">Ржавая фильтрующая маска; фильтры шипят, будто в них живёт металл. Внутри — едва заметная урановая метка и сухой привкус чужого воздуха.</font>",
+      "name": "<font color=\"#A7F3D0\">Маска второго шанса</font>",
+      "description": "<font color=\"#D1FAE5\">Ржавая фильтрующая маска; фильтры шипят, будто в них живёт металл. Внутри — едва заметная вставка из алмазов высокого качества и сухой привкус чужого воздуха.</font>",
       "actions": [],
       "triggerOnInventoryAdd": true,
       "attributes": {
@@ -313,7 +313,7 @@
       "description": "<font color=\"#86EFAC\">Грубый фильтр на цепи, покрытый ржавчиной и зелёной гарью. Если поднести к лицу, слышно, как внутри оседает криптовый туман.</font>",
       "actions": [],
       "attributes": {
-        "maxoxygen": 14000,
+        "maxoxygen": 28000,
         "temporaldrainmult": 0.15,
         "hungerrate": 0.15,
         "walkspeed": -0.03,

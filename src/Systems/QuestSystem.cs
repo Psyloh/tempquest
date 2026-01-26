@@ -327,5 +327,62 @@ namespace VsQuest
             {
             }
         }
+
+        internal void OnClaimReputationRewardsMessage(IServerPlayer player, ClaimReputationRewardsMessage message, ICoreServerAPI sapi)
+        {
+            if (sapi == null || player == null || message == null) return;
+
+            var repSystem = sapi.ModLoader.GetModSystem<ReputationSystem>();
+            if (repSystem == null) return;
+
+            if (!repSystem.TryResolveQuestGiverReputation(sapi, message.questGiverId, out string repNpcId, out string repFactionId))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(message.scope) || string.Equals(message.scope, "npc", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrWhiteSpace(repNpcId))
+                {
+                    repSystem.ClaimPendingRewards(sapi, player, ReputationScope.Npc, repNpcId);
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(message.scope) || string.Equals(message.scope, "faction", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrWhiteSpace(repFactionId))
+                {
+                    repSystem.ClaimPendingRewards(sapi, player, ReputationScope.Faction, repFactionId);
+                }
+            }
+
+            var questGiver = sapi.World.GetEntityById(message.questGiverId);
+            var questGiverBehavior = questGiver?.GetBehavior<EntityBehaviorQuestGiver>();
+            if (questGiverBehavior != null && player.Entity is EntityPlayer entityPlayer)
+            {
+                questGiverBehavior.SendQuestInfoMessageToClient(sapi, entityPlayer);
+            }
+        }
+
+        internal void OnClaimQuestCompletionRewardMessage(IServerPlayer player, ClaimQuestCompletionRewardMessage message, ICoreServerAPI sapi)
+        {
+            if (sapi == null || player == null || message == null) return;
+
+            var rewardSystem = sapi.ModLoader.GetModSystem<QuestCompletionRewardSystem>();
+            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+            if (rewardSystem == null || questSystem == null) return;
+
+            var reward = rewardSystem.GetRewardById(message.rewardId);
+            if (reward == null) return;
+
+            rewardSystem.TryGrantReward(player, reward, questSystem, sapi);
+
+            var questGiver = sapi.World.GetEntityById(message.questGiverId);
+            var questGiverBehavior = questGiver?.GetBehavior<EntityBehaviorQuestGiver>();
+            if (questGiverBehavior != null && player.Entity is EntityPlayer entityPlayer)
+            {
+                questGiverBehavior.SendQuestInfoMessageToClient(sapi, entityPlayer);
+            }
+        }
     }
 }

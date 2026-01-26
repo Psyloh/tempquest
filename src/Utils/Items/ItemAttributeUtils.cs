@@ -162,7 +162,9 @@ namespace VsQuest
             }
             else if (shortKey == AttrMaxOxygen)
             {
-                return $"{displayName}: {prefix}{value:0.#}";
+                const float OxygenUnitsPerSecond = 800f;
+                float seconds = value / OxygenUnitsPerSecond;
+                return $"{displayName}: {prefix}{seconds:0.#}";
             }
 
             return $"{displayName}: {prefix}{value:0.##}";
@@ -260,30 +262,54 @@ namespace VsQuest
             {
                 stack.Attributes.SetBool(ActionItemTriggerOnInvAddKey, true);
             }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemTriggerOnInvAddKey);
+            }
 
             if (actionItem.blockMove)
             {
                 stack.Attributes.SetBool(ActionItemBlockMoveKey, true);
+            }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemBlockMoveKey);
             }
 
             if (actionItem.blockEquip)
             {
                 stack.Attributes.SetBool(ActionItemBlockEquipKey, true);
             }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemBlockEquipKey);
+            }
 
             if (actionItem.blockDrop)
             {
                 stack.Attributes.SetBool(ActionItemBlockDropKey, true);
+            }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemBlockDropKey);
             }
 
             if (actionItem.blockDeath)
             {
                 stack.Attributes.SetBool(ActionItemBlockDeathKey, true);
             }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemBlockDeathKey);
+            }
 
             if (actionItem.blockGroundStorage)
             {
                 stack.Attributes.SetBool(ActionItemBlockGroundStorageKey, true);
+            }
+            else
+            {
+                stack.Attributes.RemoveAttribute(ActionItemBlockGroundStorageKey);
             }
 
             if (actionItem.attributes != null)

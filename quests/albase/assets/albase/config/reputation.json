@@ -1,0 +1,22 @@
+{
+  "npcs": {
+    "albase:bosshunter": {
+      "titleLangKey": "albase:reputation-npc-bosshunter-title",
+      "ranks": [
+        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" },
+        { "min": 500, "rankLangKey": "albase:reputation-bosshunter-rank-500", "rewardAction": "questitem albase:bosshunt-reward-fox-boots" },
+        { "min": 1500, "rankLangKey": "albase:reputation-bosshunter-rank-1500", "rewardAction": "giveitem game:crystalizedore-rich-uranium-chalk 1" }
+      ]
+    },
+    "albase:innkeeper": {
+      "titleLangKey": "albase:reputation-npc-innkeeper-title",
+      "ranks": [
+        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" },
+        { "min": 500, "rewardAction": "giveitem game:jug-tan-fired 2" },
+        { "min": 1000, "rewardAction": "giveitem game:jug-brown-fired 2" },
+        { "min": 1500, "rewardAction": "giveitem game:jug-fire-fired 2; giveitem game:alcoholportion 50" },
+        { "min": 2000, "rankLangKey": "albase:reputation-innkeeper-rank-2000", "rewardAction": "giveitem game:crystalizedore-rich-uranium-chalk 1" }
+      ]
+    }
+  }
+}

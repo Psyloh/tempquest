@@ -1,0 +1,15 @@
+{
+  "bossKey": "albase:bosshunt:crypt-mirror",
+  "questId": "albase:bosshunt-crypt-mirror",
+  "points": [
+    "0,0,0,0",
+    "0,0,0,0",
+    "0,0,0,0"
+  ],
+  "relocateIntervalHours": 72,
+  "respawnInGameHours": 24,
+  "noRelocateAfterDamageMinutes": 10,
+  "rotationDays": 720,
+  "activationRange": 160,
+  "playerLockRange": 0
+}

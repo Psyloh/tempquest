@@ -85,6 +85,12 @@
   "albase:bosshunt-subduction-maw-reward-journal-text": "Субдукционная Пасть рухнула с шипением масла и ржавчины. Дурман рассеялся, и коридоры снова стали яснее.\n\nСкиталец кивнул и предупредил: такие охотники возвращаются в новом облике. Держи кристалл ближе и не доверяй собственным шагам слишком долго.",
   "albase:bosshunt-subduction-maw-reward": "Субдукционная Пасть повержена. Дурман ещё держится в воздухе.",
 
+  "albase:bosshunt-crypt-mirror-title": "Охота: Зеркало Крипт",
+  "albase:bosshunt-crypt-mirror-desc": "Твоя следующая цель — Зеркало Крипт. Оно не сражается одно: крадет облик и оружие тех, кто осмелился выйти против него, и заставляет их биться со своими двойниками. Чем ближе оно к падению, тем гуще становится круг обманщиков вокруг.\n\nДержись рядом с союзниками, не подпускай его к себе и не позволяй копиям закрыть тебе путь. У них одно сердце — бей всех без страха.",
+  "albase:bosshunt-crypt-mirror-journal-text": "Цель: Зеркало Крипт.\n\nОно копирует бойцов и их оружие. В радиусе ритуала каждый получает собственного двойника, и все они питаются одной кровью. Не трать время на поиски \"настоящего\" — урон по любой копии ранит его.",
+  "albase:bosshunt-crypt-mirror-reward-journal-text": "Зеркало Крипт пало. Маски сорваны, и двойники растворились в пыли крипт.\n\nХранитель принял весть спокойно. Он напомнил, что обманщики возвращаются — но уже в другой тени. Кровемер всё ещё помнит твою кровь.",
+  "albase:bosshunt-crypt-mirror-reward": "Зеркало Крипт повержено. Тени растаяли, но эхо чужих шагов еще звучит.",
+
   "albase:dialogue-bosshunter-intro": "Зачем тревожишь покой мертвых, живой? Если пришел за легкой наживой — разворачивайся. Если готов платить кровью за древние знания — слушай и не перебивай.",
   "albase:dialogue-bosshunter-work": "Какие тайны древних стражей готов открыть мне?",
   "albase:dialogue-bosshunter-whoareyou": "Кто ты такой?",
@@ -110,6 +116,12 @@
   "albase:dialogue-bosshunter-final-text": "Очередной страж пал. На время тьма отступила, но это лишь затишье. Когда понадобится снова спуститься во тьму — возвращайся.",
   "albase:dialogue-bosshunter-final-option": "Я вернусь.",
 
+  "albase:reputation-npc-bosshunter-title": "Охотник на боссов",
+  "albase:reputation-npc-innkeeper-title": "Трактирщик",
+  "albase:reputation-bosshunter-rank-500": "Скороходы",
+  "albase:reputation-bosshunter-rank-1500": "Уран",
+  "albase:reputation-innkeeper-rank-2000": "Свой человек",
+
   "albase:no-quest-available-bosshunter": "Стражи притаились. Не время для охоты.",
   "albase:no-quest-available-bosshunter-cooldown": "Следы еще слишком свежи, а тьма не набрала полную силу. Возвращайся через {0} д. Смена цели — через {1} д. А пока — береги кровемер и не привлекай внимания.",
   "albase:bosshunt-rotation-info": "Смена цели охоты — через {0} д.",
@@ -122,6 +134,7 @@
   "item-creature-bonecolossus": "Псарь Оссуария",
   "item-creature-bonecolossus-eurasian-adult-male": "Псарь Оссуария",
   "item-creature-subduction-maw": "Субдукционная Пасть",
+  "item-creature-crypt-mirror": "Зеркало Крипт",
   "albase:item-dead-creature-ashenlurker": "Труп: Преследователь",
   "albase:item-dead-creature-subduction-maw": "Труп: Субдукционная Пасть",
   "albase:item-dead-creature-ossuarywarden": "Труп: Страж Оссуария",
@@ -132,6 +145,8 @@
   "game:tradingwindow-bosshunter": "Хранитель Склепа",
   "albase:tradingwindow-bosshunter": "Хранитель Склепа",
   "albase:bosshunt-tracker-name": "Кровемер",
+  "albase:reputation-bosshunt-mask-title": "Личина вечной охоты",
+  "albase:reputation-bosshunt-mask-req": "Завершите все охоты",
 
   "albase:innkeeper-title": "Трактирщик",
 

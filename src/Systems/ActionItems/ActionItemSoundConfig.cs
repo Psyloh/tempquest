@@ -9,6 +9,6 @@ namespace VsQuest
         public float CastSoundVolume { get; } = 0.35f;
         public float CastSoundRange { get; } = 12f;
         public float CastCompleteSoundRange { get; } = 16f;
-        public float CastCompleteSoundVolume { get; } = 0.75f;
+        public float CastCompleteSoundVolume { get; } = 0.4f;
     }
 }

@@ -83,6 +83,12 @@
   "albase:bosshunt-subduction-maw-reward-journal-text": "The Subduction Maw collapsed in a hiss of oil and rust. The haze thinned, and the corridors felt clear again.\n\nThe wanderer nodded and warned: these hunters always return in another shape. Keep the crystal close and do not trust your own steps for long.",
   "albase:bosshunt-subduction-maw-reward": "The Subduction Maw is defeated. The haze still lingers.",
 
+  "albase:bosshunt-crypt-mirror-title": "Wanderer: Crypt Mirror",
+  "albase:bosshunt-crypt-mirror-desc": "Your next target is the Crypt Mirror. It does not fight alone: it steals the faces and weapons of those who challenge it and forces them to duel their own echoes. The closer it is to collapse, the thicker the ring of impostors.\n\nStay with allies, keep moving, and do not let the copies box you in. They share one heart—strike any of them without hesitation.",
+  "albase:bosshunt-crypt-mirror-journal-text": "Target: Crypt Mirror.\n\nIt mirrors fighters and their weapons. Anyone within its ritual receives a personal double, and they all bleed from the same heart. Do not waste time hunting the \"real\" one—damage to any copy wounds it.",
+  "albase:bosshunt-crypt-mirror-reward-journal-text": "The Crypt Mirror has fallen. Masks tore away, and the doubles dissolved into crypt dust.\n\nThe wanderer accepted the news calmly. He warned that deceivers return in other shadows. The crystal still remembers your blood.",
+  "albase:bosshunt-crypt-mirror-reward": "The Crypt Mirror is defeated. The echoes fade, but чужие footsteps still linger.",
+
   "albase:dialogue-bosshunter-intro": "Looking for work—or a shadow that’s looking for you?",
   "albase:dialogue-bosshunter-work": "Any work?",
   "albase:dialogue-bosshunter-whoareyou": "Who are you?",
@@ -108,6 +114,12 @@
   "albase:dialogue-bosshunter-final-text": "Good. The path is clear for now. If you need another hunt, you know where to find me.",
   "albase:dialogue-bosshunter-final-option": "I’ll return.",
 
+  "albase:reputation-npc-bosshunter-title": "Boss Hunter",
+  "albase:reputation-npc-innkeeper-title": "Innkeeper",
+  "albase:reputation-bosshunter-rank-500": "Fleetfoot",
+  "albase:reputation-bosshunter-rank-1500": "Uranium",
+  "albase:reputation-innkeeper-rank-2000": "Trusted Regular",
+
   "albase:no-quest-available-bosshunter": "No hunt is available right now.",
   "albase:no-quest-available-bosshunter-cooldown": "A new hunt will be available in {0} day(s). Target rotation in {1} day(s).",
   "albase:bosshunt-rotation-info": "Boss hunt target rotation in {0} day(s).",
@@ -120,6 +132,7 @@
   "item-creature-bonecolossus": "Ossuary Hound",
   "item-creature-bonecolossus-eurasian-adult-male": "Ossuary Hound",
   "item-creature-subduction-maw": "Subduction Maw",
+  "item-creature-crypt-mirror": "Crypt Mirror",
   "albase:item-dead-creature-bonecolossus": "Corpse: Ossuary Hound",
   "albase:item-dead-creature-bonecolossus-eurasian-adult-male": "Corpse: Ossuary Hound",
   "tradingwindow-bosshunter": "Wanderer",

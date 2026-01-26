@@ -25,6 +25,7 @@ namespace VsQuest
         public List<ItemReward> itemRewards { get; set; } = new List<ItemReward>();
         public RandomItemReward randomItemRewards { get; set; } = new RandomItemReward();
         public List<ActionWithArgs> actionRewards { get; set; } = new List<ActionWithArgs>();
+        public List<QuestReputationRequirement> reputationRequirements { get; set; } = new List<QuestReputationRequirement>();
     }
 
     public class Objective
@@ -63,5 +64,11 @@ namespace VsQuest
         public int maxAmount { get; set; }
     }
 
-
+    public class QuestReputationRequirement
+    {
+        public string scope { get; set; }
+        public string id { get; set; }
+        public int minValue { get; set; }
+        public string rankLangKey { get; set; }
+    }
 }

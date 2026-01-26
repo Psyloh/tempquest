@@ -57,6 +57,24 @@
   "itemRewards": [],
   "actionRewards": [
     {
+      "id": "addreputation",
+      "args": [
+        "npc",
+        "albase:bosshunter",
+        "50"
+      ]
+    },
+    {
+      "id": "addreputation",
+      "args": [
+        "npc",
+        "albase:bosshunter",
+        "50",
+        "",
+        "alegacyvsquest:rep-bosshunt-ossuarywarden-once"
+      ]
+    },
+    {
       "id": "questitem",
       "args": [
         "albase:bosshunt-reward-miner-belt"

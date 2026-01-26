@@ -56,6 +56,24 @@
   "itemRewards": [],
   "actionRewards": [
     {
+      "id": "addreputation",
+      "args": [
+        "npc",
+        "albase:bosshunter",
+        "50"
+      ]
+    },
+    {
+      "id": "addreputation",
+      "args": [
+        "npc",
+        "albase:bosshunter",
+        "50",
+        "",
+        "alegacyvsquest:rep-bosshunt-bonecolossus-once"
+      ]
+    },
+    {
       "id": "questitem",
       "args": [
         "albase:bosshunt-reward-sea-spirit"

@@ -1,3 +1,4 @@
+using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
@@ -47,6 +48,10 @@ namespace VsQuest
                     {
                         if (asset.Value != null)
                         {
+                            if (string.Equals(asset.Value.bossKey, "vsquestdebugging:bosshunt:breathbreaker", StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
                             configs.Add(asset.Value);
                         }
                     }
