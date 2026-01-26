@@ -15,6 +15,9 @@ namespace VsQuest
         private const string AnchorKeyPrefix = "alegacyvsquest:spawner:";
         private const string TargetIdKey = "alegacyvsquest:killaction:targetid";
 
+        private const string CloneFlagKey = "alegacyvsquest:bossplayerclone";
+        private const string CloneOwnerIdKey = "alegacyvsquest:bossplayerclone:ownerid";
+
         private class SwapStage
         {
             public float whenHealthRelBelow;
@@ -75,6 +78,37 @@ namespace VsQuest
             }
         }
 
+        private void TryRebindPlayerClones(long oldOwnerId, long newOwnerId)
+        {
+            if (sapi == null) return;
+            if (oldOwnerId <= 0 || newOwnerId <= 0) return;
+
+            var loaded = sapi.World?.LoadedEntities;
+            if (loaded == null) return;
+
+            try
+            {
+                foreach (var e in loaded.Values)
+                {
+                    if (e == null || !e.Alive) continue;
+
+                    var wa = e.WatchedAttributes;
+                    if (wa == null) continue;
+
+                    if (!wa.GetBool(CloneFlagKey, false)) continue;
+
+                    long owner = wa.GetLong(CloneOwnerIdKey, 0);
+                    if (owner != oldOwnerId) continue;
+
+                    wa.SetLong(CloneOwnerIdKey, newOwnerId);
+                    wa.MarkPathDirty(CloneOwnerIdKey);
+                }
+            }
+            catch
+            {
+            }
+        }
+
         public override void OnGameTick(float dt)
         {
             base.OnGameTick(dt);
@@ -110,6 +144,7 @@ namespace VsQuest
             Entity newEntity = null;
             try
             {
+                long oldEntityId = entity?.EntityId ?? 0;
                 var type = sapi.World.GetEntityType(new AssetLocation(stage.entityCode));
                 if (type == null) return;
 
@@ -130,6 +165,9 @@ namespace VsQuest
                 TryPlaySwapSound(stage);
 
                 sapi.World.SpawnEntity(newEntity);
+
+                // Keep any existing player clones alive by rebinding them to the newly spawned boss entity.
+                TryRebindPlayerClones(oldEntityId, newEntity.EntityId);
 
                 if (stage.keepHealthFraction)
                 {

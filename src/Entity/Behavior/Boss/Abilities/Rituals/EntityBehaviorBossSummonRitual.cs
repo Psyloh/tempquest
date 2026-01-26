@@ -15,6 +15,17 @@ namespace VsQuest
         private const string SummonStageKey = "alegacyvsquest:bosssummonstage";
         private const string LastRitualStartMsKey = "alegacyvsquest:bosssummonritual:lastStartMs";
 
+        private class SummonSpawn
+        {
+            public string entityCode;
+            public int maxNearby;
+            public float nearbyRange;
+            public int minCount;
+            public int maxCount;
+            public float chance;
+            public int spawnDelayMs;
+        }
+
         private class SummonStage
         {
             public float whenHealthRelBelow;
@@ -23,6 +34,7 @@ namespace VsQuest
             public float nearbyRange;
             public int minCount;
             public int maxCount;
+            public List<SummonSpawn> spawns;
             public int ritualMs;
             public float healPerSecond;
             public float healRelPerSecond;
@@ -98,7 +110,29 @@ namespace VsQuest
                         spawnDelayMs = stageObj["spawnDelayMs"].AsInt(600),
                     };
 
-                    if (!string.IsNullOrWhiteSpace(stage.entityCode))
+                    stage.spawns = new List<SummonSpawn>();
+                    foreach (var spawnObj in stageObj["spawns"].AsArray())
+                    {
+                        if (spawnObj == null || !spawnObj.Exists) continue;
+
+                        var spawn = new SummonSpawn
+                        {
+                            entityCode = spawnObj["entityCode"].AsString(null),
+                            maxNearby = spawnObj["maxNearby"].AsInt(stage.maxNearby),
+                            nearbyRange = spawnObj["nearbyRange"].AsFloat(stage.nearbyRange),
+                            minCount = spawnObj["minCount"].AsInt(stage.minCount),
+                            maxCount = spawnObj["maxCount"].AsInt(stage.maxCount),
+                            chance = spawnObj["chance"].AsFloat(1f),
+                            spawnDelayMs = spawnObj["spawnDelayMs"].AsInt(stage.spawnDelayMs),
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(spawn.entityCode))
+                        {
+                            stage.spawns.Add(spawn);
+                        }
+                    }
+
+                    if (stage.spawns.Count > 0 || !string.IsNullOrWhiteSpace(stage.entityCode))
                     {
                         stages.Add(stage);
                     }
@@ -126,9 +160,9 @@ namespace VsQuest
                 BossBehaviorUtils.ApplyRotationLock(entity, ref yawLocked, ref lockedYaw);
                 if (stages.Count > activeStageIndex && activeStageIndex >= 0)
                 {
-                    var stage = stages[activeStageIndex];
-                    HealDuringRitual(stage, dt);
-                    ApplyCircleMovement(stage, dt);
+                    var activeStage = stages[activeStageIndex];
+                    HealDuringRitual(activeStage, dt);
+                    ApplyCircleMovement(activeStage, dt);
                 }
 
                 if (sapi.World.ElapsedMilliseconds >= ritualEndsAtMs)
@@ -141,20 +175,40 @@ namespace VsQuest
 
             if (!BossBehaviorUtils.TryGetHealthFraction(entity, out float frac)) return;
 
-            int stageProgress = entity.WatchedAttributes?.GetInt(SummonStageKey, 0) ?? 0;
-            for (int i = stageProgress; i < stages.Count; i++)
-            {
-                var stage = stages[i];
-                if (frac <= stage.whenHealthRelBelow)
-                {
-                    if (!BossBehaviorUtils.IsCooldownReady(sapi, entity, LastRitualStartMsKey, stage.cooldownSeconds)) return;
+            int stageIndex = SelectStageIndex(frac);
+            if (stageIndex < 0 || stageIndex >= stages.Count) return;
 
-                    entity.WatchedAttributes.SetInt(SummonStageKey, i + 1);
-                    entity.WatchedAttributes.MarkPathDirty(SummonStageKey);
-                    StartRitual(stage, i);
-                    break;
+            var selectedStage = stages[stageIndex];
+            if (!BossBehaviorUtils.IsCooldownReady(sapi, entity, LastRitualStartMsKey, selectedStage.cooldownSeconds)) return;
+
+            entity.WatchedAttributes.SetInt(SummonStageKey, stageIndex + 1);
+            entity.WatchedAttributes.MarkPathDirty(SummonStageKey);
+
+            StartRitual(selectedStage, stageIndex);
+        }
+
+        private int SelectStageIndex(float healthFraction)
+        {
+            if (stages == null || stages.Count == 0) return -1;
+
+            int chosen = -1;
+            float chosenThreshold = float.MaxValue;
+            for (int i = 0; i < stages.Count; i++)
+            {
+                var candidateStage = stages[i];
+                if (candidateStage == null) continue;
+
+                if (healthFraction <= candidateStage.whenHealthRelBelow)
+                {
+                    if (candidateStage.whenHealthRelBelow < chosenThreshold)
+                    {
+                        chosenThreshold = candidateStage.whenHealthRelBelow;
+                        chosen = i;
+                    }
                 }
             }
+
+            return chosen;
         }
 
         private void TryStartLoopSound(SummonStage stage)
@@ -270,26 +324,58 @@ namespace VsQuest
         private void SpawnMinions(SummonStage stage)
         {
             if (sapi == null) return;
-            if (string.IsNullOrWhiteSpace(stage.entityCode)) return;
+            if (stage == null) return;
 
-            int min = Math.Max(1, stage.minCount);
-            int max = Math.Max(min, stage.maxCount);
+            if (stage.spawns != null && stage.spawns.Count > 0)
+            {
+                for (int i = 0; i < stage.spawns.Count; i++)
+                {
+                    SpawnMinions(stage, stage.spawns[i]);
+                }
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(stage.entityCode)) return;
+            SpawnMinions(stage, new SummonSpawn
+            {
+                entityCode = stage.entityCode,
+                maxNearby = stage.maxNearby,
+                nearbyRange = stage.nearbyRange,
+                minCount = stage.minCount,
+                maxCount = stage.maxCount,
+                chance = 1f,
+                spawnDelayMs = stage.spawnDelayMs
+            });
+        }
+
+        private void SpawnMinions(SummonStage stage, SummonSpawn spawn)
+        {
+            if (sapi == null || entity == null) return;
+            if (stage == null || spawn == null) return;
+            if (string.IsNullOrWhiteSpace(spawn.entityCode)) return;
+
+            float chance = spawn.chance;
+            if (chance <= 0f) return;
+            if (chance < 1f && sapi.World.Rand.NextDouble() > chance) return;
+
+            int min = Math.Max(1, spawn.minCount);
+            int max = Math.Max(min, spawn.maxCount);
             int count = min;
             if (max > min)
             {
                 count = min + sapi.World.Rand.Next(max - min + 1);
             }
 
-            if (stage.maxNearby > 0)
+            if (spawn.maxNearby > 0)
             {
-                float range = stage.nearbyRange > 0f ? stage.nearbyRange : Math.Max(1f, stage.spawnRange);
-                int aliveNearby = CountAliveNearby(stage.entityCode, range);
-                int remaining = stage.maxNearby - aliveNearby;
+                float range = spawn.nearbyRange > 0f ? spawn.nearbyRange : Math.Max(1f, stage.spawnRange);
+                int aliveNearby = CountAliveNearby(spawn.entityCode, range);
+                int remaining = spawn.maxNearby - aliveNearby;
                 if (remaining <= 0) return;
                 if (count > remaining) count = remaining;
             }
 
-            var type = sapi.World.GetEntityType(new AssetLocation(stage.entityCode));
+            var type = sapi.World.GetEntityType(new AssetLocation(spawn.entityCode));
             if (type == null) return;
 
             int dim = entity.ServerPos.Dimension;
@@ -304,12 +390,12 @@ namespace VsQuest
                 float yaw = (float)(sapi.World.Rand.NextDouble() * Math.PI * 2.0);
                 var spawnPos = new Vec3d(x, y + dim * 32768.0, z);
 
-                if (stage.spawnDelayMs > 0)
+                if (spawn.spawnDelayMs > 0)
                 {
                     sapi.Event.RegisterCallback(_ =>
                     {
                         SpawnEntityAt(type, spawnPos, yaw);
-                    }, stage.spawnDelayMs);
+                    }, spawn.spawnDelayMs);
                 }
                 else
                 {

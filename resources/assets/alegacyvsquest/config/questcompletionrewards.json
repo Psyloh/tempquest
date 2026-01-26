@@ -7,7 +7,7 @@
       "titleLangKey": "alegacyvsquest:reputation-bosshunt-mask-title",
       "requirementLangKey": "alegacyvsquest:reputation-bosshunt-mask-req",
       "x": 0.5,
-      "y": 0.25,
+      "y": 0.99,
       "iconItemCode": "albase:bosshunt-reward-secondchance-mask",
       "requiredQuestIds": [
         "albase:bosshunt-ashenlurker",

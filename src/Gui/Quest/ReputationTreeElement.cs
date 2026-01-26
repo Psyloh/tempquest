@@ -113,8 +113,9 @@ namespace VsQuest
 
                 var slot = new DummySlot(stack);
 
-                double drawX = NodeX(node.X) - size / 2.0;
-                double drawY = NodeY(node.Y) - size / 2.0;
+                double iconOffset = GuiElement.scaled(10.0);
+                double drawX = NodeX(node.X) - size / 2.0 + iconOffset;
+                double drawY = NodeY(node.Y) - size / 2.0 + iconOffset;
 
                 api.Render.RenderItemstackToGui(slot, drawX, drawY, 500, (float)size, -1, false, false, false);
             }
@@ -344,7 +345,7 @@ namespace VsQuest
             {
                 ReputationNodeStatus.Claimed => Tuple.Create(0.25, 0.8, 0.35),
                 ReputationNodeStatus.Available => Tuple.Create(0.95, 0.75, 0.25),
-                _ => Tuple.Create(0.4, 0.4, 0.4)
+                _ => Tuple.Create(0.85, 0.2, 0.2)
             };
         }
 

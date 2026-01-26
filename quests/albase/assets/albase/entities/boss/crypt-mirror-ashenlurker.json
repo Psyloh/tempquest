@@ -1,5 +1,5 @@
 {
-  "code": "ashenlurker",
+  "code": "crypt-mirror-ashenlurker",
   "class": "EntityLocust",
   "tags": ["mechanical", "habitat-land"],
   "canClimb": true,
@@ -33,7 +33,7 @@
       { "code": "interpolateposition" },
       { "code": "boss", "bossHpBarRange": 80 },
       { "code": "bossmusicurl", "musicKey": "theme_bosshunt_3", "range": 95, "startRange": 40, "combatTimeoutMs": 12000, "requireRecentDamage": true, "startOnTarget": true, "playInIdle": false, "fadeOutSeconds": 2, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
-      { "code": "bossnametag", "nameLangKey": "item-creature-ashenlurker", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 120 }
+      { "code": "bossnametag", "nameLangKey": "item-creature-crypt-mirror", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 120 }
     ],
     "animations": [
       { "code": "hurt", "animation": "hurt", "animationSpeed": 2.2, "weight": 5, "blendMode": "AddAverage" },
@@ -51,7 +51,8 @@
       { "code": "health", "currenthealth": 350, "maxhealth": 350 },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "bosshastargetsync" },
-      { "code": "questtarget", "targetId": "albase:bosshunt:ashenlurker", "leashRange": 120, "returnMoveSpeed": 0.05, "leashCheckMs": 1000 },
+      { "code": "questtarget", "targetId": "albase:bosshunt:crypt-mirror", "leashRange": 120, "returnMoveSpeed": 0.05, "leashCheckMs": 1000 },
+      { "code": "bossplayerclone", "cloneEntityCode": "albase:crypt-mirror-clone", "cloneRange": 50, "checkIntervalMs": 500 },
       {
         "code": "emotionstates",
         "states": [
@@ -218,68 +219,18 @@
             "attackAngleRangeDeg": 120,
             "mincooldown": 3800,
             "maxcooldown": 5200,
-            "damagePlayerAtMs": 750,
-            "attackDurationMs": 1200,
-            "animation": "rundrill",
-            "animationSpeed": 7.5,
-            "sound": "game:creature/locust/saw",
-            "soundStartMs": 450,
-            "whenInEmotionState": "ashenlurker-frenzy|ashenlurker-overdrive"
-          },
-          {
-            "code": "meleeattack",
-            "entityCodes": ["player"],
-            "priority": 2.4,
-            "damage": 36,
-            "damageTier": 5,
-            "minDist": 11.0,
-            "minVerDist": 6.3,
-            "attackAngleRangeDeg": 160,
-            "mincooldown": 2800,
-            "maxcooldown": 3800,
             "damagePlayerAtMs": 650,
-            "attackDurationMs": 900,
-            "animation": "rundrill",
-            "animationSpeed": 8.5,
+            "attackDurationMs": 1000,
+            "animation": "attack",
+            "animationSpeed": 1.8,
             "sound": "game:creature/locust/saw",
-            "soundStartMs": 350,
-            "whenInEmotionState": "ashenlurker-overdrive"
-          },
-          {
-            "code": "seekentity",
-            "entityCodes": ["player"],
-            "priority": 1.5,
-            "mincooldown": 300,
-            "maxcooldown": 1050,
-            "movespeed": 0.05,
-            "seekingRange": 30,
-            "maxFollowTime": 120,
-            "animationSpeed": 7,
-            "leapAtTarget": true,
-            "leapAnimation": "jump",
-            "animation": "rundrill"
-          },
-          {
-            "code": "wander",
-            "priority": 1.0,
-            "movespeed": 0.016,
-            "animationSpeed": 4,
-            "animation": "run",
-            "maxDistanceToSpawn": 6
-          },
-          { "code": "lookaround", "priority": 0.5 }
+            "soundStartMs": 1000
+          }
         ]
       },
       { "code": "deaddecay", "hoursToDecay": 999999 },
       { "code": "bossrespawn", "respawnInGameHours": 24, "spawnNewBoss": false },
       { "code": "floatupwhenstuck", "onlyWhenDead": true }
     ]
-  },
-  "idleSoundRange": 32,
-  "idleSoundChance": 0.04,
-  "sounds": {
-    "hurt": "game:creature/locust/hurt",
-    "death": "game:creature/locust/death",
-    "idle": "game:creature/locust/idle"
   }
 }

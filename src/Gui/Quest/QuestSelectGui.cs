@@ -42,6 +42,8 @@ namespace VsQuest
         private List<ReputationRankRewardStatus> reputationNpcRankRewards;
         private List<ReputationRankRewardStatus> reputationFactionRankRewards;
 
+        private Dictionary<string, string> lastRewardStatuses = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         private int curTab = 0;
         private bool closeGuiAfterAcceptingAndCompleting;
 
@@ -140,6 +142,7 @@ namespace VsQuest
         {
             if (message == null) return;
 
+            var prevStatuses = new Dictionary<string, string>(lastRewardStatuses, StringComparer.OrdinalIgnoreCase);
             ApplyData(message.questGiverId, message.availableQestIds, message.activeQuests, message.noAvailableQuestDescLangKey, message.noAvailableQuestCooldownDescLangKey, message.noAvailableQuestCooldownDaysLeft, message.noAvailableQuestRotationDaysLeft);
             reputationNpcId = message.reputationNpcId;
             reputationFactionId = message.reputationFactionId;
@@ -156,6 +159,66 @@ namespace VsQuest
             completionRewards = message.completionRewards ?? new List<QuestCompletionRewardStatus>();
             reputationNpcRankRewards = message.reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>();
             reputationFactionRankRewards = message.reputationFactionRankRewards ?? new List<ReputationRankRewardStatus>();
+
+            lastRewardStatuses = BuildRewardStatuses();
+            if (HasAnyRewardTransitionedToClaimed(prevStatuses, lastRewardStatuses))
+            {
+                capi?.Gui?.PlaySound("player/coin1");
+            }
+        }
+
+        private Dictionary<string, string> BuildRewardStatuses()
+        {
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (completionRewards != null)
+            {
+                for (int i = 0; i < completionRewards.Count; i++)
+                {
+                    var r = completionRewards[i];
+                    if (r == null || string.IsNullOrWhiteSpace(r.id)) continue;
+                    map[r.id] = r.status;
+                }
+            }
+
+            var rankRewards = !string.IsNullOrWhiteSpace(reputationNpcId)
+                ? (reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>())
+                : (reputationFactionRankRewards ?? new List<ReputationRankRewardStatus>());
+
+            if (rankRewards != null)
+            {
+                for (int i = 0; i < rankRewards.Count; i++)
+                {
+                    var rr = rankRewards[i];
+                    if (rr == null) continue;
+                    map["rank:" + rr.min] = rr.status;
+                }
+            }
+
+            return map;
+        }
+
+        private static bool HasAnyRewardTransitionedToClaimed(Dictionary<string, string> previous, Dictionary<string, string> current)
+        {
+            if (current == null || current.Count == 0) return false;
+
+            foreach (var kvp in current)
+            {
+                string cur = kvp.Value;
+                if (!string.Equals(cur, "claimed", StringComparison.OrdinalIgnoreCase)) continue;
+
+                if (!previous.TryGetValue(kvp.Key, out string prev))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(prev, "claimed", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void recompose()
@@ -323,38 +386,6 @@ namespace VsQuest
             var nodes = new List<ReputationTreeNode>();
             if (completionRewards == null) completionRewards = new List<QuestCompletionRewardStatus>();
 
-            foreach (var reward in completionRewards)
-            {
-                if (reward == null || string.IsNullOrWhiteSpace(reward.id)) continue;
-
-                string reqText = reward.requirementText;
-                if (reward.status == "claimed")
-                {
-                    string line = Lang.Get("alegacyvsquest:reputation-received");
-                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
-                }
-                else if (reward.status == "available")
-                {
-                    string line = Lang.Get("alegacyvsquest:reputation-lmb-claim");
-                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
-                }
-
-                var status = reward.status == "claimed"
-                    ? ReputationNodeStatus.Claimed
-                    : (reward.status == "available" ? ReputationNodeStatus.Available : ReputationNodeStatus.Locked);
-
-                nodes.Add(new ReputationTreeNode
-                {
-                    Id = reward.id,
-                    Title = reward.title,
-                    RequirementText = reqText,
-                    X = reward.x,
-                    Y = reward.y,
-                    Status = status,
-                    IconItemCode = reward.iconItemCode
-                });
-            }
-
             // Add rank-based rewards (e.g. innkeeper uranium at 2000 rep) as additional nodes.
             var rankRewards = !string.IsNullOrWhiteSpace(reputationNpcId)
                 ? (reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>())
@@ -408,6 +439,58 @@ namespace VsQuest
                         IconItemCode = rr.iconItemCode
                     });
                 }
+            }
+
+            // Quest completion rewards (e.g. Eternal Hunt) should appear after rank-based rewards.
+            if (completionRewards.Count > 1)
+            {
+                completionRewards.Sort((a, b) =>
+                {
+                    if (a == null && b == null) return 0;
+                    if (a == null) return 1;
+                    if (b == null) return -1;
+
+                    int y = a.y.CompareTo(b.y);
+                    if (y != 0) return y;
+
+                    int x = a.x.CompareTo(b.x);
+                    if (x != 0) return x;
+
+                    return string.CompareOrdinal(a.id, b.id);
+                });
+            }
+
+            for (int i = 0; i < completionRewards.Count; i++)
+            {
+                var reward = completionRewards[i];
+                if (reward == null || string.IsNullOrWhiteSpace(reward.id)) continue;
+
+                string reqText = reward.requirementText;
+                if (reward.status == "claimed")
+                {
+                    string line = Lang.Get("alegacyvsquest:reputation-received");
+                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
+                }
+                else if (reward.status == "available")
+                {
+                    string line = Lang.Get("alegacyvsquest:reputation-lmb-claim");
+                    reqText = string.IsNullOrWhiteSpace(reqText) ? line : (reqText + "\n" + line);
+                }
+
+                var status = reward.status == "claimed"
+                    ? ReputationNodeStatus.Claimed
+                    : (reward.status == "available" ? ReputationNodeStatus.Available : ReputationNodeStatus.Locked);
+
+                nodes.Add(new ReputationTreeNode
+                {
+                    Id = reward.id,
+                    Title = reward.title,
+                    RequirementText = reqText,
+                    X = reward.x,
+                    Y = reward.y,
+                    Status = status,
+                    IconItemCode = reward.iconItemCode
+                });
             }
 
             ApplyReputationGridLayout(nodes);

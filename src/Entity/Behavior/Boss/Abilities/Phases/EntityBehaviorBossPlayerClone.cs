@@ -188,7 +188,6 @@ namespace VsQuest
                 if (clone == null) return;
 
                 ApplyCloneFlags(clone, player);
-                CopyPlayerInventory(player, clone);
 
                 var spawnPos = GetSpawnPositionNear(player.Entity.ServerPos.XYZ);
                 int dim = entity.ServerPos.Dimension;
@@ -197,6 +196,23 @@ namespace VsQuest
                 clone.Pos.SetFrom(clone.ServerPos);
 
                 sapi.World.SpawnEntity(clone);
+
+                // Important: many behaviors (including seraphinventory) finish initialization during SpawnEntity.
+                // Copying inventory/appearance before SpawnEntity can silently do nothing.
+                sapi.Event.EnqueueMainThreadTask(() =>
+                {
+                    try
+                    {
+                        if (clone == null || !clone.Alive) return;
+
+                        CopyAppearanceAttributes(player, clone);
+                        CopyPlayerInventory(player, clone);
+                        clone.MarkShapeModified();
+                    }
+                    catch
+                    {
+                    }
+                }, "bossplayerclone-copy");
 
                 cloneByPlayerUid[player.PlayerUID] = clone.EntityId;
             }
