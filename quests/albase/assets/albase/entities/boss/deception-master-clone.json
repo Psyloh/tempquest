@@ -254,7 +254,7 @@
     "renderer": "Shape",
     "size": 1.1,
     "shape": { "base": "game:entity/humanoid/seraph-faceless" },
-    "texture": { "base": "game:entity/humanoid/seraph-naked-hairless" },
+    "texture": { "base": "albase:boss-crypt-mirror-seraph-naked-hairless" },
     "behaviors": [
       { "code": "nametag", "showtagonlywhentargeted": true },
       { "code": "repulseagents" },
@@ -290,7 +290,7 @@
             "code": "meleeattack",
             "entityCodes": ["player"],
             "priority": 2,
-            "damage": 8,
+            "damage": 9.5,
             "damageTier": 3,
             "minDist": 2.8,
             "minVerDist": 2.8,

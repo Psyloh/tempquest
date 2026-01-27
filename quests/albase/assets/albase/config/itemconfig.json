@@ -24,7 +24,7 @@
     },
     {
       "id": "albase:bosshunt-reward-miner-belt",
-      "itemCode": "game:clothes-nadiya-waist-miner-accessories",
+      "itemCode": "albase:bosshunt-miner-belt",
       "name": "<font color=\"#F59E0B\">Пояс Оссуария</font>",
       "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой, обсыпанной костяной крошкой. На коже — следы когтей и каменной пыли, будто кто-то цеплялся за своды в темноте.</font>",
       "actions": [],

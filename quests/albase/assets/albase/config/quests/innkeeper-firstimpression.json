@@ -125,6 +125,14 @@
   },
   "actionRewards": [
     {
+      "id": "addreputation",
+      "args": [
+        "npc",
+        "albase:innkeeper",
+        "100"
+      ]
+    },
+    {
       "id": "playsound",
       "args": [
         "game:sounds/effect/cashregister",

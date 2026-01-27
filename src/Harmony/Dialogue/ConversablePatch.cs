@@ -1,5 +1,7 @@
 
 using HarmonyLib;
+using System;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -10,8 +12,22 @@ namespace VsQuest.Harmony
     [HarmonyPatch(typeof(EntityBehaviorConversable), "Controller_DialogTriggers")]
     public class EntityBehaviorConversable_Controller_DialogTriggers_Patch
     {
+        static readonly HashSet<string> VanillaTriggers = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "revealname",
+            "opentrade",
+            "giveitemstack",
+            "playanimation",
+            "takefrominventory",
+            "repairheld",
+            "spawnentity",
+            "attack",
+        };
+
         public static void Postfix(EntityBehaviorConversable __instance, EntityAgent triggeringEntity, string value, JsonObject data)
         {
+            if (VanillaTriggers.Contains(value)) return;
+
             var sapi = __instance.entity.Api as ICoreServerAPI;
             if (sapi == null) return;
 

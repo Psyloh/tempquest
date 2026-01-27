@@ -24,7 +24,7 @@
     },
     "texturesByType": {
       "*": {
-        "skin": { "base": "game:entity/lore/bowtorn/gearfoot" }
+        "skin": { "base": "albase:boss-subduction-maw-gearfoot" }
       }
     },
     "behaviors": [
@@ -188,7 +188,7 @@
             "windupAnimation": "load",
             "fuseMs": 2200,
             "explosionRadius": 4.2,
-            "explosionDamage": 18,
+            "explosionDamage": 19.5,
             "damageTier": 3,
             "damageType": "PiercingAttack",
             "trapInvulnerable": true,
@@ -212,7 +212,7 @@
             "windupAnimation": "reload",
             "fuseMs": 1900,
             "explosionRadius": 4.8,
-            "explosionDamage": 22,
+            "explosionDamage": 23.5,
             "damageTier": 4,
             "damageType": "PiercingAttack",
             "trapInvulnerable": true,
@@ -311,7 +311,7 @@
             "code": "meleeattack",
             "entityCodes": ["player"],
             "priority": 4,
-            "damage": 28,
+            "damage": 29.5,
             "damageTier": 4,
             "mincooldown": 220,
             "maxcooldown": 620,
@@ -356,7 +356,7 @@
             "firingRangeMin": 8,
             "firingRangeMax": 22,
             "abortRange": 9,
-            "projectileDamage": 12,
+            "projectileDamage": 13.5,
             "projectileDamageTier": 2,
             "projectileCode": "game:bowtornprojectile",
             "retaliateAttacks": false,
