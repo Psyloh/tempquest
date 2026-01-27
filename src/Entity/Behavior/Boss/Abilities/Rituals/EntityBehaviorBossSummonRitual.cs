@@ -14,6 +14,8 @@ namespace VsQuest
     {
         private const string SummonStageKey = "alegacyvsquest:bosssummonstage";
         private const string LastRitualStartMsKey = "alegacyvsquest:bosssummonritual:lastStartMs";
+        private const string SummonedByEntityIdKey = "alegacyvsquest:bosssummonritual:summonedByEntityId";
+        private const string SummonedByEntityCodeKey = "alegacyvsquest:bosssummonritual:summonedByEntityCode";
 
         private class SummonSpawn
         {
@@ -445,11 +447,73 @@ namespace VsQuest
             Entity spawned = sapi.World.ClassRegistry.CreateEntity(type);
             if (spawned == null) return;
 
+            try
+            {
+                if (entity != null && entity.EntityId != 0)
+                {
+                    spawned.WatchedAttributes.SetLong(SummonedByEntityIdKey, entity.EntityId);
+                    spawned.WatchedAttributes.MarkPathDirty(SummonedByEntityIdKey);
+                }
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                var summonerCode = entity?.Code?.ToString();
+                if (!string.IsNullOrWhiteSpace(summonerCode))
+                {
+                    spawned.WatchedAttributes.SetString(SummonedByEntityCodeKey, summonerCode);
+                    spawned.WatchedAttributes.MarkPathDirty(SummonedByEntityCodeKey);
+                }
+            }
+            catch
+            {
+            }
+
             spawned.ServerPos.SetPosWithDimension(spawnPos);
             spawned.Pos.SetFrom(spawned.ServerPos);
             spawned.ServerPos.Yaw = yaw;
 
             sapi.World.SpawnEntity(spawned);
+        }
+
+        private void DespawnSummonedMinions()
+        {
+            if (sapi == null || entity == null) return;
+
+            try
+            {
+                int dim = entity.ServerPos.Dimension;
+                var center = new Vec3d(entity.ServerPos.X, entity.ServerPos.Y + dim * 32768.0, entity.ServerPos.Z);
+
+                const float range = 64f;
+                var entities = sapi.World.GetEntitiesAround(center, range, range, e => e != null && e.Alive);
+                if (entities == null) return;
+
+                long ownerId = entity.EntityId;
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    var e = entities[i];
+                    if (e == null) continue;
+                    if (e.EntityId == ownerId) continue;
+
+                    try
+                    {
+                        long summonedBy = e.WatchedAttributes.GetLong(SummonedByEntityIdKey, 0);
+                        if (summonedBy != ownerId) continue;
+
+                        sapi.World.DespawnEntity(e, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void TryPlayAnimation(string animation)
@@ -500,6 +564,7 @@ namespace VsQuest
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
             StopRitual();
+            DespawnSummonedMinions();
             base.OnEntityDeath(damageSourceForDeath);
         }
 
