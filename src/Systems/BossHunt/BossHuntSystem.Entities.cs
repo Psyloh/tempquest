@@ -130,7 +130,9 @@ namespace VsQuest
                 return null;
             }
 
-            nextBossEntityScanTotalHours = nowHours + (1.0 / 60.0);
+            double scanInterval = bossEntityScanIntervalHours;
+            if (scanInterval <= 0) scanInterval = 1.0 / 60.0;
+            nextBossEntityScanTotalHours = nowHours + scanInterval;
 
             var loaded = sapi?.World?.LoadedEntities;
             if (loaded == null) return null;
@@ -235,7 +237,9 @@ namespace VsQuest
                 // Cache the newly spawned boss immediately.
                 cachedBossEntity = entity;
                 cachedBossKey = cfg.bossKey;
-                nextBossEntityScanTotalHours = (sapi.World?.Calendar?.TotalHours ?? 0) + (1.0 / 60.0);
+                double scanInterval = bossEntityScanIntervalHours;
+                if (scanInterval <= 0) scanInterval = 1.0 / 60.0;
+                nextBossEntityScanTotalHours = (sapi.World?.Calendar?.TotalHours ?? 0) + scanInterval;
             }
             catch
             {
@@ -244,12 +248,14 @@ namespace VsQuest
 
         private void DebugLog(string message, bool force = false)
         {
-            if (!DebugBossHunt || sapi == null || string.IsNullOrWhiteSpace(message)) return;
+            if (!debugBossHunt || sapi == null || string.IsNullOrWhiteSpace(message)) return;
 
             double nowHours = sapi.World?.Calendar?.TotalHours ?? 0;
             if (!force && nowHours < nextDebugLogTotalHours) return;
 
-            nextDebugLogTotalHours = nowHours + 0.02;
+            double throttle = debugLogThrottleHours;
+            if (throttle <= 0) throttle = 0.02;
+            nextDebugLogTotalHours = nowHours + throttle;
             sapi.Logger.Notification("[BossHunt] " + message);
         }
 

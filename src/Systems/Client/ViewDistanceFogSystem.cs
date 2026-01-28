@@ -10,13 +10,38 @@ namespace VsQuest
     {
         private const string ModifierKey = "alegacyvsquest:viewdistancefog";
         private ICoreClientAPI capi;
+        private long tickListenerId;
+
+        private int tickIntervalMs = 100;
+        private float baseDensity = 0.00125f;
+        private float fogMinMul = 0.03f;
+        private float negativeFogDensityAddMul = 0.006f;
+        private float positiveFogDensitySubMul = 0.0009f;
 
         public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
 
         public override void StartClientSide(ICoreClientAPI api)
         {
             capi = api;
-            api.Event.RegisterGameTickListener(OnTick, 100);
+
+            try
+            {
+                var qs = api?.ModLoader?.GetModSystem<QuestSystem>();
+                var cfg = qs?.CoreConfig?.Client?.ViewDistanceFog;
+                if (cfg != null)
+                {
+                    if (cfg.TickIntervalMs > 0) tickIntervalMs = cfg.TickIntervalMs;
+                    baseDensity = cfg.BaseDensity;
+                    fogMinMul = cfg.FogMinMul;
+                    negativeFogDensityAddMul = cfg.NegativeFogDensityAddMul;
+                    positiveFogDensitySubMul = cfg.PositiveFogDensitySubMul;
+                }
+            }
+            catch
+            {
+            }
+
+            tickListenerId = api.Event.RegisterGameTickListener(OnTick, tickIntervalMs);
         }
 
         private void OnTick(float dt)
@@ -65,24 +90,22 @@ namespace VsQuest
 
             strength = GameMath.Clamp(strength, 0f, 1f);
 
-            const float baseDensity = 0.00125f;
-
             // FogMin controls how close the fog starts.
             // Positive viewDistance => allow the fog to start further away.
             // Negative viewDistance => do not increase FogMin (avoid improving visibility).
-            modifier.FogMin.Value = viewDistance > 0f ? strength * 0.03f : 0f;
+            modifier.FogMin.Value = viewDistance > 0f ? strength * fogMinMul : 0f;
             modifier.FogMin.Weight = strength;
 
             // Negative viewDistance => worse visibility (more fog)
             if (viewDistance < 0f)
             {
-                modifier.FogDensity.Value = baseDensity + strength * 0.006f;
+                modifier.FogDensity.Value = baseDensity + strength * negativeFogDensityAddMul;
                 modifier.FogDensity.Weight = strength;
                 return;
             }
 
             // Positive viewDistance => better visibility (less fog)
-            modifier.FogDensity.Value = Math.Max(0f, baseDensity - strength * 0.0009f);
+            modifier.FogDensity.Value = Math.Max(0f, baseDensity - strength * positiveFogDensitySubMul);
             modifier.FogDensity.Weight = strength;
         }
     }

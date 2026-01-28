@@ -46,6 +46,9 @@ namespace VsQuest
         private ICoreServerAPI sapi;
         private readonly List<TeleportStage> stages = new List<TeleportStage>();
 
+        private const int CheckIntervalMs = 200;
+        private long lastCheckMs;
+
         private long teleportCallbackId;
         private bool teleportPending;
         private int pendingStageIndex = -1;
@@ -120,6 +123,7 @@ namespace VsQuest
         {
             base.OnGameTick(dt);
             if (sapi == null || entity == null) return;
+            if (entity.Api?.Side != EnumAppSide.Server) return;
             if (stages.Count == 0) return;
 
             if (!entity.Alive)
@@ -129,6 +133,22 @@ namespace VsQuest
             }
 
             if (teleportPending) return;
+
+            long now;
+            try
+            {
+                now = sapi.World.ElapsedMilliseconds;
+            }
+            catch
+            {
+                now = 0;
+            }
+
+            if (now > 0)
+            {
+                if (lastCheckMs != 0 && now - lastCheckMs < CheckIntervalMs) return;
+                lastCheckMs = now;
+            }
 
             if (!BossBehaviorUtils.TryGetHealthFraction(entity, out float frac)) return;
 

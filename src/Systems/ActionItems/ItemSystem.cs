@@ -12,10 +12,13 @@ namespace VsQuest
 {
     public class ItemSystem : ModSystem
     {
-        private const float ActionItemCastDurationSec = 3f;
-        private const float ActionItemCastSlowdown = -0.5f;
-        private const string ActionItemCastSpeedStatKey = "alegacyvsquest:actionitemcast";
-        private const string BloodmeterActionItemId = "albase:bosshunt-tracker";
+        private float actionItemCastDurationSec = 3f;
+        private float actionItemCastSlowdown = -0.5f;
+        private string actionItemCastSpeedStatKey = "alegacyvsquest:actionitemcast";
+        private string bloodmeterActionItemId = "albase:bosshunt-tracker";
+
+        private int inventoryScanIntervalMs = 1000;
+        private int hotbarEnforceIntervalMs = 500;
 
         private ICoreAPI api;
         private ICoreServerAPI sapi;
@@ -47,6 +50,26 @@ namespace VsQuest
         {
             this.api = api;
             questSystem = api.ModLoader.GetModSystem<QuestSystem>();
+        }
+
+        private void ApplyCoreConfig()
+        {
+            try
+            {
+                var cfg = questSystem?.CoreConfig?.ActionItems;
+                if (cfg == null) return;
+
+                if (cfg.BossHuntTrackerCastDurationSec > 0f) actionItemCastDurationSec = cfg.BossHuntTrackerCastDurationSec;
+                actionItemCastSlowdown = cfg.BossHuntTrackerCastSlowdown;
+                if (!string.IsNullOrWhiteSpace(cfg.BossHuntTrackerCastSpeedStatKey)) actionItemCastSpeedStatKey = cfg.BossHuntTrackerCastSpeedStatKey;
+                if (!string.IsNullOrWhiteSpace(cfg.BossHuntTrackerActionItemId)) bloodmeterActionItemId = cfg.BossHuntTrackerActionItemId;
+
+                if (cfg.InventoryScanIntervalMs > 0) inventoryScanIntervalMs = cfg.InventoryScanIntervalMs;
+                if (cfg.HotbarEnforceIntervalMs > 0) hotbarEnforceIntervalMs = cfg.HotbarEnforceIntervalMs;
+            }
+            catch
+            {
+            }
         }
 
         public override void AssetsLoaded(ICoreAPI api)
@@ -87,6 +110,8 @@ namespace VsQuest
             sapi = api;
             if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
 
+            ApplyCoreConfig();
+
             attributeResolver = new ActionItemAttributeResolver(ActionItemRegistry);
             actionExecutor = new ActionItemActionExecutor(questSystem, sapi);
             packetHandler = new ActionItemPacketHandler(questSystem, attributeResolver, actionExecutor);
@@ -104,16 +129,19 @@ namespace VsQuest
 
             // Periodically scan inventories for action items that should trigger when added.
             // This avoids relying on right click and allows one-time processing.
-            inventoryScanListenerId = api.Event.RegisterGameTickListener(OnInventoryScanTick, 1000);
+            inventoryScanListenerId = api.Event.RegisterGameTickListener(OnInventoryScanTick, inventoryScanIntervalMs);
 
             // Periodically enforce hotbar-only placement for special quest items (blockEquip action items).
-            hotbarEnforceListenerId = api.Event.RegisterGameTickListener(OnHotbarEnforceTick, 500);
+            hotbarEnforceListenerId = api.Event.RegisterGameTickListener(OnHotbarEnforceTick, hotbarEnforceIntervalMs);
         }
 
         public override void StartClientSide(ICoreClientAPI api)
         {
             capi = api;
             if (ActionItemRegistry == null || ActionItemRegistry.Count == 0) return;
+
+            ApplyCoreConfig();
+
             clientChannel = api.Network.RegisterChannel("alegacyvsquest-itemaction")
                 .RegisterMessageType<ExecuteActionItemPacket>();
 
@@ -123,10 +151,10 @@ namespace VsQuest
                 capi,
                 clientChannel,
                 attributeResolver,
-                BloodmeterActionItemId,
-                ActionItemCastDurationSec,
-                ActionItemCastSlowdown,
-                ActionItemCastSpeedStatKey,
+                bloodmeterActionItemId,
+                actionItemCastDurationSec,
+                actionItemCastSlowdown,
+                actionItemCastSpeedStatKey,
                 soundConfig.CastLoopSound,
                 soundConfig.CastCompleteSound,
                 soundConfig.CastSoundVolume,

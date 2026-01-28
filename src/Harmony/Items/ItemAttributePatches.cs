@@ -142,6 +142,13 @@ namespace VsQuest.Harmony
                 {
                     float bonus = ItemAttributeUtils.GetAttributeFloatScaled(stack, ItemAttributeUtils.AttrAttackPower);
                     __result += bonus;
+
+                    // Some vanilla logic can break interactions (attacks/mining) if attack power becomes <= 0.
+                    // Allow debuffs, but never let the final value drop below a tiny positive threshold.
+                    if (__result <= 0.001f)
+                    {
+                        __result = 0.001f;
+                    }
                 }
             }
         }

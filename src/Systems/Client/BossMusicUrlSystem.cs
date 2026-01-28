@@ -44,15 +44,28 @@ namespace VsQuest
 
         private long suppressVanillaMusicListenerId;
 
-        private const float BossMusicVolumeMul = 0.3f;
-
-        private const float DefaultFadeOutSeconds = 2f;
+        private float bossMusicVolumeMul = 0.3f;
+        private float defaultFadeOutSeconds = 2f;
 
         public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
 
         public override void StartClientSide(ICoreClientAPI api)
         {
             capi = api;
+
+            try
+            {
+                var qs = api?.ModLoader?.GetModSystem<QuestSystem>();
+                var cfg = qs?.CoreConfig?.Client?.BossMusic;
+                if (cfg != null)
+                {
+                    if (cfg.VolumeMul >= 0f) bossMusicVolumeMul = cfg.VolumeMul;
+                    if (cfg.DefaultFadeOutSeconds >= 0f) defaultFadeOutSeconds = cfg.DefaultFadeOutSeconds;
+                }
+            }
+            catch
+            {
+            }
 
             try
             {
@@ -206,7 +219,7 @@ namespace VsQuest
             {
             }
 
-            float fadeSeconds = fadeOutSeconds > 0f ? fadeOutSeconds : DefaultFadeOutSeconds;
+            float fadeSeconds = fadeOutSeconds > 0f ? fadeOutSeconds : defaultFadeOutSeconds;
             if (fadeSeconds <= 0f)
             {
                 currentKey = null;
@@ -591,7 +604,7 @@ namespace VsQuest
             lastSoundLevel = soundLevel;
 
             // Boss music depends only on master sound volume
-            float gain = Math.Clamp((soundLevel / 100f) * baseGain * BossMusicVolumeMul, 0f, 1f);
+            float gain = Math.Clamp((soundLevel / 100f) * baseGain * bossMusicVolumeMul, 0f, 1f);
             try
             {
                 lock (alLock)
@@ -740,11 +753,14 @@ namespace VsQuest
                     }
 
                     // Prebuffer a few chunks
+                    int prebuffered = 0;
                     for (int i = 0; i < 6; i++)
                     {
                         token.ThrowIfCancellationRequested();
                         int read = mpeg.ReadSamples(floatBuf, 0, floatBuf.Length);
                         if (read <= 0) break;
+
+                        prebuffered++;
 
                         int shorts = FloatToPcm16(floatBuf, read, pcmBuf);
                         int buffer;
@@ -763,6 +779,15 @@ namespace VsQuest
                                 AL.SourceQueueBuffer(sourceId, buffer);
                             }
                         }
+                    }
+
+                    if (prebuffered == 0)
+                    {
+                        // If we seeked past the end (e.g. phase offset larger than track duration),
+                        // retry from the beginning instead of getting stuck with an empty queue.
+                        loopStartAtSeconds = 0f;
+                        await Task.Delay(200, token);
+                        continue;
                     }
 
                     bool reachedEnd = false;

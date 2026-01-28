@@ -10,6 +10,8 @@ namespace VsQuest
         {
             sapi = api;
 
+            ApplyCoreConfig();
+
             LoadConfigs();
             LoadState();
 
@@ -48,10 +50,7 @@ namespace VsQuest
                     {
                         if (asset.Value != null)
                         {
-                            if (string.Equals(asset.Value.bossKey, "vsquestdebugging:bosshunt:breathbreaker", StringComparison.OrdinalIgnoreCase))
-                            {
-                                continue;
-                            }
+                            if (IsBossKeySkipped(asset.Value.bossKey)) continue;
                             configs.Add(asset.Value);
                         }
                     }

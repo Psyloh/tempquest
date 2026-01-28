@@ -16,7 +16,13 @@ namespace VsQuest
         public const string LastBossDamageTotalHoursKey = "alegacyvsquest:bosshunt:lastBossDamageTotalHours";
 
         private const string SaveKey = "alegacyvsquest:bosshunt:state";
-        private const bool DebugBossHunt = true;
+        private bool debugBossHunt;
+
+        private double softResetIdleHours = 1.0;
+        private double softResetAntiSpamHours = 0.25;
+        private double relocatePostponeHours = 0.25;
+
+        private readonly HashSet<string> skipBossKeys = new(StringComparer.OrdinalIgnoreCase);
 
         private ICoreServerAPI sapi;
         private readonly List<BossHuntConfig> configs = new();
@@ -32,6 +38,54 @@ namespace VsQuest
         private string cachedBossKey;
         private double nextBossEntityScanTotalHours;
         private double nextDebugLogTotalHours;
+
+        private double bossEntityScanIntervalHours = 1.0 / 60.0;
+        private double debugLogThrottleHours = 0.02;
+
+
+        private void ApplyCoreConfig()
+        {
+            if (sapi == null) return;
+
+            AlegacyVsQuestConfig.BossHuntCoreConfig cfg = null;
+            try
+            {
+                var qs = sapi.ModLoader.GetModSystem<QuestSystem>();
+                cfg = qs?.CoreConfig?.BossHunt;
+            }
+            catch
+            {
+                cfg = null;
+            }
+
+            if (cfg == null) return;
+
+            debugBossHunt = cfg.Debug;
+
+            softResetIdleHours = cfg.SoftResetIdleHours > 0 ? cfg.SoftResetIdleHours : 1.0;
+            softResetAntiSpamHours = cfg.SoftResetAntiSpamHours >= 0 ? cfg.SoftResetAntiSpamHours : 0.25;
+            relocatePostponeHours = cfg.RelocatePostponeHours >= 0 ? cfg.RelocatePostponeHours : 0.25;
+
+            bossEntityScanIntervalHours = cfg.BossEntityScanIntervalHours > 0 ? cfg.BossEntityScanIntervalHours : (1.0 / 60.0);
+            debugLogThrottleHours = cfg.DebugLogThrottleHours > 0 ? cfg.DebugLogThrottleHours : 0.02;
+
+            skipBossKeys.Clear();
+            if (cfg.SkipBossKeys != null)
+            {
+                for (int i = 0; i < cfg.SkipBossKeys.Count; i++)
+                {
+                    var key = cfg.SkipBossKeys[i];
+                    if (string.IsNullOrWhiteSpace(key)) continue;
+                    skipBossKeys.Add(key);
+                }
+            }
+        }
+
+        private bool IsBossKeySkipped(string bossKey)
+        {
+            if (string.IsNullOrWhiteSpace(bossKey)) return false;
+            return skipBossKeys.Contains(bossKey);
+        }
 
 
         private void OnTick(float dt)
@@ -68,9 +122,9 @@ namespace VsQuest
                     double lastDamage = bossEntity.WatchedAttributes.GetDouble(LastBossDamageTotalHoursKey, double.NaN);
 
                     bool hasEverBeenDamaged = !double.IsNaN(lastDamage) && lastDamage > 0;
-                    bool idleLongEnough = hasEverBeenDamaged && (nowHours - lastDamage >= 1.0);
+                    bool idleLongEnough = hasEverBeenDamaged && (nowHours - lastDamage >= softResetIdleHours);
 
-                    bool antiSpamOk = st.lastSoftResetAtTotalHours <= 0 || (nowHours - st.lastSoftResetAtTotalHours >= 0.25);
+                    bool antiSpamOk = st.lastSoftResetAtTotalHours <= 0 || (nowHours - st.lastSoftResetAtTotalHours >= softResetAntiSpamHours);
 
                     if (idleLongEnough && antiSpamOk)
                     {
@@ -108,7 +162,7 @@ namespace VsQuest
                 if (bossAlive && !IsSafeToRelocate(cfg, bossEntity, nowHours))
                 {
                     // Postpone a bit
-                    st.nextRelocateAtTotalHours = nowHours + 0.25;
+                    st.nextRelocateAtTotalHours = nowHours + relocatePostponeHours;
                     stateDirty = true;
                 }
                 else

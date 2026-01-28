@@ -5,6 +5,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 
 namespace VsQuest
 {
@@ -291,6 +292,52 @@ namespace VsQuest
                 spawned.ServerPos.Yaw = yaw;
 
                 sapi.World.SpawnEntity(spawned);
+
+                TryDisableFleeForSummonedWolves(spawned);
+            }
+        }
+
+        private void TryDisableFleeForSummonedWolves(Entity spawned)
+        {
+            if (sapi == null || spawned == null) return;
+
+            try
+            {
+                var code = spawned.Code?.ToString() ?? "";
+                if (code.IndexOf("wolf", StringComparison.OrdinalIgnoreCase) < 0) return;
+
+                long summonerId = spawned.WatchedAttributes?.GetLong(SummonedByEntityIdKey, 0) ?? 0;
+                if (summonerId <= 0) return;
+
+                sapi.Event.RegisterCallback(_ =>
+                {
+                    try
+                    {
+                        if (spawned == null || !spawned.Alive) return;
+
+                        var taskAi = spawned.GetBehavior<EntityBehaviorTaskAI>();
+                        if (taskAi?.TaskManager == null) return;
+
+                        taskAi.TaskManager.StopTasks();
+
+                        var tasks = taskAi.TaskManager.AllTasks;
+                        for (int i = tasks.Count - 1; i >= 0; i--)
+                        {
+                            var t = tasks[i];
+                            var tn = t?.GetType()?.Name ?? "";
+                            if (tn.IndexOf("AiTaskFlee", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                taskAi.TaskManager.RemoveTask(t);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }, 1);
+            }
+            catch
+            {
             }
         }
     }

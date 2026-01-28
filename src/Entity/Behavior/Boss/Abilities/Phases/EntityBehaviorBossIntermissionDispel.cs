@@ -310,6 +310,9 @@ namespace VsQuest
 
             loopSoundPlayer.Stop();
 
+            DespawnSpawnedAdds();
+            DespawnSpawnedDispels();
+
             if (activeStageIndex >= 0 && activeStageIndex < stages.Count)
             {
                 var stage = stages[activeStageIndex];
@@ -326,6 +329,46 @@ namespace VsQuest
             }
 
             activeStageIndex = -1;
+        }
+
+        private void DespawnSpawnedAdds()
+        {
+            if (sapi == null) return;
+
+            for (int i = spawnedAddIds.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    var e = sapi.World.GetEntityById(spawnedAddIds[i]);
+                    if (e == null) continue;
+                    sapi.World.DespawnEntity(e, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                }
+                catch
+                {
+                }
+            }
+
+            spawnedAddIds.Clear();
+        }
+
+        private void DespawnSpawnedDispels()
+        {
+            if (sapi == null) return;
+
+            for (int i = spawnedDispelIds.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    var e = sapi.World.GetEntityById(spawnedDispelIds[i]);
+                    if (e == null) continue;
+                    sapi.World.DespawnEntity(e, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                }
+                catch
+                {
+                }
+            }
+
+            spawnedDispelIds.Clear();
         }
 
         private bool AllObjectivesCleared()

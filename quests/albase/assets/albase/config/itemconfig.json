@@ -29,18 +29,17 @@
       "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой, обсыпанной костяной крошкой. На коже — следы когтей и каменной пыли, будто кто-то цеплялся за своды в темноте.</font>",
       "actions": [],
       "attributes": {
-        "protection": 0.6,
-        "protectionperc": 0.06,
-        "walkspeed": -0.08,
+        "protectionperc": -0.1,
+        "walkspeed": -0.1,
         "weightlimit": 0.2,
-        "hungerrate": 0.5,
+        "hungerrate": 0.8,
         "miningspeedmult": 0.45,
         "temporaldrainmult": 0.1
       },
       "showAttributes": [
-        "protection",
         "protectionperc",
         "walkspeed",
+        "weightlimit",
         "hungerrate",
         "miningspeedmult",
         "temporaldrainmult"
@@ -89,8 +88,9 @@
       "attributes": {
         "attackpower": 1.2,
         "healingeffectiveness": 0.05,
-        "protectionperc": -0.1,
-        "hungerrate": 0.2,
+        "protectionperc": -0.15,
+        "hungerrate": 0.4,
+        "walkspeed": -0.05,
         "knockbackmult": 0.3
       },
       "showAttributes": [
@@ -98,6 +98,7 @@
         "healingeffectiveness",
         "protectionperc",
         "hungerrate",
+        "walkspeed",
         "knockbackmult"
       ],
       "hideVanillaTooltips": [
@@ -233,7 +234,7 @@
       "description": "<font color=\"#FCA5A5\">Ткань пропитана маслом и ядовитой гарью. Если долго смотреть на складки, на краю зрения вспыхивают силуэты — призрачные двойники, как в криптовом тумане.</font>",
       "actions": [],
       "attributes": {
-        "attackpower": 1.2,
+        "attackpower": -0.6,
         "hungerrate": 0.12,
         "walkspeed": -0.06,
         "protectionperc": -0.04,

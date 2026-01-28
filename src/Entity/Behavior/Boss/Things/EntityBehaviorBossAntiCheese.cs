@@ -49,6 +49,9 @@ namespace VsQuest
         private float farSecondsAcc;
         private float noLosSecondsAcc;
 
+        private long lastLosCheckMs;
+        private bool cachedHasLos;
+
         private long callbackId;
         private bool pending;
 
@@ -136,6 +139,7 @@ namespace VsQuest
             base.OnGameTick(dt);
 
             if (sapi == null || entity == null) return;
+            if (entity.Api?.Side != EnumAppSide.Server) return;
             if (stages.Count == 0) return;
 
             if (!entity.Alive)
@@ -181,10 +185,33 @@ namespace VsQuest
                 farSecondsAcc = 0f;
             }
 
-            bool hasLos = HasLineOfSight(target);
-            if (!hasLos)
+            if (stage.noLosSeconds > 0f)
             {
-                noLosSecondsAcc += stage.checkIntervalMs / 1000f;
+                bool hasLos;
+                try
+                {
+                    int losCheckIntervalMs = Math.Max(500, stage.checkIntervalMs);
+                    if (lastLosCheckMs == 0 || now - lastLosCheckMs >= losCheckIntervalMs)
+                    {
+                        cachedHasLos = HasLineOfSight(target);
+                        lastLosCheckMs = now;
+                    }
+
+                    hasLos = cachedHasLos;
+                }
+                catch
+                {
+                    hasLos = false;
+                }
+
+                if (!hasLos)
+                {
+                    noLosSecondsAcc += stage.checkIntervalMs / 1000f;
+                }
+                else
+                {
+                    noLosSecondsAcc = 0f;
+                }
             }
             else
             {
@@ -226,6 +253,8 @@ namespace VsQuest
         {
             farSecondsAcc = 0f;
             noLosSecondsAcc = 0f;
+            lastLosCheckMs = 0;
+            cachedHasLos = false;
         }
 
         private void CancelPending()

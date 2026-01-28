@@ -60,6 +60,42 @@ namespace VsQuest
         private ICoreServerAPI sapi;
         private readonly List<Stage> stages = new List<Stage>();
 
+        private const int CheckIntervalMs = 200;
+        private const int TrapOwnerCheckIntervalMs = 500;
+        private const int ExplodeRetryDelayMs = 250;
+        private const int ExplodeSoundLimiterMs = 400;
+        private const int SpawnSoundLimiterMs = 500;
+        private const float DefaultMaxTargetRange = 40f;
+        private const float DefaultSpawnRange = 6f;
+        private const int DefaultTrapCount = 1;
+        private const int DefaultFuseMs = 1500;
+        private const float DefaultExplosionRadius = 3f;
+        private const float DefaultExplosionDamage = 6f;
+        private const int DefaultDamageTier = 3;
+        private const string DefaultDamageType = "PiercingAttack";
+        private const float DefaultSoundRange = 24f;
+        private const int DefaultSoundStartMs = 0;
+        private const float DefaultSoundVolume = 1f;
+        private const float DefaultExplodeSoundRange = 24f;
+        private const float DefaultExplodeSoundVolume = 1f;
+
+        private const float MinSpawnRange = 0.5f;
+        private const int MinTrapCount = 1;
+        private const int MinFuseMs = 250;
+        private const float MinExplosionRadius = 0.5f;
+        private const int MinDamageTier = 0;
+        private const int SpawnTries = 14;
+        private const bool SpawnRequireSolidGround = true;
+        private const float SpawnMinRingFrac = 0.4f;
+        private const float SpawnMinSeparationMin = 1.5f;
+        private const float SpawnMinSeparationSpawnRangeFrac = 0.5f;
+        private const float SpawnYawRandomRange = 0.4f;
+        private const int FindFreeSpotMaxVerticalSteps = 6;
+
+        private long lastCheckMs;
+
+        private long lastTrapOwnerCheckMs;
+
         private long callbackId;
         private bool pending;
 
@@ -87,17 +123,17 @@ namespace VsQuest
                         cooldownSeconds = stageObj["cooldownSeconds"].AsFloat(0f),
 
                         minTargetRange = stageObj["minTargetRange"].AsFloat(0f),
-                        maxTargetRange = stageObj["maxTargetRange"].AsFloat(40f),
+                        maxTargetRange = stageObj["maxTargetRange"].AsFloat(DefaultMaxTargetRange),
 
                         trapEntityCode = stageObj["trapEntityCode"].AsString(null),
-                        spawnRange = stageObj["spawnRange"].AsFloat(6f),
-                        trapCount = stageObj["trapCount"].AsInt(1),
+                        spawnRange = stageObj["spawnRange"].AsFloat(DefaultSpawnRange),
+                        trapCount = stageObj["trapCount"].AsInt(DefaultTrapCount),
 
-                        fuseMs = stageObj["fuseMs"].AsInt(1500),
-                        explosionRadius = stageObj["explosionRadius"].AsFloat(3f),
-                        explosionDamage = stageObj["explosionDamage"].AsFloat(6f),
-                        damageTier = stageObj["damageTier"].AsInt(3),
-                        damageType = stageObj["damageType"].AsString("PiercingAttack"),
+                        fuseMs = stageObj["fuseMs"].AsInt(DefaultFuseMs),
+                        explosionRadius = stageObj["explosionRadius"].AsFloat(DefaultExplosionRadius),
+                        explosionDamage = stageObj["explosionDamage"].AsFloat(DefaultExplosionDamage),
+                        damageTier = stageObj["damageTier"].AsInt(DefaultDamageTier),
+                        damageType = stageObj["damageType"].AsString(DefaultDamageType),
 
                         trapInvulnerable = stageObj["trapInvulnerable"].AsBool(false),
 
@@ -105,26 +141,26 @@ namespace VsQuest
                         windupMs = stageObj["windupMs"].AsInt(0),
 
                         sound = stageObj["sound"].AsString(null),
-                        soundRange = stageObj["soundRange"].AsFloat(24f),
-                        soundStartMs = stageObj["soundStartMs"].AsInt(0),
-                        soundVolume = stageObj["soundVolume"].AsFloat(1f),
+                        soundRange = stageObj["soundRange"].AsFloat(DefaultSoundRange),
+                        soundStartMs = stageObj["soundStartMs"].AsInt(DefaultSoundStartMs),
+                        soundVolume = stageObj["soundVolume"].AsFloat(DefaultSoundVolume),
 
                         explodeSound = stageObj["explodeSound"].AsString(null),
-                        explodeSoundRange = stageObj["explodeSoundRange"].AsFloat(24f),
-                        explodeSoundVolume = stageObj["explodeSoundVolume"].AsFloat(1f),
+                        explodeSoundRange = stageObj["explodeSoundRange"].AsFloat(DefaultExplodeSoundRange),
+                        explodeSoundVolume = stageObj["explodeSoundVolume"].AsFloat(DefaultExplodeSoundVolume),
                     };
 
                     if (stage.cooldownSeconds < 0f) stage.cooldownSeconds = 0f;
                     if (stage.minTargetRange < 0f) stage.minTargetRange = 0f;
                     if (stage.maxTargetRange < stage.minTargetRange) stage.maxTargetRange = stage.minTargetRange;
 
-                    if (stage.spawnRange <= 0f) stage.spawnRange = 0.5f;
-                    if (stage.trapCount <= 0) stage.trapCount = 1;
+                    if (stage.spawnRange <= 0f) stage.spawnRange = MinSpawnRange;
+                    if (stage.trapCount <= 0) stage.trapCount = MinTrapCount;
 
-                    if (stage.fuseMs <= 0) stage.fuseMs = 250;
-                    if (stage.explosionRadius <= 0f) stage.explosionRadius = 0.5f;
+                    if (stage.fuseMs <= 0) stage.fuseMs = MinFuseMs;
+                    if (stage.explosionRadius <= 0f) stage.explosionRadius = MinExplosionRadius;
                     if (stage.explosionDamage < 0f) stage.explosionDamage = 0f;
-                    if (stage.damageTier < 0) stage.damageTier = 0;
+                    if (stage.damageTier < MinDamageTier) stage.damageTier = MinDamageTier;
 
                     if (stage.windupMs < 0) stage.windupMs = 0;
                     if (stage.soundVolume <= 0f) stage.soundVolume = 1f;
@@ -145,6 +181,7 @@ namespace VsQuest
         {
             base.OnGameTick(dt);
             if (sapi == null || entity == null) return;
+            if (entity.Api?.Side != EnumAppSide.Server) return;
 
             if (IsTrapEntity())
             {
@@ -160,6 +197,22 @@ namespace VsQuest
             }
 
             if (pending) return;
+
+            long now;
+            try
+            {
+                now = sapi.World.ElapsedMilliseconds;
+            }
+            catch
+            {
+                now = 0;
+            }
+
+            if (now > 0)
+            {
+                if (lastCheckMs != 0 && now - lastCheckMs < CheckIntervalMs) return;
+                lastCheckMs = now;
+            }
 
             if (!BossBehaviorUtils.TryGetHealthFraction(entity, out float frac)) return;
 
@@ -241,8 +294,8 @@ namespace VsQuest
             int count = Math.Max(1, stage.trapCount);
             var placed = new List<Vec3d>();
 
-            float minRingFrac = 0.4f;
-            float minSeparation = Math.Max(1.5f, stage.spawnRange * 0.5f);
+            float minRingFrac = SpawnMinRingFrac;
+            float minSeparation = Math.Max(SpawnMinSeparationMin, stage.spawnRange * SpawnMinSeparationSpawnRangeFrac);
 
             for (int i = 0; i < count; i++)
             {
@@ -254,9 +307,10 @@ namespace VsQuest
 
                     ApplyTrapFlags(trap, stage);
 
-                    var spawnPos = TryFindSpawnPositionNear(trap, target.ServerPos.XYZ, stage.spawnRange, tries: 14, requireSolidGround: true, minRingFrac: minRingFrac, avoidPositions: placed, minSeparation: minSeparation);
+                    var spawnPos = TryFindSpawnPositionNear(trap, target.ServerPos.XYZ, stage.spawnRange, tries: SpawnTries, requireSolidGround: SpawnRequireSolidGround, minRingFrac: minRingFrac, avoidPositions: placed, minSeparation: minSeparation);
                     trap.ServerPos.SetPosWithDimension(new Vec3d(spawnPos.X, spawnPos.Y + dim * 32768.0, spawnPos.Z));
-                    trap.ServerPos.Yaw = yaw + (float)((sapi.World.Rand.NextDouble() - 0.5) * 0.4);
+                    double yawRand = (sapi.World.Rand.NextDouble() - 0.5) * SpawnYawRandomRange;
+                    trap.ServerPos.Yaw = yaw + (float)yawRand;
                     trap.Pos.SetFrom(trap.ServerPos);
 
                     sapi.World.SpawnEntity(trap);
@@ -362,7 +416,7 @@ namespace VsQuest
             var ct = world.CollisionTester;
             if (ct == null) return false;
 
-            for (int dy = 0; dy <= 6; dy++)
+            for (int dy = 0; dy <= FindFreeSpotMaxVerticalSteps; dy++)
             {
                 int y = basePos.Y + dy;
                 var testPos = new Vec3d(basePos.X + 0.5, y + 1.0, basePos.Z + 0.5);
@@ -399,7 +453,7 @@ namespace VsQuest
                 return true;
             }
 
-            for (int dy = 1; dy <= 6; dy++)
+            for (int dy = 1; dy <= FindFreeSpotMaxVerticalSteps; dy++)
             {
                 int y = basePos.Y - dy;
                 if (y < 0) break;
@@ -465,7 +519,7 @@ namespace VsQuest
 
             try
             {
-                trap.WatchedAttributes.SetLong(TrapExplodeAtMsKey, sapi.World.ElapsedMilliseconds + Math.Max(250, stage.fuseMs));
+                trap.WatchedAttributes.SetLong(TrapExplodeAtMsKey, sapi.World.ElapsedMilliseconds + Math.Max(MinFuseMs, stage.fuseMs));
                 trap.WatchedAttributes.MarkPathDirty(TrapExplodeAtMsKey);
             }
             catch
@@ -574,8 +628,64 @@ namespace VsQuest
             if (sapi == null || entity == null) return;
             if (!entity.Alive) return;
 
+            long now;
+            try
+            {
+                now = sapi.World.ElapsedMilliseconds;
+            }
+            catch
+            {
+                now = 0;
+            }
+
+            if (now <= 0) return;
+
             long explodeAt = 0;
             long ownerId = 0;
+            try
+            {
+                var wa = entity.WatchedAttributes;
+                explodeAt = wa.GetLong(TrapExplodeAtMsKey, 0);
+                ownerId = wa.GetLong(TrapOwnerIdKey, 0);
+            }
+            catch
+            {
+                explodeAt = 0;
+                ownerId = 0;
+            }
+
+            if (explodeAt <= 0) return;
+
+            if (now < explodeAt)
+            {
+                // While far from explosion, avoid doing expensive work each tick.
+                // Only validate owner occasionally.
+                if (ownerId <= 0)
+                {
+                    sapi.World.DespawnEntity(entity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                    return;
+                }
+
+                if (lastTrapOwnerCheckMs == 0 || now - lastTrapOwnerCheckMs >= TrapOwnerCheckIntervalMs)
+                {
+                    lastTrapOwnerCheckMs = now;
+                    try
+                    {
+                        var ownerCheck = sapi.World.GetEntityById(ownerId);
+                        if (ownerCheck == null || !ownerCheck.Alive)
+                        {
+                            sapi.World.DespawnEntity(entity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return;
+            }
+
+            // Explosion time reached: read remaining parameters and attempt explode.
             float radius = 0f;
             float damage = 0f;
             int tier = 0;
@@ -587,8 +697,6 @@ namespace VsQuest
             try
             {
                 var wa = entity.WatchedAttributes;
-                explodeAt = wa.GetLong(TrapExplodeAtMsKey, 0);
-                ownerId = wa.GetLong(TrapOwnerIdKey, 0);
                 radius = wa.GetFloat(TrapRadiusKey, 0f);
                 damage = wa.GetFloat(TrapDamageKey, 0f);
                 tier = wa.GetInt(TrapDamageTierKey, 0);
@@ -614,15 +722,12 @@ namespace VsQuest
                 return;
             }
 
-            if (explodeAt <= 0) return;
-            if (sapi.World.ElapsedMilliseconds < explodeAt) return;
-
             if (!TryExplode(owner as EntityAgent, radius, damage, tier, dmgTypeStr, explodeSound, explodeSoundRange, explodeSoundVolume))
             {
                 try
                 {
                     var wa = entity.WatchedAttributes;
-                    wa.SetLong(TrapExplodeAtMsKey, sapi.World.ElapsedMilliseconds + 250);
+                    wa.SetLong(TrapExplodeAtMsKey, now + ExplodeRetryDelayMs);
                     wa.MarkPathDirty(TrapExplodeAtMsKey);
                 }
                 catch
@@ -669,7 +774,7 @@ namespace VsQuest
                     }
 
                     string limiterKey = $"ent:{limiterEntityId}:{explodeSound}";
-                    if (!BossBehaviorUtils.ShouldPlaySoundLimited(limiterKey, 400))
+                    if (!BossBehaviorUtils.ShouldPlaySoundLimited(limiterKey, ExplodeSoundLimiterMs))
                     {
                         explodeSound = null;
                     }
@@ -820,7 +925,7 @@ namespace VsQuest
             if (string.IsNullOrWhiteSpace(stage.sound)) return;
 
             // Prevent stacking when multiple traps are spawned in the same moment.
-            if (!BossBehaviorUtils.ShouldPlaySoundLimited(entity, stage.sound, 500)) return;
+            if (!BossBehaviorUtils.ShouldPlaySoundLimited(entity, stage.sound, SpawnSoundLimiterMs)) return;
 
             AssetLocation soundLoc = AssetLocation.Create(stage.sound, "game").WithPathPrefixOnce("sounds/");
             if (soundLoc == null) return;

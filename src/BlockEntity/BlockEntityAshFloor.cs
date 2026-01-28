@@ -48,7 +48,7 @@ namespace VsQuest
             if (!ticking)
             {
                 ticking = true;
-                RegisterGameTickListener(OnServerTick, 50);
+                RegisterGameTickListener(OnServerTick, 100);
             }
         }
 
@@ -126,20 +126,27 @@ namespace VsQuest
             if (nextTickAtMs != 0 && now < nextTickAtMs) return;
             nextTickAtMs = now + interval;
 
-            var players = sapi.World.AllOnlinePlayers;
-            if (players == null || players.Length == 0) return;
-
-            for (int i = 0; i < players.Length; i++)
+            try
             {
-                if (players[i] is not IServerPlayer sp) continue;
-                if (sp.Entity is not EntityPlayer plr) continue;
-                if (!plr.Alive) continue;
-                if (plr.ServerPos.Dimension != Pos.dimension) continue;
+                int dim = Pos.dimension;
+                var center = new Vec3d(Pos.X + 0.5, Pos.Y + 0.5 + dim * 32768.0, Pos.Z + 0.5);
+                var entities = sapi.World.GetEntitiesAround(center, 2f, 2f, e => e is EntityPlayer);
+                if (entities == null || entities.Length == 0) return;
 
-                if (!IsPlayerOnThisBlock(sapi, plr)) continue;
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (entities[i] is not EntityPlayer plr) continue;
+                    if (!plr.Alive) continue;
+                    if (plr.ServerPos.Dimension != Pos.dimension) continue;
 
-                ApplyVictimDebuffs(sapi, plr, interval);
-                DealDamage(sapi, plr);
+                    if (!IsPlayerOnThisBlock(sapi, plr)) continue;
+
+                    ApplyVictimDebuffs(sapi, plr, interval);
+                    DealDamage(sapi, plr);
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -199,8 +206,12 @@ namespace VsQuest
 
             try
             {
-                player.WatchedAttributes.SetLong(VictimUntilKey, until);
-                player.WatchedAttributes.MarkPathDirty(VictimUntilKey);
+                long prev = player.WatchedAttributes.GetLong(VictimUntilKey, 0);
+                if (prev != until)
+                {
+                    player.WatchedAttributes.SetLong(VictimUntilKey, until);
+                    player.WatchedAttributes.MarkPathDirty(VictimUntilKey);
+                }
             }
             catch
             {
@@ -209,8 +220,12 @@ namespace VsQuest
             try
             {
                 float mult = GameMath.Clamp(victimWalkSpeedMult <= 0f ? 0.35f : victimWalkSpeedMult, 0f, 1f);
-                player.WatchedAttributes.SetFloat(VictimWalkSpeedMultKey, mult);
-                player.WatchedAttributes.MarkPathDirty(VictimWalkSpeedMultKey);
+                float prev = player.WatchedAttributes.GetFloat(VictimWalkSpeedMultKey, float.NaN);
+                if (float.IsNaN(prev) || Math.Abs(prev - mult) > 0.0001f)
+                {
+                    player.WatchedAttributes.SetFloat(VictimWalkSpeedMultKey, mult);
+                    player.WatchedAttributes.MarkPathDirty(VictimWalkSpeedMultKey);
+                }
             }
             catch
             {
@@ -220,8 +235,12 @@ namespace VsQuest
             {
                 try
                 {
-                    player.WatchedAttributes.SetLong(VictimNoJumpUntilKey, until);
-                    player.WatchedAttributes.MarkPathDirty(VictimNoJumpUntilKey);
+                    long prev = player.WatchedAttributes.GetLong(VictimNoJumpUntilKey, 0);
+                    if (prev != until)
+                    {
+                        player.WatchedAttributes.SetLong(VictimNoJumpUntilKey, until);
+                        player.WatchedAttributes.MarkPathDirty(VictimNoJumpUntilKey);
+                    }
                 }
                 catch
                 {
@@ -232,8 +251,12 @@ namespace VsQuest
             {
                 try
                 {
-                    player.WatchedAttributes.SetLong(VictimNoShiftUntilKey, until);
-                    player.WatchedAttributes.MarkPathDirty(VictimNoShiftUntilKey);
+                    long prev = player.WatchedAttributes.GetLong(VictimNoShiftUntilKey, 0);
+                    if (prev != until)
+                    {
+                        player.WatchedAttributes.SetLong(VictimNoShiftUntilKey, until);
+                        player.WatchedAttributes.MarkPathDirty(VictimNoShiftUntilKey);
+                    }
                 }
                 catch
                 {

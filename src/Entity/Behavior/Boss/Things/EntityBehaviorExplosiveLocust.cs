@@ -15,6 +15,12 @@ namespace VsQuest
 
         private const int ExplodeAtRescheduleGraceMs = 2000;
 
+        private const int ProximityCheckIntervalDefaultMs = 250;
+        private const int ProximityCheckIntervalNearExplodeMs = 125;
+        private const int ProximityNearExplodeWindowMs = 1000;
+
+        private const float ProximityExplodeDistanceSq = 1.0f;
+
         private ICoreServerAPI sapi;
         private readonly BossBehaviorUtils.LoopSound loopSound = new BossBehaviorUtils.LoopSound();
 
@@ -42,6 +48,9 @@ namespace VsQuest
         private long lastLeapAtMs;
 
         private long spawnedAtMs;
+
+        private long lastExplodeScheduleCheckMs;
+        private long lastProximityCheckMs;
 
         public EntityBehaviorExplosiveLocust(Entity entity) : base(entity)
         {
@@ -105,7 +114,20 @@ namespace VsQuest
                 spawnedAtMs = 0;
             }
 
-            EnsureExplodeAtScheduled();
+            long nowMs = spawnedAtMs;
+            if (nowMs <= 0)
+            {
+                try
+                {
+                    nowMs = sapi?.World?.ElapsedMilliseconds ?? 0;
+                }
+                catch
+                {
+                    nowMs = 0;
+                }
+            }
+
+            EnsureExplodeAtScheduled(nowMs);
         }
 
         public override void OnGameTick(float dt)
@@ -122,16 +144,65 @@ namespace VsQuest
                 return;
             }
 
-            EnsureExplodeAtScheduled();
+            long nowMs;
+            try
+            {
+                nowMs = sapi.World.ElapsedMilliseconds;
+            }
+            catch
+            {
+                nowMs = 0;
+            }
+
+            if (nowMs > 0)
+            {
+                if (lastExplodeScheduleCheckMs == 0 || nowMs - lastExplodeScheduleCheckMs >= 500)
+                {
+                    EnsureExplodeAtScheduled(nowMs);
+                    lastExplodeScheduleCheckMs = nowMs;
+                }
+
+                long explodeAtIntervalMs = 0;
+                try
+                {
+                    explodeAtIntervalMs = entity.WatchedAttributes.GetLong(ExplodeAtMsKey, 0);
+                }
+                catch
+                {
+                    explodeAtIntervalMs = 0;
+                }
+
+                int proximityInterval = ProximityCheckIntervalDefaultMs;
+                if (explodeAtIntervalMs > 0)
+                {
+                    long msLeft = explodeAtIntervalMs - nowMs;
+                    if (msLeft <= ProximityNearExplodeWindowMs)
+                    {
+                        proximityInterval = ProximityCheckIntervalNearExplodeMs;
+                    }
+                }
+
+                if (lastProximityCheckMs == 0 || nowMs - lastProximityCheckMs >= proximityInterval)
+                {
+                    TryLeapAtTarget(nowMs);
+                    TryExplodeOnProximity(nowMs);
+                    lastProximityCheckMs = nowMs;
+                }
+            }
+
             EnsureLoopSoundStarted();
 
-            TryLeapAtTarget();
-
-            TryExplodeOnProximity();
-
-            long explodeAt = entity.WatchedAttributes.GetLong(ExplodeAtMsKey, 0);
-            if (explodeAt <= 0) return;
-            if (sapi.World.ElapsedMilliseconds < explodeAt) return;
+            long explodeAtMs;
+            try
+            {
+                explodeAtMs = entity.WatchedAttributes.GetLong(ExplodeAtMsKey, 0);
+            }
+            catch
+            {
+                explodeAtMs = 0;
+            }
+            if (explodeAtMs <= 0) return;
+            if (nowMs > 0 && nowMs < explodeAtMs) return;
 
             Explode();
         }
@@ -150,13 +221,13 @@ namespace VsQuest
             base.OnEntityDespawn(despawn);
         }
 
-        private void EnsureExplodeAtScheduled()
+        private void EnsureExplodeAtScheduled(long now)
         {
             if (sapi == null || entity == null) return;
+            if (now <= 0) return;
 
             try
             {
-                long now = sapi.World.ElapsedMilliseconds;
                 long explodeAt = entity.WatchedAttributes.GetLong(ExplodeAtMsKey, 0);
 
                 if (explodeAt > 0)
@@ -179,21 +250,10 @@ namespace VsQuest
             }
         }
 
-        private void TryExplodeOnProximity()
+        private void TryExplodeOnProximity(long now)
         {
             if (sapi == null || entity == null) return;
             if (entity.Api?.Side != EnumAppSide.Server) return;
-
-            long now;
-            try
-            {
-                now = sapi.World.ElapsedMilliseconds;
-            }
-            catch
-            {
-                now = 0;
-            }
-
             if (now <= 0) return;
 
             try
@@ -232,7 +292,7 @@ namespace VsQuest
                 float dz = (float)(target.ServerPos.Z - entity.ServerPos.Z);
                 float distSq = dx * dx + dy * dy + dz * dz;
 
-                if (distSq <= 1.0f)
+                if (distSq <= ProximityExplodeDistanceSq)
                 {
                     Explode();
                 }
@@ -401,12 +461,11 @@ namespace VsQuest
             }
         }
 
-        private void TryLeapAtTarget()
+        private void TryLeapAtTarget(long now)
         {
             if (sapi == null || entity == null) return;
             if (entity.Api?.Side != EnumAppSide.Server) return;
-
-            long now = sapi.World.ElapsedMilliseconds;
+            if (now <= 0) return;
             long cdMs = (long)(leapCooldownSeconds * 1000f);
             if (cdMs < 50) cdMs = 50;
 

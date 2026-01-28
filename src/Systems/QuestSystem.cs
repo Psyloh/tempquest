@@ -25,6 +25,7 @@ namespace VsQuest
         private QuestChatCommandRegistry chatCommandRegistry;
 
         public QuestConfig Config { get; set; }
+        public AlegacyVsQuestConfig CoreConfig { get; private set; } = new AlegacyVsQuestConfig();
         private ICoreAPI api;
 
         private VsQuestDiscoveryHud discoveryHud;
@@ -59,25 +60,60 @@ namespace VsQuest
 
             try
             {
-                Config = api.LoadModConfig<QuestConfig>("questconfig.json");
-                if (Config != null)
+                try
                 {
-                    api.Logger.Notification("Mod Config successfully loaded.");
+                    Config = api.LoadModConfig<QuestConfig>("questconfig.json");
+                    if (Config != null)
+                    {
+                        api.Logger.Notification("Mod Config successfully loaded.");
+                    }
+                    else
+                    {
+                        api.Logger.Notification("No Mod Config specified. Falling back to default settings");
+                        Config = new QuestConfig();
+                    }
                 }
-                else
+                catch
                 {
-                    api.Logger.Notification("No Mod Config specified. Falling back to default settings");
                     Config = new QuestConfig();
+                    api.Logger.Error("Failed to load custom mod configuration. Falling back to default settings!");
+                }
+                finally
+                {
+                    api.StoreModConfig(Config, "questconfig.json");
+                }
+
+                try
+                {
+                    CoreConfig = api.LoadModConfig<AlegacyVsQuestConfig>("alegacy-vsquest-config.json");
+                    if (CoreConfig != null)
+                    {
+                        api.Logger.Notification("Alegacy VS Quest core config successfully loaded.");
+                    }
+                    else
+                    {
+                        api.Logger.Notification("No Alegacy VS Quest core config specified. Falling back to default settings");
+                        CoreConfig = new AlegacyVsQuestConfig();
+                    }
+                }
+                catch
+                {
+                    CoreConfig = new AlegacyVsQuestConfig();
+                    api.Logger.Error("Failed to load Alegacy VS Quest core configuration. Falling back to default settings!");
+                }
+                finally
+                {
+                    api.StoreModConfig(CoreConfig, "alegacy-vsquest-config.json");
                 }
             }
             catch
             {
-                Config = new QuestConfig();
-                api.Logger.Error("Failed to load custom mod configuration. Falling back to default settings!");
+                api.Logger.Error("Failed to load mod configuration. Falling back to default settings!");
             }
             finally
             {
                 api.StoreModConfig(Config, "questconfig.json");
+                api.StoreModConfig(CoreConfig, "alegacy-vsquest-config.json");
             }
         }
 

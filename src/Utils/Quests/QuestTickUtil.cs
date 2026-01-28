@@ -7,9 +7,17 @@ namespace VsQuest
 {
     public static class QuestTickUtil
     {
-        public static void HandleQuestTick(float dt, Dictionary<string, Quest> questRegistry, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, IPlayer[] players, System.Func<string, List<ActiveQuest>> getPlayerQuests, ICoreServerAPI sapi)
+        private static readonly Dictionary<string, double> lastMissingQuestLogHoursByKey = new Dictionary<string, double>(System.StringComparer.OrdinalIgnoreCase);
+
+        public static void HandleQuestTick(float dt, Dictionary<string, Quest> questRegistry, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, IPlayer[] players, System.Func<string, List<ActiveQuest>> getPlayerQuests, ICoreServerAPI sapi, double missingQuestLogThrottleHours = (1.0 / 60.0), double passiveCompletionThrottleHours = (1.0 / 3600.0))
         {
             if (players == null || players.Length == 0) return;
+
+			double missingLogThrottle = missingQuestLogThrottleHours;
+			if (missingLogThrottle <= 0) missingLogThrottle = 1.0 / 60.0;
+
+			double passiveThrottle = passiveCompletionThrottleHours;
+			if (passiveThrottle <= 0) passiveThrottle = 1.0 / 3600.0;
 
             for (int p = 0; p < players.Length; p++)
             {
@@ -25,7 +33,21 @@ namespace VsQuest
 
                     if (!questRegistry.TryGetValue(activeQuest.questId, out var quest) || quest == null)
                     {
-                        sapi.Logger.Error($"[alegacyvsquest] Active quest with id '{activeQuest.questId}' for player '{serverPlayer.PlayerUID}' not found in QuestRegistry. Skipping tick update. This might happen if a quest was removed but player data was not updated.");
+                        // Throttle log to avoid spamming every tick for every player.
+                        // Keyed by player uid + quest id.
+                        try
+                        {
+                            double nowHours = sapi?.World?.Calendar?.TotalHours ?? 0;
+                            string logKey = serverPlayer.PlayerUID + ":" + activeQuest.questId;
+                            if (!lastMissingQuestLogHoursByKey.TryGetValue(logKey, out var lastHours) || (nowHours - lastHours) > missingLogThrottle)
+                            {
+                                lastMissingQuestLogHoursByKey[logKey] = nowHours;
+                                sapi.Logger.Error($"[alegacyvsquest] Active quest with id '{activeQuest.questId}' for player '{serverPlayer.PlayerUID}' not found in QuestRegistry. Skipping tick update. This might happen if a quest was removed but player data was not updated.");
+                            }
+                        }
+                        catch
+                        {
+                        }
                         continue;
                     }
 
@@ -36,24 +58,26 @@ namespace VsQuest
                         {
                             if (!QuestTimeGateUtil.AllowsProgress(serverPlayer, quest, actionObjectiveRegistry, "tick", objective.objectiveId)) continue;
 
-                            var objectiveImplementation = actionObjectiveRegistry[objective.id] as WalkDistanceObjective;
+                            if (!actionObjectiveRegistry.TryGetValue(objective.id, out var impl) || impl == null) continue;
+                            var objectiveImplementation = impl as WalkDistanceObjective;
                             objectiveImplementation?.OnTick(serverPlayer, activeQuest, i, objective.args, sapi, dt);
                         }
                         else if (objective.id == "temporalstorm")
                         {
                             if (!QuestTimeGateUtil.AllowsProgress(serverPlayer, quest, actionObjectiveRegistry, "tick", objective.objectiveId)) continue;
 
-                            var objectiveImplementation = actionObjectiveRegistry[objective.id] as TemporalStormObjective;
+                            if (!actionObjectiveRegistry.TryGetValue(objective.id, out var impl) || impl == null) continue;
+                            var objectiveImplementation = impl as TemporalStormObjective;
                             objectiveImplementation?.OnTick(serverPlayer, activeQuest, objective, sapi);
                         }
                     }
 
-                    TryFirePassiveActionObjectiveCompletions(serverPlayer, activeQuest, quest, actionObjectiveRegistry, sapi);
+                    TryFirePassiveActionObjectiveCompletions(serverPlayer, activeQuest, quest, actionObjectiveRegistry, sapi, passiveThrottle);
                 }
             }
         }
 
-        private static void TryFirePassiveActionObjectiveCompletions(IServerPlayer player, ActiveQuest activeQuest, Quest questDef, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, ICoreServerAPI sapi)
+        private static void TryFirePassiveActionObjectiveCompletions(IServerPlayer player, ActiveQuest activeQuest, Quest questDef, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, ICoreServerAPI sapi, double passiveCompletionThrottleHours)
         {
             if (player == null || activeQuest == null || questDef?.actionObjectives == null) return;
             if (sapi == null || actionObjectiveRegistry == null) return;
@@ -64,7 +88,9 @@ namespace VsQuest
             string throttleKey = $"alegacyvsquest:ao:lastcheck:{activeQuest.questId}";
             double now = sapi.World.Calendar.TotalHours;
             double last = wa.GetDouble(throttleKey, -999999);
-            if (now - last < (1.0 / 3600.0)) return;
+			double throttle = passiveCompletionThrottleHours;
+			if (throttle <= 0) throttle = 1.0 / 3600.0;
+			if (now - last < throttle) return;
             wa.SetDouble(throttleKey, now);
             wa.MarkPathDirty(throttleKey);
 

@@ -11,13 +11,43 @@ namespace VsQuest
 {
     public class QuestEventHandler
     {
-        private const double BossKillCreditMinShareCeil = 0.5;
-        private const double BossKillCreditMinShareFloor = 0.08;
-        private const float BossKillHealFraction = 0.17f;
+        private double bossKillCreditMinShareCeil = 0.5;
+        private double bossKillCreditMinShareFloor = 0.08;
+        private float bossKillHealFraction = 0.17f;
+
+        private const string SummonedByEntityIdKey = "alegacyvsquest:bosssummonritual:summonedByEntityId";
 
         private readonly Dictionary<string, Quest> questRegistry;
         private readonly QuestPersistenceManager persistenceManager;
         private readonly ICoreServerAPI sapi;
+        private QuestSystem questSystem;
+
+        private void ApplyCoreConfig()
+        {
+            AlegacyVsQuestConfig cfg = null;
+            try
+            {
+                cfg = questSystem?.CoreConfig;
+            }
+            catch
+            {
+                cfg = null;
+            }
+
+            var combat = cfg?.BossCombat;
+            if (combat != null)
+            {
+                bossKillCreditMinShareCeil = combat.BossKillCreditMinShareCeil;
+                bossKillCreditMinShareFloor = combat.BossKillCreditMinShareFloor;
+                bossKillHealFraction = combat.BossKillHealFraction;
+
+                if (bossKillCreditMinShareCeil < 0) bossKillCreditMinShareCeil = 0;
+                if (bossKillCreditMinShareFloor < 0) bossKillCreditMinShareFloor = 0;
+                if (bossKillCreditMinShareFloor > bossKillCreditMinShareCeil) bossKillCreditMinShareFloor = bossKillCreditMinShareCeil;
+
+                if (bossKillHealFraction < 0f) bossKillHealFraction = 0f;
+            }
+        }
 
         public QuestEventHandler(Dictionary<string, Quest> questRegistry, QuestPersistenceManager persistenceManager, ICoreServerAPI sapi)
         {
@@ -28,6 +58,10 @@ namespace VsQuest
 
         public void RegisterEventHandlers()
         {
+            questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+
+            ApplyCoreConfig();
+
             sapi.Event.GameWorldSave += OnGameWorldSave;
             sapi.Event.PlayerJoin += OnPlayerJoin;
             sapi.Event.PlayerDisconnect += OnPlayerDisconnect;
@@ -87,6 +121,39 @@ namespace VsQuest
         private void OnEntityDeath(Entity entity, DamageSource damageSource)
         {
             var credited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            try
+            {
+                long summonedBy = 0;
+                try
+                {
+                    summonedBy = entity?.WatchedAttributes?.GetLong(SummonedByEntityIdKey, 0) ?? 0;
+                }
+                catch
+                {
+                    summonedBy = 0;
+                }
+
+                if (summonedBy != 0)
+                {
+                    sapi.Event.RegisterCallback(_ =>
+                    {
+                        try
+                        {
+                            if (entity == null) return;
+                            if (entity.Alive) return;
+
+                            sapi.World.DespawnEntity(entity, new EntityDespawnData { Reason = EnumDespawnReason.Removed });
+                        }
+                        catch
+                        {
+                        }
+                    }, 2000);
+                }
+            }
+            catch
+            {
+            }
 
             try
             {
@@ -241,7 +308,7 @@ namespace VsQuest
                 if (!BossBehaviorUtils.TryGetHealth(boss, out ITreeAttribute healthTree, out float currentHealth, out float maxHealth)) return;
                 if (maxHealth <= 0f) return;
 
-                float add = maxHealth * BossKillHealFraction;
+                float add = maxHealth * bossKillHealFraction;
                 if (add <= 0f) return;
 
                 float next = currentHealth + add;
@@ -255,16 +322,23 @@ namespace VsQuest
             }
         }
 
-        private static double GetBossKillCreditMinShare(int attackersWithDamage)
+        private double GetBossKillCreditMinShare(int attackersWithDamage)
         {
             if (attackersWithDamage <= 1)
             {
-                return BossKillCreditMinShareCeil;
+                return bossKillCreditMinShareCeil;
             }
 
-            double share = BossKillCreditMinShareCeil / Math.Sqrt(Math.Max(1, attackersWithDamage));
-            if (share < BossKillCreditMinShareFloor) share = BossKillCreditMinShareFloor;
-            if (share > BossKillCreditMinShareCeil) share = BossKillCreditMinShareCeil;
+            double ceil = bossKillCreditMinShareCeil;
+            double floor = bossKillCreditMinShareFloor;
+
+            if (ceil < 0) ceil = 0;
+            if (floor < 0) floor = 0;
+            if (floor > ceil) floor = ceil;
+
+            double share = ceil / Math.Sqrt(Math.Max(1, attackersWithDamage));
+            if (share < floor) share = floor;
+            if (share > ceil) share = ceil;
 
             return share;
         }
@@ -298,9 +372,14 @@ namespace VsQuest
             var blockCode = sapi.World.GetBlock(blockId)?.Code.ToString();
             var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
             var playerQuests = persistenceManager.GetPlayerQuests(byPlayer.PlayerUID);
-            foreach (var quest in playerQuests.ToArray())
+            if (playerQuests == null || playerQuests.Count == 0) return;
+
+            int count = playerQuests.Count;
+            for (int i = 0; i < count; i++)
             {
-                quest.OnBlockBroken(blockCode, position, byPlayer);
+                if (i >= playerQuests.Count) break;
+                var quest = playerQuests[i];
+                quest?.OnBlockBroken(blockCode, position, byPlayer);
             }
         }
 
@@ -314,21 +393,43 @@ namespace VsQuest
             var blockCode = sapi.World.BlockAccessor.GetBlock(blockSel.Position)?.Code.ToString();
             var position = new int[] { blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z };
             var playerQuests = persistenceManager.GetPlayerQuests(byPlayer.PlayerUID);
-            foreach (var quest in playerQuests.ToArray())
+            if (playerQuests == null || playerQuests.Count == 0) return;
+
+            int count = playerQuests.Count;
+            for (int i = 0; i < count; i++)
             {
-                quest.OnBlockPlaced(blockCode, position, byPlayer);
+                if (i >= playerQuests.Count) break;
+                var quest = playerQuests[i];
+                quest?.OnBlockPlaced(blockCode, position, byPlayer);
             }
         }
 
         private void OnQuestTick(float dt)
         {
-            var questSystem = sapi.ModLoader.GetModSystem<QuestSystem>();
+            questSystem ??= sapi.ModLoader.GetModSystem<QuestSystem>();
             if (questSystem == null) return;
 
             var players = sapi.World.AllOnlinePlayers;
             if (players == null || players.Length == 0) return;
 
-            QuestTickUtil.HandleQuestTick(dt, questRegistry, questSystem.ActionObjectiveRegistry, players, persistenceManager.GetPlayerQuests, sapi);
+            double missingLogThrottle = 1.0 / 60.0;
+            double passiveThrottle = 1.0 / 3600.0;
+            try
+            {
+                var cfg = questSystem.CoreConfig?.QuestTick;
+                if (cfg != null)
+                {
+                    if (cfg.MissingQuestLogThrottleHours > 0) missingLogThrottle = cfg.MissingQuestLogThrottleHours;
+                    if (cfg.PassiveCompletionThrottleHours > 0) passiveThrottle = cfg.PassiveCompletionThrottleHours;
+                }
+            }
+            catch
+            {
+                missingLogThrottle = 1.0 / 60.0;
+                passiveThrottle = 1.0 / 3600.0;
+            }
+
+            QuestTickUtil.HandleQuestTick(dt, questRegistry, questSystem.ActionObjectiveRegistry, players, persistenceManager.GetPlayerQuests, sapi, missingLogThrottle, passiveThrottle);
         }
 
         public void HandleVanillaBlockInteract(IServerPlayer player, VanillaBlockInteractMessage message)
@@ -345,9 +446,14 @@ namespace VsQuest
 
             int[] position = new int[] { message.Position.X, message.Position.Y, message.Position.Z };
             var playerQuests = persistenceManager.GetPlayerQuests(player.PlayerUID);
-            foreach (var quest in playerQuests.ToArray())
+            if (playerQuests == null || playerQuests.Count == 0) return;
+
+            int count = playerQuests.Count;
+            for (int i = 0; i < count; i++)
             {
-                quest.OnBlockUsed(message.BlockCode, position, player, sapi);
+                if (i >= playerQuests.Count) break;
+                var quest = playerQuests[i];
+                quest?.OnBlockUsed(message.BlockCode, position, player, sapi);
             }
         }
     }

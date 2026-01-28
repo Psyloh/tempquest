@@ -49,6 +49,9 @@ namespace VsQuest
         private ICoreServerAPI sapi;
         private readonly List<Stage> stages = new List<Stage>();
 
+        private const int CheckIntervalMs = 200;
+        private long lastCheckMs;
+
         private long callbackId;
         private bool pending;
         private int pendingStageIndex;
@@ -133,6 +136,7 @@ namespace VsQuest
         {
             base.OnGameTick(dt);
             if (sapi == null || entity == null) return;
+            if (entity.Api?.Side != EnumAppSide.Server) return;
 
             if (IsFakeEntity())
             {
@@ -149,6 +153,22 @@ namespace VsQuest
             }
 
             if (pending) return;
+
+            long now;
+            try
+            {
+                now = sapi.World.ElapsedMilliseconds;
+            }
+            catch
+            {
+                now = 0;
+            }
+
+            if (now > 0)
+            {
+                if (lastCheckMs != 0 && now - lastCheckMs < CheckIntervalMs) return;
+                lastCheckMs = now;
+            }
 
             if (!BossBehaviorUtils.TryGetHealthFraction(entity, out float frac)) return;
 

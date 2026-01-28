@@ -55,7 +55,7 @@
       { "code": "repulseagents" },
       { "code": "controlledphysics", "stepHeight": 1.1251 },
       { "code": "bossdamagesourceimmunity", "ignoreWeather": true, "ignoreExplosion": true, "ignoreElectricity": true, "onlyAllowPlayerDamage": true },
-      { "code": "health", "currenthealth": 650, "maxhealth": 650 },
+      { "code": "health", "currenthealth": 560, "maxhealth": 560 },
       { "code": "bosscombatmarker", "trackBossHuntDamageLock": true },
       { "code": "bosshastargetsync" },
       { "code": "questtarget", "targetId": "albase:bosshunt:subduction-maw", "leashRange": 120, "returnMoveSpeed": 0.06, "leashCheckMs": 1000 },
@@ -96,12 +96,12 @@
             "intermissionMaxMs": 9000,
             "freezeBoss": true,
             "lockYaw": true,
-            "incomingDamageMultiplier": 0.15,
+            "incomingDamageMultiplier": 0.25,
             "spawnRange": 12,
             "adds": [
               {
                 "entityCode": "game:shiver-surface",
-                "maxNearby": 8,
+                "maxNearby": 6,
                 "nearbyRange": 30,
                 "minCount": 2,
                 "maxCount": 3,
@@ -133,11 +133,11 @@
         "stages": [
           {
             "whenHealthRelBelow": 0.9,
-            "cooldownSeconds": 6,
-            "range": 4.6,
+            "cooldownSeconds": 7,
+            "range": 4.2,
             "knockbackStrength": 0.45,
             "maxPlayerMotion": 0.75,
-            "stunMs": 1400,
+            "stunMs": 1800,
             "victimWalkSpeedMult": 0.0,
             "sound": "albase:deathmagic",
             "soundRange": 24,
@@ -146,11 +146,11 @@
           },
           {
             "whenHealthRelBelow": 0.35,
-            "cooldownSeconds": 5,
-            "range": 5.2,
+            "cooldownSeconds": 6,
+            "range": 4.8,
             "knockbackStrength": 0.55,
             "maxPlayerMotion": 0.9,
-            "stunMs": 1600,
+            "stunMs": 2100,
             "victimWalkSpeedMult": 0.0,
             "sound": "albase:deathmagic",
             "soundRange": 26,
@@ -162,9 +162,9 @@
       {
         "code": "bosscloning",
         "stages": [
-          { "whenHealthRelBelow": 0.8, "cloneCount": 2, "durationMs": 11000, "cooldownSeconds": 10, "spawnRange": 7, "cloneDamageMult": 0.7, "cloneWalkSpeedMult": 1.1, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.65, "cloneCount": 4, "durationMs": 11000, "cooldownSeconds": 10, "spawnRange": 8, "cloneDamageMult": 0.65, "cloneWalkSpeedMult": 1.15, "cloneInvulnerable": true },
-          { "whenHealthRelBelow": 0.33, "cloneCount": 6, "durationMs": 13000, "cooldownSeconds": 9, "spawnRange": 8, "cloneDamageMult": 0.6, "cloneWalkSpeedMult": 1.2, "cloneInvulnerable": true }
+          { "whenHealthRelBelow": 0.8, "cloneCount": 2, "durationMs": 9000, "cooldownSeconds": 12, "spawnRange": 7, "cloneDamageMult": 0.7, "cloneWalkSpeedMult": 1.1, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.66, "cloneCount": 3, "durationMs": 9000, "cooldownSeconds": 12, "spawnRange": 8, "cloneDamageMult": 0.65, "cloneWalkSpeedMult": 1.15, "cloneInvulnerable": true },
+          { "whenHealthRelBelow": 0.4, "cloneCount": 5, "durationMs": 11000, "cooldownSeconds": 11, "spawnRange": 8, "cloneDamageMult": 0.6, "cloneWalkSpeedMult": 1.2, "cloneInvulnerable": true }
         ]
       },
       {
@@ -241,7 +241,7 @@
             "warningSoundRange": 32,
             "warningSoundVolume": 0.56,
             "warningDelayMs": 3000,
-            "chance": 0.9
+            "chance": 0.75
           },
           {
             "whenHealthRelBelow": 0.5,
@@ -254,7 +254,7 @@
             "warningSoundRange": 34,
             "warningSoundVolume": 0.56,
             "warningDelayMs": 3000,
-            "chance": 1.0
+            "chance": 0.85
           },
           {
             "whenHealthRelBelow": 0.25,
@@ -267,7 +267,7 @@
             "warningSoundRange": 36,
             "warningSoundVolume": 0.56,
             "warningDelayMs": 2500,
-            "chance": 1.0
+            "chance": 0.9
           }
         ]
       },
@@ -276,12 +276,12 @@
         "stages": [
           {
             "whenHealthRelBelow": 0.75,
-            "cooldownSeconds": 10,
+            "cooldownSeconds": 12,
             "entityCode": "game:shiver-surface",
             "maxNearby": 4,
             "nearbyRange": 28,
-            "minCount": 2,
-            "maxCount": 3,
+            "minCount": 1,
+            "maxCount": 2,
             "ritualMs": 1900,
             "spawnRange": 8,
             "animation": "load",
@@ -292,12 +292,12 @@
           },
           {
             "whenHealthRelBelow": 0.4,
-            "cooldownSeconds": 8,
+            "cooldownSeconds": 10,
             "entityCode": "game:shiver-surface",
             "maxNearby": 6,
             "nearbyRange": 30,
-            "minCount": 3,
-            "maxCount": 4,
+            "minCount": 2,
+            "maxCount": 3,
             "ritualMs": 1800,
             "spawnRange": 10,
             "animation": "reload",
