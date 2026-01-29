@@ -2,18 +2,24 @@
 
 > **Documentation Version:** v1.3.0
 
-All commands require **`give` privilege** and are accessed via the `/vsq` command.
+All commands require **`give` privilege** and are accessed via the `/avq` command.
 
 ---
 
 ## Command Reference
 
+### Core
+
+| Command | Arguments | Description |
+|---------|-----------|-------------|
+| `/avq reload` | — | Reloads mod configs (`questconfig.json`, `alegacy-vsquest-config.json`). Does not reload assets. |
+
 ### Action Items
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq actionitems` | — | Lists all registered action items from `itemconfig.json` |
-| `/vsq getactionitem` | `<itemId> [amount]` | Gives an action item to yourself. Default amount is 1 |
+| `/avq actionitems` | — | Lists all registered action items from `itemconfig.json` |
+| `/avq getactionitem` | `<itemId> [amount]` | Gives an action item to yourself. Default amount is 1 |
 
 ---
 
@@ -21,8 +27,8 @@ All commands require **`give` privilege** and are accessed via the `/vsq` comman
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq entities spawned` | — | Lists all currently loaded Quest Giver NPCs (entity ID, code, position) |
-| `/vsq entities all` | — | Lists all entity types from a quest pack domain (`assets/<domain>/entities`) |
+| `/avq entities spawned` | — | Lists all currently loaded Quest Giver NPCs (entity ID, code, position) |
+| `/avq entities all` | — | Lists all entity types from a quest pack domain (`assets/<domain>/entities`) |
 
 ---
 
@@ -30,17 +36,17 @@ All commands require **`give` privilege** and are accessed via the `/vsq` comman
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq qlist` | — | Lists all registered quest IDs and their titles |
-| `/vsq qcheck` | `<playerName>` | Shows active/completed quests and progress for a player |
-| `/vsq qcomplete` | `<questId> <playerName>` | Force-completes a specific active quest for a player |
-| `/vsq qcompleteactive` | `[playerName]` | Force-completes the player's currently active quest |
-| `/vsq qca` | `[playerName]` | Alias for `/vsq qcompleteactive` |
-| `/vsq qstart` | `<questId> <playerName>` | Starts a quest for a player |
-| `/vsq qforgive` | `<modeOrQuestId> [playerName]` | Resets quests or notes for a player: `all`, `notes`, `active`, or a specific quest id |
-| `/vsq qfa` | `[playerName]` | Alias for `/vsq qforgive active` |
-| `/vsq qfall` | `[playerName]` | Alias for `/vsq qforgive all` |
-| `/vsq nforgive` | `[playerName]` | Removes all note entries from the journal for a player |
-| `/vsq exec` | `[playerName] <actionString>` | Executes an action string on a player. If no player is given, uses the caller |
+| `/avq qlist` | — | Lists all registered quest IDs and their titles |
+| `/avq qcheck` | `<playerName>` | Shows active/completed quests and progress for a player |
+| `/avq qcomplete` | `<questId> <playerName>` | Force-completes a specific active quest for a player |
+| `/avq qcompleteactive` | `[playerName]` | Force-completes the player's currently active quest |
+| `/avq qca` | `[playerName]` | Alias for `/avq qcompleteactive` |
+| `/avq qstart` | `<questId> <playerName>` | Starts a quest for a player |
+| `/avq qforgive` | `<modeOrQuestId> [playerName]` | Resets quests or notes for a player: `all`, `notes`, `active`, or a specific quest id |
+| `/avq qfa` | `[playerName]` | Alias for `/avq qforgive active` |
+| `/avq qfall` | `[playerName]` | Alias for `/avq qforgive all` |
+| `/avq nforgive` | `[playerName]` | Removes all note entries from the journal for a player |
+| `/avq exec` | `[playerName] <actionString>` | Executes an action string on a player. If no player is given, uses the caller |
 
 ---
 
@@ -50,9 +56,9 @@ Player attributes are persistent flags used for quest progress tracking.
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq attr list` | `<playerName>` | Lists all watched quest attributes for an online player |
-| `/vsq attr set` | `<playerName> <key> <value>` | Sets a string attribute on an online player |
-| `/vsq attr remove` | `<playerName> <key>` | Removes an attribute from an online player |
+| `/avq attr list` | `<playerName>` | Lists all watched quest attributes for an online player |
+| `/avq attr set` | `<playerName> <key> <value>` | Sets a string attribute on an online player |
+| `/avq attr remove` | `<playerName> <key>` | Removes an attribute from an online player |
 
 ---
 
@@ -60,18 +66,25 @@ Player attributes are persistent flags used for quest progress tracking.
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq bosshunt status` | — | Shows the current active boss key and time until rotation |
-| `/vsq bosshunt skip` | — | Forces rotation to the next boss entry |
+| `/avq bosshunt status` | — | Shows the current active boss key and time until rotation |
+| `/avq bosshunt skip` | — | Forces rotation to the next boss entry |
+
+### Action Item Durability
+
+| Command | Arguments | Description |
+|---------|-----------|-------------|
+| `/avq ai repair` | — | Repair held item to max durability |
+| `/avq ai destruct` | `<amount>` | Damage held item by a value |
 
 ### WatchedAttributes
 
 | Command | Arguments | Description |
 |---------|-----------|-------------|
-| `/vsq wattr setint` | `[playerName] <key> <value>` | Sets an int WatchedAttribute |
-| `/vsq wattr addint` | `[playerName] <key> <delta>` | Adds delta to an int WatchedAttribute |
-| `/vsq wattr setbool` | `[playerName] <key> <value>` | Sets a bool WatchedAttribute |
-| `/vsq wattr setstring` | `[playerName] <key> <value...>` | Sets a string WatchedAttribute |
-| `/vsq wattr remove` | `[playerName] <key>` | Removes a WatchedAttribute key |
+| `/avq wattr setint` | `[playerName] <key> <value>` | Sets an int WatchedAttribute |
+| `/avq wattr addint` | `[playerName] <key> <delta>` | Adds delta to an int WatchedAttribute |
+| `/avq wattr setbool` | `[playerName] <key> <value>` | Sets a bool WatchedAttribute |
+| `/avq wattr setstring` | `[playerName] <key> <value...>` | Sets a string WatchedAttribute |
+| `/avq wattr remove` | `[playerName] <key>` | Removes a WatchedAttribute key |
 
 ---
 
@@ -79,31 +92,31 @@ Player attributes are persistent flags used for quest progress tracking.
 
 ```
 # List all available quests
-/vsq qlist
+/avq qlist
 
 # Check player's quest progress
-/vsq qcheck PlayerName
+/avq qcheck PlayerName
 
 # Give action item
-/vsq getactionitem example_sword 1
+/avq getactionitem example_sword 1
 
 # Reset a specific quest for a player
-/vsq qforgive innkeeper-firstimpression PlayerName
+/avq qforgive innkeeper-firstimpression PlayerName
 
 # Reset all quest progress for a player
-/vsq qforgive all PlayerName
+/avq qforgive all PlayerName
 
 # Remove all note entries for a player
-/vsq nforgive PlayerName
+/avq nforgive PlayerName
 
 # Forget the active quest for a player
-/vsq qforgive active PlayerName
+/avq qforgive active PlayerName
 
 # Set a custom attribute
-/vsq attr set PlayerName talked_to_innkeeper true
+/avq attr set PlayerName talked_to_innkeeper true
 
 # View player's attributes
-/vsq attr list PlayerName
+/avq attr list PlayerName
 ```
 
 ---

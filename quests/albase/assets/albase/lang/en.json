@@ -116,7 +116,7 @@
 
   "albase:reputation-npc-bosshunter-title": "Boss Hunter",
   "albase:reputation-npc-innkeeper-title": "Innkeeper",
-  "albase:reputation-bosshunter-rank-500": "Fleetfoot",
+  "albase:reputation-bosshunter-rank-500": "Spark Boots",
   "albase:reputation-bosshunter-rank-1500": "Uranium",
   "albase:reputation-innkeeper-rank-2000": "Trusted Regular",
 
@@ -139,6 +139,9 @@
   "game:tradingwindow-bosshunter": "Wanderer",
   "albase:tradingwindow-bosshunter": "Wanderer",
   "albase:bosshunt-tracker-name": "Tracker crystal",
+
+  "albase:reputation-bosshunt-mask-title": "Salvation Mask",
+  "albase:reputation-bosshunt-mask-req": "Complete all boss hunts",
 
   "albase:innkeeper-firstimpression-title": "Innkeeper: First Impression",
   "albase:innkeeper-firstimpression-desc": "The innkeeper dislikes noise and doesn't trust words. He judges people by what they do. Do a short job nearby, and he'll hand you supplies without extra talk. This job is available only once.",

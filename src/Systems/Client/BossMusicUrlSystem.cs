@@ -34,6 +34,9 @@ namespace VsQuest
         private readonly object preloadLock = new object();
         private readonly Dictionary<string, Task> preloadTasksByUrl = new Dictionary<string, Task>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly object durationLock = new object();
+        private readonly Dictionary<string, float> durationSecondsByUrl = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+
         private Task fadeTask;
         private CancellationTokenSource fadeCts;
 
@@ -69,9 +72,7 @@ namespace VsQuest
 
             try
             {
-                capi.Network.RegisterChannel("alegacyvsquestmusic")
-                    .RegisterMessageType<BossMusicUrlMapMessage>()
-                    .SetMessageHandler<BossMusicUrlMapMessage>(OnBossMusicUrlMapMessage);
+                VsQuestNetworkRegistry.RegisterBossMusicClient(capi, OnBossMusicUrlMapMessage);
             }
             catch
             {
@@ -83,6 +84,45 @@ namespace VsQuest
                 {
                     UpdateGainFromSettings();
                 });
+            }
+            catch
+            {
+            }
+        }
+
+        private void TryCacheDurationSeconds(string url, string cachedFile)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return;
+            if (string.IsNullOrWhiteSpace(cachedFile)) return;
+
+            try
+            {
+                string normalized = NormalizeUrl(url);
+                if (string.IsNullOrWhiteSpace(normalized)) return;
+
+                lock (durationLock)
+                {
+                    if (durationSecondsByUrl.ContainsKey(normalized)) return;
+                }
+
+                float seconds = 0f;
+                try
+                {
+                    using var fs = new FileStream(cachedFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using var mpeg = new MpegFile(fs);
+                    seconds = (float)mpeg.Duration.TotalSeconds;
+                }
+                catch
+                {
+                    seconds = 0f;
+                }
+
+                if (seconds <= 0.01f) return;
+
+                lock (durationLock)
+                {
+                    durationSecondsByUrl[normalized] = seconds;
+                }
             }
             catch
             {
@@ -110,7 +150,8 @@ namespace VsQuest
                     try
                     {
                         using var cts = new CancellationTokenSource();
-                        await EnsureCachedAsync(resolvedUrl, cts.Token);
+                        string cached = await EnsureCachedAsync(resolvedUrl, cts.Token);
+                        TryCacheDurationSeconds(resolvedUrl, cached);
                     }
                     catch (Exception e)
                     {
@@ -132,6 +173,28 @@ namespace VsQuest
                 });
 
                 preloadTasksByUrl[resolvedUrl] = task;
+            }
+        }
+
+        public bool TryGetDurationSeconds(string url, out float seconds)
+        {
+            seconds = 0f;
+            if (string.IsNullOrWhiteSpace(url)) return false;
+
+            try
+            {
+                string normalized = NormalizeUrl(url);
+                if (string.IsNullOrWhiteSpace(normalized)) return false;
+
+                lock (durationLock)
+                {
+                    return durationSecondsByUrl.TryGetValue(normalized, out seconds);
+                }
+            }
+            catch
+            {
+                seconds = 0f;
+                return false;
             }
         }
 
@@ -684,6 +747,8 @@ namespace VsQuest
             {
                 cachedFile = await EnsureCachedAsync(url, token);
 
+                TryCacheDurationSeconds(url, cachedFile);
+
                 token.ThrowIfCancellationRequested();
 
                 // Boss music should loop
@@ -984,6 +1049,7 @@ namespace VsQuest
             string path = GetCachePathForUrl(url);
             if (File.Exists(path))
             {
+                TryCacheDurationSeconds(url, path);
                 return path;
             }
 

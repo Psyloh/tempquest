@@ -116,11 +116,7 @@
   "albase:dialogue-bosshunter-final-text": "Очередной страж пал. На время тьма отступила, но это лишь затишье. Когда понадобится снова спуститься во тьму — возвращайся.",
   "albase:dialogue-bosshunter-final-option": "Я вернусь.",
 
-  "albase:reputation-npc-bosshunter-title": "Охотник на боссов",
-  "albase:reputation-npc-innkeeper-title": "Трактирщик",
-  "albase:reputation-bosshunter-rank-500": "Скороходы",
-  "albase:reputation-bosshunter-rank-1500": "Уран",
-  "albase:reputation-innkeeper-rank-2000": "Свой человек",
+
 
   "albase:no-quest-available-bosshunter": "Стражи притаились. Не время для охоты.",
   "albase:no-quest-available-bosshunter-cooldown": "Следы еще слишком свежи, а тьма не набрала полную силу. Возвращайся через {0} д. Смена цели — через {1} д. А пока — береги кровемер и не привлекай внимания.",
@@ -147,8 +143,14 @@
   "game:tradingwindow-bosshunter": "Хранитель Склепа",
   "albase:tradingwindow-bosshunter": "Хранитель Склепа",
   "albase:bosshunt-tracker-name": "Кровемер",
-  "albase:reputation-bosshunt-mask-title": "Личина вечной охоты",
+  "albase:reputation-bosshunt-mask-title": "Маска спасения",
   "albase:reputation-bosshunt-mask-req": "Завершите все охоты",
+
+  "albase:reputation-npc-bosshunter-title": "Охотник на боссов",
+  "albase:reputation-npc-innkeeper-title": "Трактирщик",
+  "albase:reputation-bosshunter-rank-500": "Сапоги искры",
+  "albase:reputation-bosshunter-rank-1500": "Уран",
+  "albase:reputation-innkeeper-rank-2000": "Свой человек",
 
   "albase:innkeeper-title": "Трактирщик",
 

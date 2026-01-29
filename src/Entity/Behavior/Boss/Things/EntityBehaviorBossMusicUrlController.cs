@@ -26,6 +26,7 @@ namespace VsQuest
             public float whenHealthRelBelow;
             public string url;
             public float startAtSeconds;
+            public float startAtRel;
         }
 
         private readonly System.Collections.Generic.List<MusicPhase> phases = new System.Collections.Generic.List<MusicPhase>();
@@ -87,7 +88,8 @@ namespace VsQuest
                         {
                             whenHealthRelBelow = ph["whenHealthRelBelow"].AsFloat(1f),
                             url = ph["musicUrl"].AsString(null),
-                            startAtSeconds = ph["startAtSeconds"].AsFloat(0f)
+                            startAtSeconds = ph["startAtSeconds"].AsFloat(0f),
+                            startAtRel = ph["startAtRel"].AsFloat(-1f)
                         });
                     }
                 }
@@ -357,6 +359,18 @@ namespace VsQuest
                 {
                     if (!preferKey && !string.IsNullOrWhiteSpace(best.url)) url = best.url;
                     offset = best.startAtSeconds;
+
+                    if (best.startAtRel >= 0f)
+                    {
+                        float rel = best.startAtRel;
+                        if (rel < 0f) rel = 0f;
+                        if (rel > 1f) rel = 1f;
+
+                        if (!string.IsNullOrWhiteSpace(url) && sys != null && sys.TryGetDurationSeconds(url, out var seconds) && seconds > 0.01f)
+                        {
+                            offset = seconds * rel;
+                        }
+                    }
                 }
             }
 

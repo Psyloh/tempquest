@@ -32,7 +32,7 @@
       { "code": "floatupwhenstuck", "onlyWhenDead": true },
       { "code": "interpolateposition" },
       { "code": "boss", "bossHpBarRange": 80 },
-      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_3", "range": 95, "startRange": 40, "combatTimeoutMs": 20000, "fadeOutSeconds": 4, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_3", "range": 95, "startRange": 40, "combatTimeoutMs": 20000, "fadeOutSeconds": 4, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtRel": 0.33333334 }, { "whenHealthRelBelow": 0.3, "startAtRel": 0.6666667 } ] },
       { "code": "bossnametag", "nameLangKey": "item-creature-ashenlurker", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 120 }
     ],
     "animations": [
@@ -226,7 +226,7 @@
             "damage": 0.4,
             "damageTier": 3,
             "damageType": "Acid",
-            "victimWalkSpeedMult": 0.35,
+            "victimWalkSpeedMult": 0.42,
             "disableJump": true,
             "disableShift": true,
             "windupMs": 250,
@@ -250,7 +250,7 @@
             "damage": 1.1,
             "damageTier": 3,
             "damageType": "Acid",
-            "victimWalkSpeedMult": 0.28,
+            "victimWalkSpeedMult": 0.34,
             "disableJump": true,
             "disableShift": true,
             "windupMs": 200,

@@ -99,14 +99,43 @@ namespace VsQuest
             // Negative viewDistance => worse visibility (more fog)
             if (viewDistance < 0f)
             {
-                modifier.FogDensity.Value = baseDensity + strength * negativeFogDensityAddMul;
-                modifier.FogDensity.Weight = strength;
+                // Important: do not overwrite existing (weather/biome) fog with a smaller base value.
+                // If we set a fixed density here, then in heavy fog the player could actually see better.
+                // Instead, build on the current effective fog density and only make it worse.
+                // Also, avoid a feedback loop: capi.Render.FogDensity already includes our own modifier.
+                // If we base calculations on it, fog would get stronger and stronger over time.
+                float currentFogDensity = GetFogDensityWithoutSelf(modifiers);
+                float addMul = Math.Abs(negativeFogDensityAddMul);
+                float minAdd = baseDensity * 2f;
+                float add = strength * Math.Max(addMul, minAdd);
+
+                float targetDensity = Math.Max(baseDensity, currentFogDensity) + add;
+                modifier.FogDensity.Value = GameMath.Clamp(targetDensity, 0f, 0.25f);
+                modifier.FogDensity.Weight = 1f;
                 return;
             }
 
             // Positive viewDistance => better visibility (less fog)
             modifier.FogDensity.Value = Math.Max(0f, baseDensity - strength * positiveFogDensitySubMul);
             modifier.FogDensity.Weight = strength;
+        }
+
+        private float GetFogDensityWithoutSelf(Vintagestory.API.Datastructures.OrderedDictionary<string, AmbientModifier> modifiers)
+        {
+            float blended = capi?.Ambient?.Base?.FogDensity?.Value ?? baseDensity;
+
+            foreach (var kvp in modifiers)
+            {
+                if (kvp.Key == ModifierKey) continue;
+
+                AmbientModifier mod = kvp.Value;
+                if (mod?.FogDensity == null) continue;
+
+                float w = mod.FogDensity.Weight;
+                blended = w * w * mod.FogDensity.Value + (1f - w) * (1f - w) * blended;
+            }
+
+            return Math.Max(0f, blended);
         }
     }
 }

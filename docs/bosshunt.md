@@ -26,8 +26,8 @@ The boss hunt system spawns a single active boss at a time, rotates it on a long
 - Cooldown is 5 minutes and costs 2 HP per use.
 
 ## Commands
-- `/vsq bosshunt status`: Shows the current active boss key and time until rotation.
-- `/vsq bosshunt skip`: Forces rotation to the next boss entry.
+- `/avq bosshunt status`: Shows the current active boss key and time until rotation.
+- `/avq bosshunt skip`: Forces rotation to the next boss entry.
 - Both commands require `give` privilege.
 
 ## Questgiver behavior

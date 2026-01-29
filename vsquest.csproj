@@ -60,8 +60,10 @@
 	</ItemGroup>
 
 	<Target Name="ZipRelease" AfterTargets="Build">
+		<RemoveDir Directories="$(OutputPath)\assets\vsquest" Condition="Exists('$(OutputPath)\assets\vsquest')" />
+		
 		<ZipDirectory SourceDirectory="$(OutputPath)" 
-		              DestinationFile="$(ReleaseDir)\$(MSBuildProjectName).zip" 
+		              DestinationFile="$(ReleaseDir)\alegacyvsquest.zip" 
 		              Overwrite="true" />
 		
 		<ItemGroup>

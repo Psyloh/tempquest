@@ -14,34 +14,12 @@ namespace VsQuest
 
         public void RegisterClient(ICoreClientAPI capi)
         {
-            capi.Network.RegisterChannel("alegacyvsquest")
-                .RegisterMessageType<QuestAcceptedMessage>()
-                .RegisterMessageType<QuestCompletedMessage>()
-                .RegisterMessageType<QuestInfoMessage>().SetMessageHandler<QuestInfoMessage>(message => questSystem.OnQuestInfoMessage(message, capi))
-                .RegisterMessageType<ExecutePlayerCommandMessage>().SetMessageHandler<ExecutePlayerCommandMessage>(message => questSystem.OnExecutePlayerCommand(message, capi))
-                .RegisterMessageType<VanillaBlockInteractMessage>()
-                .RegisterMessageType<ShowNotificationMessage>().SetMessageHandler<ShowNotificationMessage>(message => questSystem.OnShowNotificationMessage(message, capi))
-                .RegisterMessageType<ShowDiscoveryMessage>().SetMessageHandler<ShowDiscoveryMessage>(message => questSystem.OnShowDiscoveryMessage(message, capi))
-                .RegisterMessageType<ShowQuestDialogMessage>().SetMessageHandler<ShowQuestDialogMessage>(message => questSystem.OnShowQuestDialogMessage(message, capi))
-                .RegisterMessageType<ClaimReputationRewardsMessage>()
-                .RegisterMessageType<ClaimQuestCompletionRewardMessage>()
-                .RegisterMessageType<PreloadBossMusicMessage>().SetMessageHandler<PreloadBossMusicMessage>(message => questSystem.OnPreloadBossMusicMessage(message, capi));
+            VsQuestNetworkRegistry.RegisterQuestClient(capi, questSystem);
         }
 
         public void RegisterServer(ICoreServerAPI sapi)
         {
-            sapi.Network.RegisterChannel("alegacyvsquest")
-                .RegisterMessageType<QuestAcceptedMessage>().SetMessageHandler<QuestAcceptedMessage>((player, message) => questSystem.OnQuestAccepted(player, message, sapi))
-                .RegisterMessageType<QuestCompletedMessage>().SetMessageHandler<QuestCompletedMessage>((player, message) => questSystem.OnQuestCompleted(player, message, sapi))
-                .RegisterMessageType<QuestInfoMessage>()
-                .RegisterMessageType<ExecutePlayerCommandMessage>()
-                .RegisterMessageType<VanillaBlockInteractMessage>().SetMessageHandler<VanillaBlockInteractMessage>((player, message) => questSystem.OnVanillaBlockInteract(player, message, sapi))
-                .RegisterMessageType<ShowNotificationMessage>()
-                .RegisterMessageType<ShowDiscoveryMessage>()
-                .RegisterMessageType<ShowQuestDialogMessage>()
-                .RegisterMessageType<ClaimReputationRewardsMessage>().SetMessageHandler<ClaimReputationRewardsMessage>((player, message) => questSystem.OnClaimReputationRewardsMessage(player, message, sapi))
-                .RegisterMessageType<ClaimQuestCompletionRewardMessage>().SetMessageHandler<ClaimQuestCompletionRewardMessage>((player, message) => questSystem.OnClaimQuestCompletionRewardMessage(player, message, sapi))
-                .RegisterMessageType<PreloadBossMusicMessage>();
+            VsQuestNetworkRegistry.RegisterQuestServer(sapi, questSystem);
         }
     }
 }

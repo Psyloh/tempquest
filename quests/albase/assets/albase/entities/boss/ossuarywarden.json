@@ -33,7 +33,7 @@
       { "code": "interpolateposition" },
       { "code": "harvestable", "duration": 999999 },
       { "code": "boss", "bossHpBarRange": 60 },
-      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2", "range": 80, "startRange": 35, "combatTimeoutMs": 20000, "fadeOutSeconds": 4, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtSeconds": 60 }, { "whenHealthRelBelow": 0.3, "startAtSeconds": 120 } ] },
+      { "code": "bossmusicurl", "musicKey": "theme_bosshunt_2", "range": 80, "startRange": 35, "combatTimeoutMs": 20000, "fadeOutSeconds": 4, "usePhases": true, "phaseSwitching": false, "phases": [ { "whenHealthRelBelow": 0.7, "startAtRel": 0.33333334 }, { "whenHealthRelBelow": 0.3, "startAtRel": 0.6666667 } ] },
       { "code": "bossnametag", "nameLangKey": "item-creature-ossuarywarden", "color": "#ff0000", "backgroundColor": "#000000", "backgroundOpacity": 0.35, "renderRange": 80 }
     ],
     "animations": [

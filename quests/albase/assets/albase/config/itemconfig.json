@@ -82,7 +82,7 @@
     {
       "id": "albase:bosshunt-reward-bloodthirsty",
       "itemCode": "albase:bosshunt-bloodthirsty-bracelet",
-      "name": "<font color=\"#DC2626\">Браслет костяной ярости</font>",
+      "name": "<font color=\"#DC2626\">Кандалы Оссуария</font>",
       "description": "<font color=\"#FCA5A5\">Холодный металл с зазубринами, будто приспособленными для хватки. Если сжать кулак, кажется, что браслет сжимается в ответ — голодно и зло.</font>",
       "actions": [],
       "attributes": {
@@ -146,7 +146,7 @@
       "actions": [],
       "attributes": {
         "warmth": 15,
-        "protection": 1,
+        "protectionperc": 0.15,
         "walkspeed": -0.2,
         "hungerrate": 0.3,
         "weightlimit": 0.15,
@@ -154,7 +154,7 @@
       },
       "showAttributes": [
         "warmth",
-        "protection",
+        "protectionperc",
         "walkspeed",
         "hungerrate",
         "weightlimit",
@@ -207,7 +207,7 @@
       "attributes": {
         "walkspeed": 0.15,
         "hungerrate": 0.3,
-        "protectionperc": -0.09,
+        "protectionperc": -0.15,
         "jumpheightmul": 0.35,
         "falldamagemult": 0.2
       },
@@ -237,14 +237,14 @@
         "attackpower": -0.6,
         "hungerrate": 0.12,
         "walkspeed": -0.06,
-        "protection": 0.04,
+        "protectionperc": 0.05,
         "meleeattackspeed": 0.12
       },
       "showAttributes": [
         "attackpower",
         "hungerrate",
         "walkspeed",
-        "protection",
+        "protectionperc",
         "meleeattackspeed"
       ],
       "hideVanillaTooltips": [
@@ -259,7 +259,7 @@
     {
       "id": "albase:bosshunt-reward-secondchance-mask",
       "itemCode": "albase:2cnah-mask",
-      "name": "<font color=\"#A7F3D0\">Маска второго шанса</font>",
+      "name": "<font color=\"#A7F3D0\">Маска спасения</font>",
       "description": "<font color=\"#D1FAE5\">Ржавая фильтрующая маска; фильтры шипят, будто в них живёт металл. Внутри — едва заметная вставка из алмазов высокого качества и сухой привкус чужого воздуха.</font>",
       "actions": [],
       "triggerOnInventoryAdd": true,
@@ -312,7 +312,7 @@
       "description": "<font color=\"#86EFAC\">Грубый фильтр на цепи, покрытый ржавчиной и зелёной гарью. Если поднести к лицу, слышно, как внутри оседает криптовый туман.</font>",
       "actions": [],
       "attributes": {
-        "maxoxygen": 28000,
+        "maxoxygen": 42000,
         "temporaldrainmult": 0.15,
         "hungerrate": 0.15,
         "walkspeed": -0.03,
@@ -322,7 +322,8 @@
         "maxoxygen",
         "temporaldrainmult",
         "hungerrate",
-        "walkspeed"
+        "walkspeed",
+        "maxhealthflat"
       ],
       "hideVanillaTooltips": [
         "armor",

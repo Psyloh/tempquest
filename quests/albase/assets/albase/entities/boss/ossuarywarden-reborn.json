@@ -69,7 +69,7 @@
         "stages": [
           {
             "whenHealthRelBelow": 0.7,
-            "cooldownSeconds": 10,
+            "cooldownSeconds": 9,
             "minTargetRange": 5,
             "maxTargetRange": 22,
             "windupMs": 300,
@@ -84,7 +84,7 @@
           },
           {
             "whenHealthRelBelow": 0.35,
-            "cooldownSeconds": 7,
+            "cooldownSeconds": 6,
             "minTargetRange": 6,
             "maxTargetRange": 26,
             "windupMs": 250,
@@ -104,7 +104,7 @@
         "stages": [
           {
             "whenHealthRelBelow": 0.7,
-            "cooldownSeconds": 10,
+            "cooldownSeconds": 9,
             "minTargetRange": 4,
             "maxTargetRange": 26,
             "windupMs": 250,
@@ -120,7 +120,7 @@
           },
           {
             "whenHealthRelBelow": 0.35,
-            "cooldownSeconds": 8,
+            "cooldownSeconds": 7,
             "minTargetRange": 4,
             "maxTargetRange": 28,
             "windupMs": 200,

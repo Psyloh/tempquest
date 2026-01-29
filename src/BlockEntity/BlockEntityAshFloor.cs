@@ -201,15 +201,26 @@ namespace VsQuest
         {
             if (sapi == null || player?.WatchedAttributes == null) return;
 
-            long now = sapi.World.ElapsedMilliseconds;
-            long until = now + Math.Max(100, intervalMs * 2);
+            double nowHours;
+            try
+            {
+                nowHours = sapi.World.Calendar.TotalHours;
+            }
+            catch
+            {
+                nowHours = 0;
+            }
+
+            if (nowHours <= 0) return;
+
+            double until = nowHours + (Math.Max(100, intervalMs * 2) / 3600000.0);
 
             try
             {
-                long prev = player.WatchedAttributes.GetLong(VictimUntilKey, 0);
-                if (prev != until)
+                double prev = player.WatchedAttributes.GetDouble(VictimUntilKey, 0);
+                if (Math.Abs(prev - until) > 0.000001)
                 {
-                    player.WatchedAttributes.SetLong(VictimUntilKey, until);
+                    player.WatchedAttributes.SetDouble(VictimUntilKey, until);
                     player.WatchedAttributes.MarkPathDirty(VictimUntilKey);
                 }
             }
@@ -235,10 +246,10 @@ namespace VsQuest
             {
                 try
                 {
-                    long prev = player.WatchedAttributes.GetLong(VictimNoJumpUntilKey, 0);
-                    if (prev != until)
+                    double prev = player.WatchedAttributes.GetDouble(VictimNoJumpUntilKey, 0);
+                    if (Math.Abs(prev - until) > 0.000001)
                     {
-                        player.WatchedAttributes.SetLong(VictimNoJumpUntilKey, until);
+                        player.WatchedAttributes.SetDouble(VictimNoJumpUntilKey, until);
                         player.WatchedAttributes.MarkPathDirty(VictimNoJumpUntilKey);
                     }
                 }
@@ -251,10 +262,10 @@ namespace VsQuest
             {
                 try
                 {
-                    long prev = player.WatchedAttributes.GetLong(VictimNoShiftUntilKey, 0);
-                    if (prev != until)
+                    double prev = player.WatchedAttributes.GetDouble(VictimNoShiftUntilKey, 0);
+                    if (Math.Abs(prev - until) > 0.000001)
                     {
-                        player.WatchedAttributes.SetLong(VictimNoShiftUntilKey, until);
+                        player.WatchedAttributes.SetDouble(VictimNoShiftUntilKey, until);
                         player.WatchedAttributes.MarkPathDirty(VictimNoShiftUntilKey);
                     }
                 }

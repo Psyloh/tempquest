@@ -48,10 +48,16 @@ namespace VsQuest
             var questForgiveAllAliasHandler = new QuestForgiveAliasCommandHandler(sapi, questSystem, "all");
 
             var actionItemDurabilityHandler = new ActionItemDurabilityCommandHandler();
+            var reloadHandler = new QuestReloadCommandHandler(sapi, questSystem);
 
-            sapi.ChatCommands.GetOrCreate("vsq")
+            sapi.ChatCommands.GetOrCreate("avq")
                 .WithDescription("Quest administration commands")
                 .RequiresPrivilege(Privilege.give)
+                .BeginSubCommand("reload")
+                    .WithDescription("Reloads mod configs (questconfig.json, alegacy-vsquest-config.json). Does not reload assets.")
+                    .RequiresPrivilege(Privilege.give)
+                    .HandleWith(reloadHandler.Handle)
+                .EndSubCommand()
                 .BeginSubCommand("actionitems")
                     .WithDescription("Lists all registered action items.")
                     .RequiresPrivilege(Privilege.give)

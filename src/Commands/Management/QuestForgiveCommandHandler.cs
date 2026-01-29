@@ -27,13 +27,13 @@ namespace VsQuest
             {
                 return TextCommandResult.Success(
                     "Forgive command usage:\n" +
-                    "/vsq qforgive <questId> <playerName> - reset one quest\n" +
-                    "/vsq qforgive all [playerName] - reset all quests\n" +
-                    "/vsq qforgive notes [playerName] - remove all notes\n" +
-                    "/vsq qforgive active [playerName] - forget active quest\n" +
+                    "/avq qforgive <questId> <playerName> - reset one quest\n" +
+                    "/avq qforgive all [playerName] - reset all quests\n" +
+                    "/avq qforgive notes [playerName] - remove all notes\n" +
+                    "/avq qforgive active [playerName] - forget active quest\n" +
                     "\nExamples:\n" +
-                    "/vsq qforgive albase:bosshunt-ossuarywarden PlayerName\n" +
-                    "/vsq qforgive notes PlayerName"
+                    "/avq qforgive albase:bosshunt-ossuarywarden PlayerName\n" +
+                    "/avq qforgive notes PlayerName"
                 );
             }
 

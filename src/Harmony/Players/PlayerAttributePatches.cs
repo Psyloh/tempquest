@@ -49,6 +49,8 @@ namespace VsQuest.Harmony
 
                 if (player?.Entity?.WatchedAttributes == null) return;
 
+                if (!IsProtectionApplicable(dmgSource)) return;
+
                 float playerFlat = player.Entity.WatchedAttributes.GetFloat("vsquestadmin:attr:protection", 0f);
                 float playerPerc = player.Entity.WatchedAttributes.GetFloat("vsquestadmin:attr:protectionperc", 0f);
 
@@ -60,6 +62,27 @@ namespace VsQuest.Harmony
 
                 __result = newDamage;
             }
+        }
+
+        private static bool IsProtectionApplicable(DamageSource dmgSource)
+        {
+            EnumDamageType type;
+            try
+            {
+                type = dmgSource?.Type ?? EnumDamageType.Injury;
+            }
+            catch
+            {
+                type = EnumDamageType.Injury;
+            }
+
+            // Apply custom armor only to direct physical damage.
+            // Do not reduce suffocation/drowning, hunger, poison, fire, etc.
+            return type == EnumDamageType.BluntAttack
+                || type == EnumDamageType.SlashingAttack
+                || type == EnumDamageType.PiercingAttack
+                || type == EnumDamageType.Crushing
+                || type == EnumDamageType.Injury;
         }
 
         [HarmonyPatch(typeof(EntityBehaviorHealth), "OnEntityReceiveDamage")]
@@ -482,6 +505,26 @@ namespace VsQuest.Harmony
                     now = 0;
                 }
 
+                // World.ElapsedMilliseconds resets on relog/server restart, but WatchedAttributes persist.
+                // If 'until' is far in the future compared to 'now', it is almost certainly stale data.
+                // In that case, clear the effect so players don't get stuck with permanent disabled sneak.
+                if (until > 0 && now > 0)
+                {
+                    const long MaxFutureMs = 5L * 60L * 1000L;
+                    if (until - now > MaxFutureMs)
+                    {
+                        try
+                        {
+                            player.WatchedAttributes.SetLong(BossGrabNoSneakUntilKey, 0);
+                        }
+                        catch
+                        {
+                        }
+
+                        return;
+                    }
+                }
+
                 if (now > 0 && now < until)
                 {
                     try
@@ -504,22 +547,22 @@ namespace VsQuest.Harmony
                 if (player.World?.Side != EnumAppSide.Client) return;
                 if (player.WatchedAttributes == null) return;
 
-                long now;
+                double nowHours;
                 try
                 {
-                    now = player.World.ElapsedMilliseconds;
+                    nowHours = player.World.Calendar.TotalHours;
                 }
                 catch
                 {
-                    now = 0;
+                    nowHours = 0;
                 }
 
-                if (now <= 0) return;
+                if (nowHours <= 0) return;
 
                 try
                 {
-                    long untilJump = player.WatchedAttributes.GetLong(AshFloorNoJumpUntilKey, 0);
-                    if (untilJump > 0 && now < untilJump)
+                    double untilJump = player.WatchedAttributes.GetDouble(AshFloorNoJumpUntilKey, 0);
+                    if (untilJump > 0 && nowHours < untilJump)
                     {
                         player.Controls.Jump = false;
                     }
@@ -530,8 +573,8 @@ namespace VsQuest.Harmony
 
                 try
                 {
-                    long untilShift = player.WatchedAttributes.GetLong(AshFloorNoShiftUntilKey, 0);
-                    if (untilShift > 0 && now < untilShift)
+                    double untilShift = player.WatchedAttributes.GetDouble(AshFloorNoShiftUntilKey, 0);
+                    if (untilShift > 0 && nowHours < untilShift)
                     {
                         player.Controls.ShiftKey = false;
                         player.Controls.Sneak = false;
@@ -553,32 +596,35 @@ namespace VsQuest.Harmony
                 if (player.Stats == null) return;
                 if (player.WatchedAttributes == null) return;
 
-                long until;
+                double nowHours;
                 try
                 {
-                    until = player.WatchedAttributes.GetLong(AshFloorUntilKey, 0);
+                    nowHours = (player.World as Vintagestory.API.Common.IWorldAccessor)?.Calendar?.TotalHours ?? player.World.Calendar.TotalHours;
+                }
+                catch
+                {
+                    nowHours = 0;
+                }
+
+                if (nowHours <= 0) return;
+
+                double until;
+                try
+                {
+                    until = player.WatchedAttributes.GetDouble(AshFloorUntilKey, 0);
                 }
                 catch
                 {
                     until = 0;
                 }
 
-                long now;
-                try
-                {
-                    now = player.World.ElapsedMilliseconds;
-                }
-                catch
-                {
-                    now = 0;
-                }
-
-                if (until <= 0 || now <= 0 || now >= until)
+                if (until <= 0 || nowHours >= until)
                 {
                     try
                     {
                         player.Stats.Set("walkspeed", AshFloorWalkSpeedStatKey, 0f, true);
-                        player.walkSpeed = player.Stats.GetBlended("walkspeed");
+                        float blended = player.Stats.GetBlended("walkspeed");
+                        player.walkSpeed = float.IsNaN(blended) ? 0f : blended;
                     }
                     catch
                     {
@@ -597,11 +643,14 @@ namespace VsQuest.Harmony
                     mult = 0.35f;
                 }
 
+                if (float.IsNaN(mult)) mult = 0.35f;
+
                 try
                 {
                     float modifier = mult - 1f;
                     player.Stats.Set("walkspeed", AshFloorWalkSpeedStatKey, modifier, true);
-                    player.walkSpeed = player.Stats.GetBlended("walkspeed");
+                    float blended = player.Stats.GetBlended("walkspeed");
+                    player.walkSpeed = float.IsNaN(blended) ? 0f : blended;
                 }
                 catch
                 {

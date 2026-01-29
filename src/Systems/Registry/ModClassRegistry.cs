@@ -6,6 +6,13 @@ namespace VsQuest
     {
         public static void RegisterAll(ICoreAPI api)
         {
+            RegisterEntityBehaviors(api);
+            RegisterItems(api);
+            RegisterBlocksAndBlockEntities(api);
+        }
+
+        private static void RegisterEntityBehaviors(ICoreAPI api)
+        {
             api.RegisterEntityBehaviorClass("questgiver", typeof(EntityBehaviorQuestGiver));
             api.RegisterEntityBehaviorClass("questtarget", typeof(EntityBehaviorQuestTarget));
             api.RegisterEntityBehaviorClass("bossnametag", typeof(EntityBehaviorBossNameTag));
@@ -43,10 +50,16 @@ namespace VsQuest
             api.RegisterEntityBehaviorClass("bossperiodicspawn", typeof(EntityBehaviorBossPeriodicSpawn));
             api.RegisterEntityBehaviorClass("bossashfloor", typeof(EntityBehaviorBossAshFloor));
             api.RegisterEntityBehaviorClass("shiverdebug", typeof(EntityBehaviorShiverDebug));
+        }
 
+        private static void RegisterItems(ICoreAPI api)
+        {
             api.RegisterItemClass("ItemDebugTool", typeof(ItemDebugTool));
             api.RegisterItemClass("ItemEntitySpawner", typeof(ItemEntitySpawner));
+        }
 
+        private static void RegisterBlocksAndBlockEntities(ICoreAPI api)
+        {
             api.RegisterBlockClass("BlockCooldownPlaceholder", typeof(BlockCooldownPlaceholder));
             api.RegisterBlockEntityClass("CooldownPlaceholder", typeof(BlockEntityCooldownPlaceholder));
 

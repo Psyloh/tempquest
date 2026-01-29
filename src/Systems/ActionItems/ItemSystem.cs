@@ -116,9 +116,7 @@ namespace VsQuest
             actionExecutor = new ActionItemActionExecutor(questSystem, sapi);
             packetHandler = new ActionItemPacketHandler(questSystem, attributeResolver, actionExecutor);
 
-            serverChannel = api.Network.RegisterChannel("alegacyvsquest-itemaction")
-                .RegisterMessageType<ExecuteActionItemPacket>()
-                .SetMessageHandler<ExecuteActionItemPacket>(packetHandler.HandlePacket);
+            serverChannel = VsQuestNetworkRegistry.RegisterItemActionServer(api, packetHandler);
             hotbarEnforcer = new ActionItemHotbarEnforcer(api);
             inventoryScanner = new ActionItemInventoryScanner(
                 api,
@@ -142,8 +140,7 @@ namespace VsQuest
 
             ApplyCoreConfig();
 
-            clientChannel = api.Network.RegisterChannel("alegacyvsquest-itemaction")
-                .RegisterMessageType<ExecuteActionItemPacket>();
+            clientChannel = VsQuestNetworkRegistry.RegisterItemActionClient(api);
 
             attributeResolver = new ActionItemAttributeResolver(ActionItemRegistry);
             soundConfig = new ActionItemSoundConfig();

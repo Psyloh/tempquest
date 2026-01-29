@@ -33,6 +33,78 @@ namespace VsQuest
         private QuestSelectGuiManager questSelectGuiManager;
         private QuestNotificationHandler notificationHandler;
 
+        public bool TryReloadConfigs(out string resultMessage)
+        {
+            resultMessage = null;
+            if (api == null)
+            {
+                resultMessage = "Core API not available.";
+                return false;
+            }
+
+            try
+            {
+                QuestConfig loadedConfig = null;
+                AlegacyVsQuestConfig loadedCoreConfig = null;
+
+                try
+                {
+                    loadedConfig = api.LoadModConfig<QuestConfig>("questconfig.json");
+                }
+                catch
+                {
+                    loadedConfig = null;
+                }
+
+                if (loadedConfig == null)
+                {
+                    loadedConfig = new QuestConfig();
+                }
+
+                try
+                {
+                    loadedCoreConfig = api.LoadModConfig<AlegacyVsQuestConfig>("alegacy-vsquest-config.json");
+                }
+                catch
+                {
+                    loadedCoreConfig = null;
+                }
+
+                if (loadedCoreConfig == null)
+                {
+                    loadedCoreConfig = new AlegacyVsQuestConfig();
+                }
+
+                Config = loadedConfig;
+                CoreConfig = loadedCoreConfig;
+
+                try
+                {
+                    api.StoreModConfig(Config, "questconfig.json");
+                    api.StoreModConfig(CoreConfig, "alegacy-vsquest-config.json");
+                }
+                catch
+                {
+                }
+
+                resultMessage = "Reloaded mod configs (questconfig.json, alegacy-vsquest-config.json).";
+                return true;
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    api.Logger.Error("[alegacyvsquest] Failed to reload configs: {0}", e);
+                }
+                catch
+                {
+                }
+
+                resultMessage = $"Reload failed: {e.Message}";
+                return false;
+            }
+        }
+
         public override void StartPre(ICoreAPI api)
         {
             this.api = api;
