@@ -1,0 +1,92 @@
+{
+  "id": "albase:witness-introduction",
+  "cooldown": -1,
+  "perPlayer": true,
+  "onAcceptedActions": [
+    {
+      "id": "playsound",
+      "args": [
+        "alegacyvsquest:sounds/queacc",
+        "0.175"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:witness",
+        "albase:witness-introduction",
+        "albase:witness-introduction-title",
+        "albase:witness-introduction-journal-text"
+      ]
+    }
+  ],
+  "actionObjectives": [
+    {
+      "id": "interactwithentity",
+      "objectiveId": "talk-innkeeper",
+      "args": [
+        "albase:witness-introduction",
+        "albase:innkeeper",
+        "1"
+      ]
+    },
+    {
+      "id": "interactwithentity",
+      "objectiveId": "talk-priest",
+      "args": [
+        "albase:witness-introduction",
+        "albase:priest",
+        "1"
+      ]
+    },
+    {
+      "id": "interactwithentity",
+      "objectiveId": "talk-bosshunter",
+      "args": [
+        "albase:witness-introduction",
+        "albase:bosshunter",
+        "1"
+      ]
+    }
+  ],
+  "killObjectives": [],
+  "itemRewards": [
+    {
+      "itemCode": "game:gear-rusty",
+      "amount": 3
+    }
+  ],
+  "actionRewards": [
+    {
+      "id": "notify",
+      "args": [
+        "albase:witness-introduction-reward"
+      ]
+    },
+    {
+      "id": "playsound",
+      "args": [
+        "sounds/tutorialstepsuccess",
+        "0.7"
+      ]
+    },
+    {
+      "id": "showquestfinaldialog",
+      "args": [
+        "albase:dialogue-witness-introduction-final-title",
+        "albase:dialogue-witness-introduction-final-text",
+        "albase:dialogue-witness-introduction-final-option"
+      ]
+    },
+    {
+      "id": "addjournalentry",
+      "args": [
+        "albase:witness",
+        "albase:witness-introduction",
+        "albase:witness-introduction-title",
+        "overwrite",
+        "albase:witness-introduction-reward-journal-text"
+      ]
+    }
+  ]
+}

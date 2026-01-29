@@ -7,7 +7,7 @@
       "base": "game:entity/humanoid/trader"
     },
     "texture": {
-      "base": "game:entity/humanoid/traderclothes/set3"
+      "base": "game:entity/humanoid/traderclothes/set1"
     },
     "behaviors": [
       {
@@ -63,6 +63,9 @@
       {
         "code": "questgiver",
         "quests": [],
+        "alwaysquests": [
+          "albase:witness-introduction"
+        ],
         "noAvailableQuestDescLangKey": "albase:no-quest-available-witness",
         "selectrandom": false,
         "selectrandomcount": 1

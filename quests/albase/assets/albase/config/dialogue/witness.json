@@ -15,9 +15,19 @@
       "type": "talk",
       "text": [
         { "value": "albase:dialogue-witness-openquests", "jumpTo": "openquests" },
+        { "value": "albase:dialogue-witness-aboutserver", "jumpTo": "aboutserver" },
         { "value": "albase:dialogue-witness-whoareyou", "jumpTo": "whoareyou" },
         { "value": "albase:dialogue-witness-closechoice", "jumpTo": "close" }
       ]
+    },
+    {
+      "code": "aboutserver",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-witness-aboutserver-answer" }
+      ],
+      "jumpTo": "main"
     },
     {
       "code": "whoareyou",

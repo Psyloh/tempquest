@@ -1,6 +1,6 @@
 {
   "id": "albase:priest-allowcharselonce",
-  "cooldown": 360,
+  "cooldown": 720,
   "perPlayer": true,
   "onAcceptedActions": [
     {
