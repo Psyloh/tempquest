@@ -51,6 +51,7 @@ namespace VsQuest
         public const string AttrSecondChanceCharges = "secondchancecharges";
         public const string AttrWeightLimit = "weightlimit";
         public const string AttrViewDistance = "viewdistance";
+        public const string AttrUraniumMaskChargeHours = "uraniummaskchargehours";
 
         public static string GetKey(string attributeName)
         {
@@ -99,6 +100,30 @@ namespace VsQuest
         {
             float value = GetAttributeFloat(stack, attributeName, defaultValue);
             if (value == 0f || stack == null) return value;
+
+            // Some wearables have effects that should only apply when they are charged.
+            // If the charge is depleted, suppress all other attribute bonuses from that wearable.
+            float uraniumMaskChargeHours = GetAttributeFloat(stack, AttrUraniumMaskChargeHours, float.NaN);
+            if (!float.IsNaN(uraniumMaskChargeHours))
+            {
+                if (attributeName != AttrUraniumMaskChargeHours && uraniumMaskChargeHours <= 0f)
+                {
+                    return 0f;
+                }
+
+                // Charged mask bonuses should not depend on item durability/condition.
+                // The only controlling factor should be the time-based charge.
+                if (attributeName == AttrUraniumMaskChargeHours) return value;
+
+                // Scale effects down when charge is low.
+                // >= 24h => full power (1.0)
+                // < 24h  => scales linearly down to 0.4
+                float chargeMult = uraniumMaskChargeHours >= 24f
+                    ? 1f
+                    : GameMath.Clamp(0.4f + 0.6f * (uraniumMaskChargeHours / 24f), 0.4f, 1f);
+
+                return value * chargeMult;
+            }
 
             if (attributeName == AttrHungerRate) return value;
 
@@ -155,6 +180,10 @@ namespace VsQuest
             else if (shortKey == AttrSecondChanceCharges)
             {
                 return $"{displayName}: {value:0.#}";
+            }
+            else if (shortKey == AttrUraniumMaskChargeHours)
+            {
+                return $"{displayName}: {value:0.#}h";
             }
             else if (shortKey == AttrMaxHealthFlat)
             {

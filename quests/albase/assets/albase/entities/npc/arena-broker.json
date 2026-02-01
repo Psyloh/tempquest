@@ -1,0 +1,67 @@
+{
+  "canClimb": true,
+  "class": "EntityAgent",
+  "client": {
+    "renderer": "Shape",
+    "shape": {
+      "base": "game:entity/humanoid/trader"
+    },
+    "texture": {
+      "base": "game:entity/humanoid/traderclothes/set2"
+    },
+    "behaviors": [
+      {
+        "code": "nametag",
+        "showtagonlywhentargeted": false
+      },
+      {
+        "code": "repulseagents"
+      },
+      {
+        "code": "controlledphysics",
+        "stepHeight": 1.01
+      },
+      {
+        "code": "interpolateposition"
+      },
+      {
+        "code": "conversable",
+        "dialogue": "config/dialogue/arena-broker"
+      }
+    ]
+  },
+  "code": "arena-broker",
+  "hitboxSize": {
+    "x": 0.77,
+    "y": 2.24
+  },
+  "attributes": {
+    "alternativeCollisionBox": [0.77, 2.24],
+    "renderRange": 32
+  },
+  "server": {
+    "behaviors": [
+      {
+        "code": "nametag",
+        "showtagonlywhentargeted": false,
+        "selectFromRandomName": [
+          "Арендодатель"
+        ]
+      },
+      {
+        "code": "controlledphysics",
+        "stepHeight": 1.01
+      },
+      {
+        "code": "health",
+        "currenthealth": 1000000,
+        "maxhealth": 1000000
+      },
+      {
+        "code": "conversable",
+        "dialogue": "config/dialogue/arena-broker"
+      }
+    ]
+  },
+  "sounds": {}
+}

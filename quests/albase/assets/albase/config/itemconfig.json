@@ -26,7 +26,7 @@
       "id": "albase:bosshunt-reward-miner-belt",
       "itemCode": "albase:bosshunt-miner-belt",
       "name": "<font color=\"#F59E0B\">Пояс Оссуария</font>",
-      "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой, обсыпанной костяной крошкой. На коже — следы когтей и каменной пыли, будто кто-то цеплялся за своды в темноте.</font>",
+      "description": "<font color=\"#FBBF24\">Тугой ремень с холодной пряжкой и костяной крошкой в трещинах. Он пахнет сырой землёй и железом, а по коже тянутся царапины — будто своды Оссуария пытались удержать того, кто проходил здесь до тебя.</font>",
       "actions": [],
       "attributes": {
         "protectionperc": -0.1,
@@ -83,7 +83,7 @@
       "id": "albase:bosshunt-reward-bloodthirsty",
       "itemCode": "albase:bosshunt-bloodthirsty-bracelet",
       "name": "<font color=\"#DC2626\">Кандалы Оссуария</font>",
-      "description": "<font color=\"#FCA5A5\">Холодный металл с зазубринами, будто приспособленными для хватки. Если сжать кулак, кажется, что браслет сжимается в ответ — голодно и зло.</font>",
+      "description": "<font color=\"#FCA5A5\">Холодный металл с зазубринами. Если сжать кулак, кажется, что браслет сжимается в ответ — голодно и зло.</font>",
       "actions": [],
       "attributes": {
         "attackpower": 1.2,
@@ -284,6 +284,34 @@
       ]
     },
     {
+      "id": "albase:bosshunt-reward-cryptsight",
+      "itemCode": "albase:uranium-mask",
+      "name": "<font color=\"#A7F3D0\">Зрение Крипты</font>",
+      "description": "<font color=\"#D1FAE5\">Грубая маска, снятая с мёртвого лица. Пока внутри шипит урановый мел, горизонт становится яснее — но темпоральная тьма жаднее тянется к тебе.</font>",
+      "actions": [],
+      "attributes": {
+        "uraniummaskchargehours": 10,
+        "viewdistance": 1.0,
+        "temporaldrainmult": -0.45,
+        "hungerrate": 0.3,
+        "walkspeed": -0.1
+      },
+      "showAttributes": [
+        "uraniummaskchargehours",
+        "viewdistance",
+        "temporaldrainmult",
+        "hungerrate",
+        "walkspeed"
+      ],
+      "hideVanillaTooltips": [
+        "armor",
+        "protection",
+        "warmth",
+        "walkspeed",
+        "modsource"
+      ]
+    },
+    {
       "id": "albase:bosshunt-reward-ashen-sigil",
       "itemCode": "albase:bosshunt-ashen-sigil",
       "name": "<font color=\"#F59E0B\">Печать роя</font>",
@@ -291,11 +319,13 @@
       "actions": [],
       "attributes": {
         "rangedaccuracy": 0.05,
-        "rangedchargspeed": 0.05
+        "rangedchargspeed": 0.05,
+        "hungerrate": -0.1
       },
       "showAttributes": [
         "rangedaccuracy",
-        "rangedchargspeed"
+        "rangedchargspeed",
+        "hungerrate"
       ],
       "hideVanillaTooltips": [
         "armor",
@@ -309,7 +339,7 @@
       "id": "albase:bosshunt-reward-subduction-filter",
       "itemCode": "albase:bosshunt-subduction-filter",
       "name": "<font color=\"#22C55E\">Фильтр субдукции</font>",
-      "description": "<font color=\"#86EFAC\">Грубый фильтр на цепи, покрытый ржавчиной и зелёной гарью. Если поднести к лицу, слышно, как внутри оседает криптовый туман.</font>",
+      "description": "<font color=\"#86EFAC\">Грубый фильтр на цепи. Воздух идёт тяжело и сухо, с привкусом масла и каменной пыли.</font>",
       "actions": [],
       "attributes": {
         "maxoxygen": 42000,

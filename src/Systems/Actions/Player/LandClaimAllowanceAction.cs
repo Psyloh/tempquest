@@ -12,15 +12,26 @@ namespace VsQuest
 
             var key = "landclaimallowance";
 
+            int value;
             if (args == null || args.Length < 1 || string.IsNullOrWhiteSpace(args[0]))
             {
-                return;
-            }
+                value = byPlayer.Entity.WatchedAttributes.GetInt(key, 0);
 
-            if (!int.TryParse(args[0], out int value))
+                // If the extra allowance was set by an admin command (ServerData only), do not let this quest action lower it.
+                if (byPlayer.ServerData != null)
+                {
+                    value = System.Math.Max(value, byPlayer.ServerData.ExtraLandClaimAllowance);
+                }
+            }
+            else if (!int.TryParse(args[0], out value))
             {
                 sapi.Logger.Error($"[vsquest] 'landclaimallowance' action argument 'value' must be an int, but got '{args[0]}' in quest '{message?.questId}'.");
                 return;
+            }
+
+            if (byPlayer.ServerData != null)
+            {
+                byPlayer.ServerData.ExtraLandClaimAllowance = value;
             }
 
             byPlayer.Entity.WatchedAttributes.SetInt(key, value);

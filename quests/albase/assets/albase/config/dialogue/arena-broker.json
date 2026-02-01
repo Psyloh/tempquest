@@ -1,0 +1,62 @@
+{
+  "components": [
+    {
+      "code": "intro",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-intro" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "main",
+      "owner": "player",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-openui", "jumpTo": "openui" },
+        { "value": "albase:dialogue-arena-broker-showregions", "jumpTo": "snapshot" },
+        { "value": "albase:dialogue-arena-broker-help", "jumpTo": "help" },
+        { "value": "albase:dialogue-arena-broker-closechoice", "jumpTo": "close" }
+      ]
+    },
+    {
+      "code": "openui",
+      "owner": "npc",
+      "trigger": "tradearena ui",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-checkchat" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "snapshot",
+      "owner": "npc",
+      "trigger": "tradearena snapshot",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-checkchat" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "help",
+      "owner": "npc",
+      "trigger": "tradearena help",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-checkchat" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "close",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-close-answer" }
+      ]
+    }
+  ]
+}

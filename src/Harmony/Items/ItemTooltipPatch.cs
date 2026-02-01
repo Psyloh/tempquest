@@ -267,7 +267,8 @@ namespace VsQuest.Harmony
                     {
                         value = ItemAttributeUtils.GetAttributeFloatScaled(inSlot.Itemstack, shortKey, 0f);
                     }
-                    bool showZero = shortKey == ItemAttributeUtils.AttrSecondChanceCharges;
+                    bool showZero = shortKey == ItemAttributeUtils.AttrSecondChanceCharges
+                        || shortKey == ItemAttributeUtils.AttrUraniumMaskChargeHours;
                     if (value != 0f || showZero)
                     {
                         string lineToAdd = ItemAttributeUtils.FormatAttributeForTooltip(kvp.Key, value);

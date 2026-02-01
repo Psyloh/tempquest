@@ -51,6 +51,15 @@
   "albase:dialogue-witness-aboutserver": "What is on this server?",
   "albase:dialogue-witness-aboutserver-answer": "Four people — four paths.\n\nThe Innkeeper offers work and reputation. He values silence and results.\n\nThe Priest guards the rite of rebirth. Prove yourself, and he will grant you one chance to use .charsel.\n\nThe Boss Hunter leads hunts into the crypts. He gives targets and teaches how to survive where stone remembers blood.\n\nThe Treasurer counts other people's mistakes like coins. You can buy land claim expansions and area slots from him — but he likes exams.",
 
+  "albase:dialogue-arena-broker-intro": "I manage arena rentals.",
+  "albase:dialogue-arena-broker-openui": "Open interface",
+  "albase:dialogue-arena-broker-showregions": "Show regions",
+  "albase:dialogue-arena-broker-help": "Help",
+  "albase:dialogue-arena-broker-closechoice": "Bye",
+  "albase:dialogue-arena-broker-close-answer": "Good luck.",
+  "albase:dialogue-arena-broker-checkchat": "Check chat.",
+  
+
   "albase:witness-introduction-title": "Witness: Introduction",
   "albase:witness-introduction-desc": "The witness knows who does what at the Crossroads. He suggests a simple start: meet four people.\n\nTalk to the Innkeeper, the Priest, the Boss Hunter, and the Treasurer.",
   "albase:witness-introduction-obj": "Innkeeper: {0}/{1}<br>Priest: {2}/{3}<br>Boss Hunter: {4}/{5}<br>Treasurer: {6}/{7}",
@@ -129,9 +138,27 @@
 
   "albase:reputation-npc-bosshunter-title": "Boss Hunter",
   "albase:reputation-npc-innkeeper-title": "Innkeeper",
-  "albase:reputation-bosshunter-rank-500": "Spark Boots",
-  "albase:reputation-bosshunter-rank-1500": "Uranium",
+  "albase:reputation-bosshunter-rank-0": "Stranger",
+  "albase:reputation-bosshunter-rank-500": "Mark Walker",
+  "albase:reputation-bosshunter-rank-1500": "Ossuary Guest",
+  "albase:reputation-innkeeper-rank-0": "Lodger",
+  "albase:reputation-innkeeper-rank-500": "Quiet Hand",
+  "albase:reputation-innkeeper-rank-1000": "Regular",
+  "albase:reputation-innkeeper-rank-1500": "Fixer",
   "albase:reputation-innkeeper-rank-2000": "Trusted Regular",
+
+  "item-albase:flashboots": "Spark Boots",
+  "albase:reward-uranium-short": "Uranium",
+
+  "item-albase:uranium-mask": "Crypt Sight",
+
+  "albase:reputation-reward-title-albase-bosshunter-300": "Crypt Sight",
+  "albase:reputation-reward-title-albase-bosshunter-500": "Spark Boots",
+  "albase:reputation-reward-title-albase-bosshunter-1500": "Uranium",
+  "albase:reputation-reward-title-albase-innkeeper-500": "Quiet Hand",
+  "albase:reputation-reward-title-albase-innkeeper-1000": "Regular",
+  "albase:reputation-reward-title-albase-innkeeper-1500": "Fixer",
+  "albase:reputation-reward-title-albase-innkeeper-2000": "Uranium",
 
   "albase:no-quest-available-bosshunter": "No hunt is available right now.",
   "albase:no-quest-available-bosshunter-cooldown": "A new hunt will be available in {0} day(s). Target rotation in {1} day(s).",

@@ -56,6 +56,7 @@ namespace VsQuest
             actionRegistry.Add("addvanillajournalentry", new AddVanillaJournalEntryQuestAction());
 
             actionRegistry.Add("giveitem", new GiveItemAction());
+            actionRegistry.Add("takeitem", new TakeItemAction());
             actionRegistry.Add("addtraits", new AddTraitsAction());
             actionRegistry.Add("removetraits", new RemoveTraitsAction());
             actionRegistry.Add("servercommand", new ServerCommandAction());

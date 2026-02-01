@@ -122,12 +122,14 @@ namespace VsQuest.Harmony
                     }
                 }
 
-                if (reduction <= 0f) return;
+                if (Math.Abs(reduction) <= 0.0001f) return;
 
                 double delta = __instance.OwnStability - __state;
                 if (delta >= 0) return;
 
-                float mult = GameMath.Clamp(1f - reduction, 0f, 1f);
+                // reduction > 0 => reduce drain (delta is negative, so multiply by <1)
+                // reduction < 0 => increase drain (delta is negative, so multiply by >1)
+                float mult = GameMath.Clamp(1f - reduction, 0f, 3f);
                 double adjusted = __state + delta * mult;
                 __instance.OwnStability = GameMath.Clamp(adjusted, 0.0, 1.0);
             }
@@ -395,6 +397,7 @@ namespace VsQuest.Harmony
             public static bool Prefix(CollectibleObject __instance, ItemStackMergeOperation op)
             {
                 if (TryHandleSecondChanceCharge(op)) return false;
+                if (TryHandleUraniumMaskCharge(op)) return false;
                 return true;
             }
         }
@@ -405,6 +408,7 @@ namespace VsQuest.Harmony
             public static bool Prefix(ItemWearable __instance, ItemStackMergeOperation op)
             {
                 if (TryHandleSecondChanceCharge(op)) return false;
+                if (TryHandleUraniumMaskCharge(op)) return false;
                 return true;
             }
         }
@@ -414,7 +418,7 @@ namespace VsQuest.Harmony
         {
             public static bool Prefix(ItemWearable __instance, ItemStack sinkStack, ItemStack sourceStack, EnumMergePriority priority, ref int __result)
             {
-                if (CanChargeSecondChance(sinkStack, sourceStack))
+                if (CanChargeSecondChance(sinkStack, sourceStack) || CanChargeUraniumMask(sinkStack, sourceStack))
                 {
                     __result = 1;
                     return false;
@@ -439,6 +443,23 @@ namespace VsQuest.Harmony
             return true;
         }
 
+        private static bool TryHandleUraniumMaskCharge(ItemStackMergeOperation op)
+        {
+            if (op?.SinkSlot?.Itemstack == null || op.SourceSlot?.Itemstack == null) return false;
+
+            var sinkStack = op.SinkSlot.Itemstack;
+            if (!CanChargeUraniumMask(sinkStack, op.SourceSlot.Itemstack)) return false;
+
+            string chargeKey = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrUraniumMaskChargeHours);
+            float hours = sinkStack.Attributes.GetFloat(chargeKey, 0f);
+            hours = Math.Min(100f, hours + 8f);
+            sinkStack.Attributes.SetFloat(chargeKey, hours);
+            op.MovedQuantity = 1;
+            op.SourceSlot.TakeOut(1);
+            op.SinkSlot.MarkDirty();
+            return true;
+        }
+
         private static bool CanChargeSecondChance(ItemStack sinkStack, ItemStack sourceStack)
         {
             if (sinkStack?.Attributes == null || sourceStack?.Collectible?.Code == null) return false;
@@ -451,6 +472,27 @@ namespace VsQuest.Harmony
 
             float charges = ItemAttributeUtils.GetAttributeFloat(sinkStack, ItemAttributeUtils.AttrSecondChanceCharges, 0f);
             return charges < 0.5f;
+        }
+
+        private static bool CanChargeUraniumMask(ItemStack sinkStack, ItemStack sourceStack)
+        {
+            if (sinkStack?.Attributes == null || sourceStack?.Collectible?.Code == null) return false;
+
+            string chargeKey = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrUraniumMaskChargeHours);
+            if (!sinkStack.Attributes.HasAttribute(chargeKey)) return false;
+
+            if (!IsUraniumChargeItem(sourceStack.Collectible.Code)) return false;
+
+            float hours = sinkStack.Attributes.GetFloat(chargeKey, 0f);
+            return hours < 100f - 0.01f;
+        }
+
+        private static bool IsUraniumChargeItem(AssetLocation code)
+        {
+            return code != null
+                && string.Equals(code.Domain, "game", StringComparison.OrdinalIgnoreCase)
+                && code.Path != null
+                && string.Equals(code.Path, "nugget-uranium", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsDiamondRough(AssetLocation code)

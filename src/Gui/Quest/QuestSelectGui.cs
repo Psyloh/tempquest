@@ -235,13 +235,19 @@ namespace VsQuest
                 Composers.Remove("single");
             }
 
+            const int questsWidth = 400;
+            const int reputationWidth = 520;
+            int mainWidth = curTab == 2 ? reputationWidth : questsWidth;
+
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
-            ElementBounds questTextBounds = ElementBounds.Fixed(0, 60, 400, 500);
+            ElementBounds questTextBounds = ElementBounds.Fixed(0, 60, mainWidth, 500);
             ElementBounds scrollbarBounds = questTextBounds.CopyOffsetedSibling(questTextBounds.fixedWidth + 10).WithFixedWidth(20).WithFixedHeight(questTextBounds.fixedHeight);
             ElementBounds clippingBounds = questTextBounds.ForkBoundingParent();
-            ElementBounds bottomLeftButtonBounds = ElementBounds.Fixed(10, 570, 200, 20);
-            ElementBounds bottomRightButtonBounds = ElementBounds.Fixed(220, 570, 200, 20);
+
+            int halfButtonWidth = Math.Max(100, (mainWidth - 30) / 2);
+            ElementBounds bottomLeftButtonBounds = ElementBounds.Fixed(10, 570, halfButtonWidth, 20);
+            ElementBounds bottomRightButtonBounds = ElementBounds.Fixed(20 + halfButtonWidth, 570, halfButtonWidth, 20);
 
             var tabsList = new List<GuiTab>
             {
@@ -273,14 +279,22 @@ namespace VsQuest
             {
                 if (availableQuestIds != null && availableQuestIds.Count > 0)
                 {
-                    if (string.IsNullOrEmpty(selectedAvailableQuestId) || !availableQuestIds.Contains(selectedAvailableQuestId))
+                    if (string.IsNullOrWhiteSpace(selectedAvailableQuestId)
+                        || !availableQuestIds.Contains(selectedAvailableQuestId))
                     {
                         selectedAvailableQuestId = availableQuestIds[0];
                     }
 
                     int selectedIndex = Math.Max(0, availableQuestIds.IndexOf(selectedAvailableQuestId));
 
-                    SingleComposer.AddDropDown(availableQuestIds.ToArray(), availableQuestIds.ConvertAll<string>(id => Lang.Get(id + "-title")).ToArray(), selectedIndex, onAvailableQuestSelectionChanged, ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, 400, 30), DropDownKey)
+                    SingleComposer
+                        .AddDropDown(
+                            availableQuestIds.ToArray(),
+                            availableQuestIds.ConvertAll(id => Lang.Get(id + "-title")).ToArray(),
+                            selectedIndex,
+                            onAvailableQuestSelectionChanged,
+                            ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, mainWidth, 30),
+                            DropDownKey)
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
                         .AddButton(Lang.Get("alegacyvsquest:button-accept"), acceptQuest, bottomRightButtonBounds)
                         .BeginClip(clippingBounds)
@@ -290,11 +304,12 @@ namespace VsQuest
                 }
                 else
                 {
-                    string noQuestText = (noAvailableQuestCooldownDaysLeft > 0 && !string.IsNullOrEmpty(noAvailableQuestCooldownDescLangKey))
-                        ? LocalizationUtils.GetSafe(noAvailableQuestCooldownDescLangKey, noAvailableQuestCooldownDaysLeft, noAvailableQuestRotationDaysLeft)
-                        : LocalizationUtils.GetFallback(noAvailableQuestDescLangKey, "alegacyvsquest:no-quest-available-desc");
+                    string text = !string.IsNullOrWhiteSpace(noAvailableQuestDescLangKey)
+                        ? Lang.Get(noAvailableQuestDescLangKey)
+                        : Lang.Get("alegacyvsquest:no-quest-available-desc");
 
-                    SingleComposer.AddStaticText(noQuestText, CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
+                    SingleComposer
+                        .AddStaticText(text, CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, mainWidth, 500))
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
@@ -302,19 +317,21 @@ namespace VsQuest
             {
                 if (activeQuests != null && activeQuests.Count > 0)
                 {
-                    if (selectedActiveQuest == null || string.IsNullOrEmpty(selectedActiveQuestKey) || activeQuests.FindIndex(match => ActiveQuestKey(match) == selectedActiveQuestKey) < 0)
+                    if (selectedActiveQuest == null)
                     {
                         selectedActiveQuest = activeQuests[0];
                         selectedActiveQuestKey = ActiveQuestKey(selectedActiveQuest);
                     }
 
-                    int selected = Math.Max(0, activeQuests.FindIndex(match => ActiveQuestKey(match) == selectedActiveQuestKey));
-
-                    string[] activeQuestKeys = activeQuests.ConvertAll<string>(quest => ActiveQuestKey(quest)).ToArray();
-
                     bool hasQuiz = HasQuizConfig(selectedActiveQuest.questId);
 
-                    SingleComposer.AddDropDown(activeQuestKeys, activeQuests.ConvertAll<string>(quest => Lang.Get(quest.questId + "-title")).ToArray(), selected, onActiveQuestSelectionChanged, ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, 400, 30), DropDownKey)
+                    string[] activeQuestKeys = activeQuests.ConvertAll(q => ActiveQuestKey(q)).ToArray();
+                    string[] activeQuestTitles = activeQuests.ConvertAll(q => Lang.Get(q.questId + "-title")).ToArray();
+                    int selected = Math.Max(0, Array.IndexOf(activeQuestKeys, selectedActiveQuestKey));
+
+                    SingleComposer
+                        .AddDropDown(activeQuestKeys, activeQuestTitles, selected, onActiveQuestSelectionChanged,
+                            ElementBounds.FixedOffseted(EnumDialogArea.RightTop, 0, 20, mainWidth, 30), DropDownKey)
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, bottomLeftButtonBounds)
                         .AddIf(selectedActiveQuest.IsCompletableOnClient)
                             .AddButton(Lang.Get("alegacyvsquest:button-complete"), completeQuest, bottomRightButtonBounds)
@@ -329,48 +346,39 @@ namespace VsQuest
                 }
                 else
                 {
-                    SingleComposer.AddStaticText(Lang.Get("alegacyvsquest:no-quest-active-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, 400, 500))
+                    SingleComposer
+                        .AddStaticText(Lang.Get("alegacyvsquest:no-quest-active-desc"), CairoFont.WhiteSmallishText(), ElementBounds.Fixed(0, 60, mainWidth, 500))
                         .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20));
                 }
             }
             else
             {
+                int repValue = !string.IsNullOrWhiteSpace(reputationNpcId) ? reputationNpcValue : reputationFactionValue;
+
                 var nodes = BuildRewardNodes();
-                var levelBounds = ElementBounds.Fixed(0, 20, 400, 25);
-                var mapBounds = ElementBounds.Fixed(0, 60, 400, 500);
+                var levelBounds = ElementBounds.Fixed(0, 20, mainWidth, 25);
+                var mapBounds = ElementBounds.Fixed(0, 60, mainWidth, 500);
                 mapBounds.WithParent(bgBounds);
 
-                int repValue = !string.IsNullOrWhiteSpace(reputationNpcId)
-                    ? reputationNpcValue
-                    : reputationFactionValue;
-
-                string rankKey = !string.IsNullOrWhiteSpace(reputationNpcId)
-                    ? reputationNpcRankLangKey
-                    : reputationFactionRankLangKey;
-                string rankText = !string.IsNullOrWhiteSpace(rankKey)
-                    ? Lang.Get(rankKey)
-                    : string.Empty;
-
-                string levelText = string.IsNullOrWhiteSpace(rankText)
-                    ? repValue.ToString()
-                    : string.Format("{0}: {1}", rankText, repValue);
+                string levelText = ReputationUiHelper.GetReputationHeaderText(reputationNpcId, repValue, reputationNpcRankLangKey, reputationFactionRankLangKey);
 
                 var closeCenteredBounds = ElementBounds.FixedOffseted(EnumDialogArea.CenterBottom, 0, -10, 200, 20);
 
-                SingleComposer.AddStaticText(levelText, CairoFont.WhiteSmallishText(), levelBounds)
+                SingleComposer
+                    .AddStaticText(levelText, CairoFont.WhiteSmallishText(), levelBounds)
                     .AddButton(Lang.Get("alegacyvsquest:button-cancel"), TryClose, closeCenteredBounds)
                     .AddInteractiveElement(new ReputationTreeElement(capi, mapBounds, nodes, OnRewardNodeClicked), "reputationtree");
             }
 
-            SingleComposer.GetScrollbar("scrollbar")?.SetHeights((float)questTextBounds.fixedHeight, (float)questTextBounds.fixedHeight);
-            SingleComposer.EndChildElements()
-                    .Compose();
+            SingleComposer.EndChildElements().Compose();
 
             var questTextElement = SingleComposer.GetRichtext("questtext");
             if (questTextElement != null)
             {
+                SingleComposer.GetScrollbar("scrollbar")?.SetHeights((float)questTextBounds.fixedHeight, (float)questTextBounds.fixedHeight);
                 SingleComposer.GetScrollbar("scrollbar")?.SetNewTotalHeight((float)questTextElement.TotalHeight);
                 SingleComposer.GetScrollbar("scrollbar")?.SetScrollbarPosition(0);
+                OnNewScrollbarvalue(0);
             }
         }
 
@@ -400,7 +408,7 @@ namespace VsQuest
                 ? (reputationNpcRankRewards ?? new List<ReputationRankRewardStatus>())
                 : (reputationFactionRankRewards ?? new List<ReputationRankRewardStatus>());
 
-            if (rankRewards != null && rankRewards.Count > 0)
+            if (rankRewards != null)
             {
                 // Filter out null entries first so layout spacing is deterministic.
                 rankRewards.RemoveAll(r => r == null);
@@ -419,11 +427,15 @@ namespace VsQuest
                     float x = 0.5f;
                     float y = 0.5f;
 
-                    string title = rr.min.ToString();
+                    string title = ReputationUiHelper.GetRankRewardTitle(capi, reputationNpcId, rr);
+
                     string req = Lang.Get("alegacyvsquest:reputation-value-template", rr.min);
                     if (!string.IsNullOrWhiteSpace(rr.rankLangKey))
                     {
-                        title = Lang.Get(rr.rankLangKey);
+                        if (string.IsNullOrWhiteSpace(title) || title == rr.min.ToString())
+                        {
+                            title = Lang.Get(rr.rankLangKey);
+                        }
                     }
 
                     if (rr.status == "claimed")

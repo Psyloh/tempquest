@@ -15,6 +15,7 @@
       "type": "talk",
       "text": [
         { "value": "Trade", "jumpTo": "opentrade" },
+        { "value": "Arena status", "jumpTo": "tradearena_snapshot" },
         { "value": "Bye", "jumpTo": "close" }
       ]
     },
@@ -22,6 +23,11 @@
       "code": "opentrade",
       "owner": "trader",
       "trigger": "opentrade"
+    },
+    {
+      "code": "tradearena_snapshot",
+      "owner": "trader",
+      "trigger": "tradearena snapshot"
     },
     {
       "code": "close",

@@ -3,7 +3,8 @@
     "albase:bosshunter": {
       "titleLangKey": "albase:reputation-npc-bosshunter-title",
       "ranks": [
-        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" },
+        { "min": 0, "rankLangKey": "albase:reputation-bosshunter-rank-0" },
+        { "min": 300, "rankLangKey": "albase:reputation-bosshunter-rank-300", "rewardAction": "questitem albase:bosshunt-reward-cryptsight" },
         { "min": 500, "rankLangKey": "albase:reputation-bosshunter-rank-500", "rewardAction": "questitem albase:bosshunt-reward-fox-boots" },
         { "min": 1500, "rankLangKey": "albase:reputation-bosshunter-rank-1500", "rewardAction": "giveitem game:crystalizedore-rich-uranium-chalk 1" }
       ]
@@ -11,10 +12,10 @@
     "albase:innkeeper": {
       "titleLangKey": "albase:reputation-npc-innkeeper-title",
       "ranks": [
-        { "min": 0, "rankLangKey": "alegacyvsquest:reputation-rank-neutral" },
-        { "min": 500, "rewardAction": "giveitem game:redmeat-cured 6" },
-        { "min": 1000, "rewardAction": "giveitem game:redmeat-vintage 8" },
-        { "min": 1500, "rewardAction": "giveitem game:poultice-linen-honey-sulfur 8" },
+        { "min": 0, "rankLangKey": "albase:reputation-innkeeper-rank-0" },
+        { "min": 500, "rankLangKey": "albase:reputation-innkeeper-rank-500", "rewardAction": "giveitem game:redmeat-cured 6" },
+        { "min": 1000, "rankLangKey": "albase:reputation-innkeeper-rank-1000", "rewardAction": "giveitem game:redmeat-vintage 8" },
+        { "min": 1500, "rankLangKey": "albase:reputation-innkeeper-rank-1500", "rewardAction": "giveitem game:poultice-linen-honey-sulfur 8" },
         { "min": 2000, "rankLangKey": "albase:reputation-innkeeper-rank-2000", "rewardAction": "giveitem game:crystalizedore-rich-uranium-chalk 1" }
       ]
     }

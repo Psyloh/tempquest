@@ -28,6 +28,8 @@ namespace VsQuest.Harmony
         private const float SecondChanceDebuffHungerRate = 0.4f;
         private const float SecondChanceDebuffHealing = -0.3f;
 
+        private const string UraniumMaskLastTickHoursKey = "alegacyvsquest:uraniummask:lasttickhours";
+
         private static bool IsBossTarget(EntityAgent target)
         {
             if (target == null) return false;
@@ -654,6 +656,75 @@ namespace VsQuest.Harmony
                 }
                 catch
                 {
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(EntityAgent), "OnGameTick")]
+        public class EntityAgent_OnGameTick_UraniumMaskCharge_Server_Patch
+        {
+            public static void Prefix(EntityAgent __instance)
+            {
+                if (__instance is not EntityPlayer player) return;
+                if (player.World?.Side != EnumAppSide.Server) return;
+                if (player.WatchedAttributes == null) return;
+                if (player.Player?.InventoryManager == null) return;
+
+                double nowHours;
+                try
+                {
+                    nowHours = player.World.Calendar.TotalHours;
+                }
+                catch
+                {
+                    nowHours = 0;
+                }
+
+                if (nowHours <= 0) return;
+
+                double lastHours;
+                try
+                {
+                    lastHours = player.WatchedAttributes.GetDouble(UraniumMaskLastTickHoursKey, 0);
+                }
+                catch
+                {
+                    lastHours = 0;
+                }
+
+                // Initialize on first tick.
+                if (lastHours <= 0)
+                {
+                    player.WatchedAttributes.SetDouble(UraniumMaskLastTickHoursKey, nowHours);
+                    return;
+                }
+
+                double dtHours = nowHours - lastHours;
+                if (dtHours <= 0) return;
+
+                player.WatchedAttributes.SetDouble(UraniumMaskLastTickHoursKey, nowHours);
+
+                var inv = player.Player.InventoryManager.GetOwnInventory("character");
+                if (inv == null) return;
+
+                string chargeKey = ItemAttributeUtils.GetKey(ItemAttributeUtils.AttrUraniumMaskChargeHours);
+
+                foreach (ItemSlot slot in inv)
+                {
+                    if (slot?.Empty != false) continue;
+                    var stack = slot.Itemstack;
+                    if (stack?.Item is not ItemWearable) continue;
+                    if (stack.Attributes == null) continue;
+                    if (!stack.Attributes.HasAttribute(chargeKey)) continue;
+
+                    float hours = stack.Attributes.GetFloat(chargeKey, 0f);
+                    if (hours <= 0f) continue;
+
+                    float newHours = Math.Max(0f, hours - (float)dtHours);
+                    if (Math.Abs(newHours - hours) <= 0.0001f) continue;
+
+                    stack.Attributes.SetFloat(chargeKey, newHours);
+                    slot.MarkDirty();
                 }
             }
         }

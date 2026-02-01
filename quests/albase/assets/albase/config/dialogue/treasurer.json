@@ -33,10 +33,9 @@
     {
       "code": "close",
       "owner": "npc",
+      "trigger": "closedialogue",
       "type": "talk",
-      "text": [
-        { "value": "albase:dialogue-treasurer-close-answer" }
-      ]
+      "text": []
     },
     {
       "code": "paperwork",
