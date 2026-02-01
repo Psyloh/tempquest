@@ -8,6 +8,35 @@ namespace VsQuest
 {
     public partial class BossHuntSystem
     {
+        private bool HasAnyRegisteredAnchors()
+        {
+            if (state?.entries == null || state.entries.Count == 0) return false;
+
+            for (int i = 0; i < state.entries.Count; i++)
+            {
+                var e = state.entries[i];
+                if (e?.anchorPoints != null && e.anchorPoints.Count > 0) return true;
+            }
+
+            return false;
+        }
+
+        private bool HasRegisteredAnchorsForBoss(string bossKey)
+        {
+            if (string.IsNullOrWhiteSpace(bossKey)) return false;
+            if (state?.entries == null || state.entries.Count == 0) return false;
+
+            for (int i = 0; i < state.entries.Count; i++)
+            {
+                var e = state.entries[i];
+                if (e == null) continue;
+                if (!string.Equals(e.bossKey, bossKey, StringComparison.OrdinalIgnoreCase)) continue;
+                return e.anchorPoints != null && e.anchorPoints.Count > 0;
+            }
+
+            return false;
+        }
+
         public string[] GetKnownBossKeys()
         {
             if (configs == null || configs.Count == 0) return Array.Empty<string>();

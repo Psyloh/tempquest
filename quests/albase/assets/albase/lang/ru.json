@@ -55,10 +55,16 @@
   "albase:dialogue-arena-broker-intro": "Я заведую арендами арены.",
   "albase:dialogue-arena-broker-openui": "Открыть интерфейс",
   "albase:dialogue-arena-broker-showregions": "Показать регионы",
-  "albase:dialogue-arena-broker-help": "Помощь",
+  "albase:dialogue-arena-broker-whatisthis": "Что это за место?",
+  "albase:dialogue-arena-broker-rules": "Правила и сроки",
+  "albase:dialogue-arena-broker-currency": "Оплата и ржавые шестерни",
   "albase:dialogue-arena-broker-closechoice": "Пока",
   "albase:dialogue-arena-broker-close-answer": "Удачи.",
-  "albase:dialogue-arena-broker-checkchat": "Смотри чат.",
+  "albase:dialogue-arena-broker-openui-answer": "Хочешь смотреть на цифры — смотри. Я только открываю дверцу. Дальше ты сам решаешь, сколько крови стоит твоя земля.\n\nИнтерфейс открыт.",
+  "albase:dialogue-arena-broker-showregions-answer": "Я выкладываю список на общий стол.\n\nЕсли регионов не видно — значит никто не выставил их на торг. Это не рынок чудес: сначала регион должен быть объявлен, потом — куплен или взят в срок.",
+  "albase:dialogue-arena-broker-whatisthis-answer": "Аренда арены — не про уют. Это про порядок.\n\nЕсть земли, которые нельзя оставлять ничьими: пустота зовёт чужаков. Поэтому мы сдаём их в срок и держим правила простыми.\n\nХочешь кусок земли под себя — плати и следи за временем.",
+  "albase:dialogue-arena-broker-rules-answer": "Срок измеряется годами: от одного до пяти.\n\nНе продлил — место уходит обратно на торг. Не успел — значит был слишком уверен.\n\nЯ не спорю, я фиксирую: кто оплатил — тот и хозяин на срок.",
+  "albase:dialogue-arena-broker-currency-answer": "Платишь ржавыми шестернями. Они тяжёлые, грязные, но честные — их не рисуют на бумаге.\n\nЦена — это не милость и не подачка. Это плата за право сказать: «Это моё».\n\nЕсли у тебя нет шестерён — у тебя нет аргументов.",
   
 
   "albase:witness-introduction-title": "Свидетель: Ознакомление",

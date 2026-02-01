@@ -16,7 +16,9 @@
       "text": [
         { "value": "albase:dialogue-arena-broker-openui", "jumpTo": "openui" },
         { "value": "albase:dialogue-arena-broker-showregions", "jumpTo": "snapshot" },
-        { "value": "albase:dialogue-arena-broker-help", "jumpTo": "help" },
+        { "value": "albase:dialogue-arena-broker-whatisthis", "jumpTo": "whatisthis" },
+        { "value": "albase:dialogue-arena-broker-rules", "jumpTo": "rules" },
+        { "value": "albase:dialogue-arena-broker-currency", "jumpTo": "currency" },
         { "value": "albase:dialogue-arena-broker-closechoice", "jumpTo": "close" }
       ]
     },
@@ -26,7 +28,7 @@
       "trigger": "tradearena ui",
       "type": "talk",
       "text": [
-        { "value": "albase:dialogue-arena-broker-checkchat" }
+        { "value": "albase:dialogue-arena-broker-openui-answer" }
       ],
       "jumpTo": "main"
     },
@@ -36,17 +38,34 @@
       "trigger": "tradearena snapshot",
       "type": "talk",
       "text": [
-        { "value": "albase:dialogue-arena-broker-checkchat" }
+        { "value": "albase:dialogue-arena-broker-showregions-answer" }
       ],
       "jumpTo": "main"
     },
     {
-      "code": "help",
+      "code": "whatisthis",
       "owner": "npc",
-      "trigger": "tradearena help",
       "type": "talk",
       "text": [
-        { "value": "albase:dialogue-arena-broker-checkchat" }
+        { "value": "albase:dialogue-arena-broker-whatisthis-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "rules",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-rules-answer" }
+      ],
+      "jumpTo": "main"
+    },
+    {
+      "code": "currency",
+      "owner": "npc",
+      "type": "talk",
+      "text": [
+        { "value": "albase:dialogue-arena-broker-currency-answer" }
       ],
       "jumpTo": "main"
     },

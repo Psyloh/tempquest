@@ -93,6 +93,8 @@ namespace VsQuest
             if (sapi == null) return;
             if (configs == null || configs.Count == 0) return;
 
+            if (!HasAnyRegisteredAnchors()) return;
+
             double nowHours = sapi.World.Calendar.TotalHours;
 
             var activeCfg = GetActiveBossConfig(nowHours);

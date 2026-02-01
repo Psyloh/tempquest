@@ -32,11 +32,11 @@
   },
   "code": "arena-broker",
   "hitboxSize": {
-    "x": 0.77,
-    "y": 2.24
+    "x": 0.6,
+    "y": 1.9
   },
   "attributes": {
-    "alternativeCollisionBox": [0.77, 2.24],
+    "alternativeCollisionBox": [0.6, 1.9],
     "renderRange": 32
   },
   "server": {

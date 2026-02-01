@@ -3,8 +3,8 @@
 		"allAngles": false,
 		"singleTexture": false
 	},
-	"textureWidth": 16,
-	"textureHeight": 16,
+	"textureWidth": 32,
+	"textureHeight": 32,
 	"textures": {
 		"metal": "block/locustnest/cage/metal",
 		"fabric-side1": "block/locustnest/cage/fabric-side1",

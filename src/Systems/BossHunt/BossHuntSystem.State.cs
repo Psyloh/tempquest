@@ -160,6 +160,7 @@ namespace VsQuest
                 {
                     var cfg = configs[i];
                     if (cfg == null || !cfg.IsValid()) continue;
+                    if (!HasRegisteredAnchorsForBoss(cfg.bossKey)) continue;
                     ordered.Add(cfg);
                 }
 

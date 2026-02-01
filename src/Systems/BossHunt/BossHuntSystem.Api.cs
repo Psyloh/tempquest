@@ -46,7 +46,12 @@ namespace VsQuest
 
         public string GetActiveBossQuestId()
         {
-            var cfg = FindConfig(GetActiveBossKey());
+            if (!HasAnyRegisteredAnchors()) return null;
+
+            var activeBossKey = GetActiveBossKey();
+            if (!HasRegisteredAnchorsForBoss(activeBossKey)) return null;
+
+            var cfg = FindConfig(activeBossKey);
             return cfg?.questId;
         }
 
@@ -56,6 +61,7 @@ namespace VsQuest
             questId = null;
 
             if (sapi == null) return false;
+            if (!HasAnyRegisteredAnchors()) return false;
 
             double nowHours = sapi.World.Calendar.TotalHours;
 
@@ -84,6 +90,7 @@ namespace VsQuest
             hoursUntilRotation = 0;
 
             if (sapi == null) return false;
+            if (!HasAnyRegisteredAnchors()) return false;
 
             double nowHours = sapi.World.Calendar.TotalHours;
             var cfg = GetActiveBossConfig(nowHours);
