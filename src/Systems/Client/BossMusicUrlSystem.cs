@@ -40,7 +40,7 @@ namespace VsQuest
         private Task fadeTask;
         private CancellationTokenSource fadeCts;
 
-        private readonly object alLock = new object();
+        private readonly object alLock = typeof(AL);
 
         private float baseGain = 1f;
         private int lastSoundLevel = -1;
