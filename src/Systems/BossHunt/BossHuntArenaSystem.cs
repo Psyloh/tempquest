@@ -17,7 +17,7 @@ namespace VsQuest
 
         private class ArenaConfig
         {
-            public string regionName;
+            public string claimName;
             public float yOffset;
             public bool keepInventory;
         }
@@ -44,14 +44,15 @@ namespace VsQuest
             base.Dispose();
         }
 
-        public void RegisterArena(BlockPos pos, string regionName, float yOffset, bool keepInventory)
+        public void RegisterArena(BlockPos pos, float yOffset, bool keepInventory)
         {
             if (pos == null) return;
 
             var p = new BlockPos(pos.X, pos.Y, pos.Z, pos.dimension);
+            string claimName = GetClaimNameAtPos(p);
             arenasByPos[p] = new ArenaConfig
             {
-                regionName = regionName,
+                claimName = claimName,
                 yOffset = yOffset,
                 keepInventory = keepInventory
             };
@@ -164,9 +165,10 @@ namespace VsQuest
                 var c = kvp.Value;
                 if (c == null) continue;
 
-                if (string.IsNullOrWhiteSpace(c.regionName)) continue;
+                string arenaClaimName = c.claimName;
+                if (string.IsNullOrWhiteSpace(arenaClaimName)) continue;
 
-                if (string.Equals(c.regionName.Trim(), claimName.Trim(), StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(arenaClaimName.Trim(), claimName.Trim(), StringComparison.OrdinalIgnoreCase))
                 {
                     pos = p;
                     cfg = c;
@@ -185,6 +187,28 @@ namespace VsQuest
             if (claimsApi == null) return null;
 
             BlockPos pos = player.Pos.AsBlockPos;
+            var claims = claimsApi.Get(pos);
+            if (claims == null || claims.Length == 0) return null;
+
+            for (int i = 0; i < claims.Length; i++)
+            {
+                var desc = claims[i]?.Description;
+                if (!string.IsNullOrWhiteSpace(desc)) return desc;
+
+                var ownerName = claims[i]?.LastKnownOwnerName;
+                if (!string.IsNullOrWhiteSpace(ownerName)) return ownerName;
+            }
+
+            return null;
+        }
+
+        private string GetClaimNameAtPos(BlockPos pos)
+        {
+            if (sapi == null || pos == null) return null;
+
+            var claimsApi = sapi.World?.Claims;
+            if (claimsApi == null) return null;
+
             var claims = claimsApi.Get(pos);
             if (claims == null || claims.Length == 0) return null;
 

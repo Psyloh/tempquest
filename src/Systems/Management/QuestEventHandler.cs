@@ -429,7 +429,7 @@ namespace VsQuest
                 passiveThrottle = 1.0 / 3600.0;
             }
 
-            QuestTickUtil.HandleQuestTick(dt, questRegistry, questSystem.ActionObjectiveRegistry, players, persistenceManager.GetPlayerQuests, sapi, missingLogThrottle, passiveThrottle);
+            QuestTickUtil.HandleQuestTick(dt, questRegistry, questSystem.ActionObjectiveRegistry, players, persistenceManager.GetPlayerQuests, persistenceManager.SavePlayerQuests, sapi, missingLogThrottle, passiveThrottle);
         }
 
         public void HandleVanillaBlockInteract(IServerPlayer player, VanillaBlockInteractMessage message)

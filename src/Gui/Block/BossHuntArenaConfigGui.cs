@@ -9,14 +9,12 @@ namespace VsQuest
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public class BossHuntArenaConfigData
     {
-        public string regionName;
         public float yOffset;
         public bool keepInventory;
     }
 
     public class BossHuntArenaConfigGui : GuiDialogGeneric
     {
-        private const string KeyRegionName = "regionName";
         private const string KeyYOffset = "yOffset";
         private const string KeyKeepInventory = "keepInventory";
 
@@ -58,10 +56,6 @@ namespace VsQuest
                 .BeginChildElements(bgBounds);
 
             SingleComposer
-                .AddStaticText("Region name (claim)", CairoFont.WhiteDetailText(), fullRow = cur)
-                .AddTextInput(cur = fullRow.BelowCopy(0, -10).WithFixedSize(420, 29), null, CairoFont.WhiteDetailText(), KeyRegionName);
-
-            SingleComposer
                 .AddStaticText("Y offset", CairoFont.WhiteDetailText(), fullRow = cur.BelowCopy(0, 10).WithFixedSize(420, 30))
                 .AddNumberInput(cur = fullRow.BelowCopy(0, -10).WithFixedSize(120, 29), null, CairoFont.WhiteDetailText(), KeyYOffset);
 
@@ -97,7 +91,6 @@ namespace VsQuest
             if (updating) return true;
 
             var data = new BossHuntArenaConfigData();
-            data.regionName = SingleComposer.GetTextInput(KeyRegionName).GetText();
             data.yOffset = (float)SingleComposer.GetNumberInput(KeyYOffset).GetValue();
 
             string selected = SingleComposer.GetDropDown(KeyKeepInventory).SelectedValue;
@@ -113,8 +106,6 @@ namespace VsQuest
 
             updating = true;
             Data = data;
-
-            SingleComposer.GetTextInput(KeyRegionName).SetValue(data.regionName ?? "");
             SingleComposer.GetNumberInput(KeyYOffset).SetValue(data.yOffset);
             SingleComposer.GetDropDown(KeyKeepInventory).SetSelectedValue(data.keepInventory ? "true" : "false");
 

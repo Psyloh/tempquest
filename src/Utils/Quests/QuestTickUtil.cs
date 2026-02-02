@@ -9,7 +9,7 @@ namespace VsQuest
     {
         private static readonly Dictionary<string, double> lastMissingQuestLogHoursByKey = new Dictionary<string, double>(System.StringComparer.OrdinalIgnoreCase);
 
-        public static void HandleQuestTick(float dt, Dictionary<string, Quest> questRegistry, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, IPlayer[] players, System.Func<string, List<ActiveQuest>> getPlayerQuests, ICoreServerAPI sapi, double missingQuestLogThrottleHours = (1.0 / 60.0), double passiveCompletionThrottleHours = (1.0 / 3600.0))
+        public static void HandleQuestTick(float dt, Dictionary<string, Quest> questRegistry, Dictionary<string, ActionObjectiveBase> actionObjectiveRegistry, IPlayer[] players, System.Func<string, List<ActiveQuest>> getPlayerQuests, System.Action<string, List<ActiveQuest>> savePlayerQuests, ICoreServerAPI sapi, double missingQuestLogThrottleHours = (1.0 / 60.0), double passiveCompletionThrottleHours = (1.0 / 3600.0))
         {
             if (players == null || players.Length == 0) return;
 
@@ -48,6 +48,19 @@ namespace VsQuest
                         catch
                         {
                         }
+
+                        // Auto-heal: remove missing quest from active quests so we don't spam logs forever.
+                        // Safe iteration: adjust index after removal.
+                        try
+                        {
+                            activeQuests.RemoveAt(aq);
+                            aq--;
+                            savePlayerQuests?.Invoke(serverPlayer.PlayerUID, activeQuests);
+                        }
+                        catch
+                        {
+                        }
+
                         continue;
                     }
 

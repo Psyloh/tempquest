@@ -64,7 +64,6 @@ namespace VsQuest
 
             var attrs = Block?.Attributes;
             bossKey = attrs?["bossKey"].AsString(bossKey);
-            anchorId = attrs?["anchorId"].AsString(anchorId);
             pointOrder = attrs?["pointOrder"].AsInt(pointOrder) ?? pointOrder;
             leashRange = attrs?["leashRange"].AsFloat(leashRange) ?? leashRange;
             outOfCombatLeashRange = attrs?["outOfCombatLeashRange"].AsFloat(outOfCombatLeashRange) ?? outOfCombatLeashRange;
@@ -79,6 +78,8 @@ namespace VsQuest
             base.FromTreeAttributes(tree, worldAccessForResolve);
 
             bossKey = tree.GetString(AttrBossKey, bossKey);
+            // Backward compatibility: old worlds may have stored anchorId explicitly.
+            // We still read it so we can unregister/keep stable IDs, but we no longer expose it in GUI nor persist it.
             anchorId = tree.GetString(AttrAnchorId, anchorId);
             pointOrder = tree.GetInt(AttrPointOrder, pointOrder);
             leashRange = tree.GetFloat(AttrLeashRange, leashRange);
@@ -91,7 +92,6 @@ namespace VsQuest
             base.ToTreeAttributes(tree);
 
             if (!string.IsNullOrWhiteSpace(bossKey)) tree.SetString(AttrBossKey, bossKey);
-            if (!string.IsNullOrWhiteSpace(anchorId)) tree.SetString(AttrAnchorId, anchorId);
             tree.SetInt(AttrPointOrder, pointOrder);
             tree.SetFloat(AttrLeashRange, leashRange);
             tree.SetFloat(AttrOutOfCombatLeashRange, outOfCombatLeashRange);
@@ -182,7 +182,6 @@ namespace VsQuest
             return new BossHuntAnchorConfigData
             {
                 bossKey = bossKey,
-                anchorId = anchorId,
                 pointOrder = pointOrder,
                 leashRange = leashRange,
                 outOfCombatLeashRange = outOfCombatLeashRange,
@@ -196,7 +195,6 @@ namespace VsQuest
             if (data == null) return;
 
             bossKey = data.bossKey;
-            anchorId = data.anchorId;
             pointOrder = data.pointOrder;
             leashRange = data.leashRange;
             outOfCombatLeashRange = data.outOfCombatLeashRange;

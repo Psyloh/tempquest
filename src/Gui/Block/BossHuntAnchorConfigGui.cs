@@ -10,7 +10,6 @@ namespace VsQuest
     public class BossHuntAnchorConfigData
     {
         public string bossKey;
-        public string anchorId;
         public int pointOrder;
         public float leashRange;
         public float outOfCombatLeashRange;
@@ -21,7 +20,6 @@ namespace VsQuest
     public class BossHuntAnchorConfigGui : GuiDialogGeneric
     {
         private const string KeyBossKey = "bossKey";
-        private const string KeyAnchorId = "anchorId";
         private const string KeyPointOrder = "pointOrder";
         private const string KeyLeashRange = "leashRange";
         private const string KeyOutOfCombatLeashRange = "outOfCombatLeashRange";
@@ -75,10 +73,6 @@ namespace VsQuest
                 .AddDropDown(bossKeys, bossKeys, 0, (_, __) => { }, cur = cur.BelowCopy(0, -10).WithFixedSize(420, 29), KeyBossKey);
 
             SingleComposer
-                .AddStaticText("Anchor id", CairoFont.WhiteDetailText(), fullRow = cur.BelowCopy(0, 10).WithFixedSize(420, 30))
-                .AddTextInput(cur = fullRow.BelowCopy(0, -10).WithFixedSize(420, 29), null, CairoFont.WhiteDetailText(), KeyAnchorId);
-
-            SingleComposer
                 .AddStaticText("Point order", CairoFont.WhiteDetailText(), fullRow = cur.BelowCopy(0, 10).WithFixedSize(420, 30))
                 .AddNumberInput(cur = fullRow.BelowCopy(0, -10).WithFixedSize(120, 29), null, CairoFont.WhiteDetailText(), KeyPointOrder);
 
@@ -122,7 +116,6 @@ namespace VsQuest
 
             data.bossKey = SingleComposer.GetDropDown(KeyBossKey).SelectedValue;
             data.knownBossKeys = Data?.knownBossKeys;
-            data.anchorId = SingleComposer.GetTextInput(KeyAnchorId).GetText();
             data.pointOrder = (int)SingleComposer.GetNumberInput(KeyPointOrder).GetValue();
             data.leashRange = (float)SingleComposer.GetNumberInput(KeyLeashRange).GetValue();
             data.outOfCombatLeashRange = (float)SingleComposer.GetNumberInput(KeyOutOfCombatLeashRange).GetValue();
@@ -149,8 +142,6 @@ namespace VsQuest
             catch
             {
             }
-
-            SingleComposer.GetTextInput(KeyAnchorId).SetValue(data.anchorId ?? "");
             SingleComposer.GetNumberInput(KeyPointOrder).SetValue(data.pointOrder);
             SingleComposer.GetNumberInput(KeyLeashRange).SetValue(data.leashRange);
             SingleComposer.GetNumberInput(KeyOutOfCombatLeashRange).SetValue(data.outOfCombatLeashRange);

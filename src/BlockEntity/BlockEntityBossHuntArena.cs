@@ -9,14 +9,12 @@ namespace VsQuest
 {
     public class BlockEntityBossHuntArena : BlockEntity
     {
-        private const string AttrRegionName = "alegacyvsquest:bosshuntarena:regionName";
         private const string AttrYOffset = "alegacyvsquest:bosshuntarena:yOffset";
         private const string AttrKeepInventory = "alegacyvsquest:bosshuntarena:keepInventory";
 
         private const int PacketOpenGui = 3000;
         private const int PacketSave = 3001;
 
-        private string regionName;
         private float yOffset;
         private bool keepInventory;
 
@@ -39,7 +37,6 @@ namespace VsQuest
             if (Api?.Side != EnumAppSide.Server) return;
 
             var attrs = Block?.Attributes;
-            regionName = attrs?["regionName"].AsString(regionName);
             yOffset = attrs?["yOffset"].AsFloat(yOffset) ?? yOffset;
             keepInventory = attrs?["keepInventory"].AsBool(keepInventory) ?? keepInventory;
 
@@ -51,7 +48,6 @@ namespace VsQuest
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
 
-            regionName = tree.GetString(AttrRegionName, regionName);
             yOffset = tree.GetFloat(AttrYOffset, yOffset);
             keepInventory = tree.GetBool(AttrKeepInventory, keepInventory);
 
@@ -65,7 +61,6 @@ namespace VsQuest
         {
             base.ToTreeAttributes(tree);
 
-            if (!string.IsNullOrWhiteSpace(regionName)) tree.SetString(AttrRegionName, regionName);
             tree.SetFloat(AttrYOffset, yOffset);
             tree.SetBool(AttrKeepInventory, keepInventory);
         }
@@ -145,7 +140,7 @@ namespace VsQuest
             try
             {
                 var system = Api.ModLoader.GetModSystem<BossHuntArenaSystem>();
-                system?.RegisterArena(new BlockPos(Pos.X, Pos.Y, Pos.Z, Pos.dimension), regionName, yOffset, keepInventory);
+                system?.RegisterArena(new BlockPos(Pos.X, Pos.Y, Pos.Z, Pos.dimension), yOffset, keepInventory);
             }
             catch
             {
@@ -156,7 +151,6 @@ namespace VsQuest
         {
             return new BossHuntArenaConfigData
             {
-                regionName = regionName,
                 yOffset = yOffset,
                 keepInventory = keepInventory
             };
@@ -166,7 +160,6 @@ namespace VsQuest
         {
             if (data == null) return;
 
-            regionName = data.regionName;
             yOffset = data.yOffset;
             keepInventory = data.keepInventory;
 

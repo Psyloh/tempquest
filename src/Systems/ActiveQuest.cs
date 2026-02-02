@@ -26,7 +26,8 @@ namespace VsQuest
         public void OnEntityKilled(string entityCode, IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return;
 
             if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "kill")) return;
 
@@ -38,7 +39,8 @@ namespace VsQuest
             if (blockPlaceTrackers == null || blockPlaceTrackers.Count == 0) return;
 
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return;
 
             if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "blockplace")) return;
 
@@ -50,7 +52,8 @@ namespace VsQuest
             if (blockBreakTrackers == null || blockBreakTrackers.Count == 0) return;
 
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return;
 
             if (!QuestTimeGateUtil.AllowsProgress(byPlayer, quest, questSystem?.ActionObjectiveRegistry, "blockbreak")) return;
 
@@ -60,7 +63,8 @@ namespace VsQuest
         public void OnBlockUsed(string blockCode, int[] position, IPlayer byPlayer, ICoreServerAPI sapi)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return;
 
             if (byPlayer?.Entity?.WatchedAttributes != null && position != null && position.Length == 3)
             {
@@ -249,7 +253,8 @@ namespace VsQuest
         public bool IsCompletable(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return false;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return false;
             var activeActionObjectives = quest.actionObjectives.ConvertAll<ActionObjectiveBase>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
             bool completable = true;
 
@@ -316,7 +321,8 @@ namespace VsQuest
         public void completeQuest(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return;
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return;
             foreach (var gatherObjective in quest.gatherObjectives)
             {
                 handOverItems(byPlayer, gatherObjective);
@@ -350,14 +356,16 @@ namespace VsQuest
         public List<int> gatherProgress(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return new List<int>();
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return new List<int>();
             return quest.gatherObjectives.ConvertAll<int>(gatherObjective => itemsGathered(byPlayer, gatherObjective));
         }
 
         public List<int> GetProgress(IPlayer byPlayer)
         {
             var questSystem = byPlayer.Entity.Api.ModLoader.GetModSystem<QuestSystem>();
-            var quest = questSystem.QuestRegistry[questId];
+            if (questSystem?.QuestRegistry == null || string.IsNullOrWhiteSpace(questId)) return new List<int>();
+            if (!questSystem.QuestRegistry.TryGetValue(questId, out var quest) || quest == null) return new List<int>();
             var activeActionObjectives = quest.actionObjectives.ConvertAll<ActionObjectiveBase>(objective => questSystem.ActionObjectiveRegistry[objective.id]);
 
             var result = gatherProgress(byPlayer);
